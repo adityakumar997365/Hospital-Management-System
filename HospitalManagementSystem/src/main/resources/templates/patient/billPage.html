@@ -1,0 +1,426 @@
+<!DOCTYPE html>
+<html xmlns:th="thymeleaf.org" lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Consultation Checkout Invoice - HMS</title>
+<style>
+/* CORPORATE DEEP-NAVY & TEAL INTERACTIVE THEME CONTEXT */
+:root {
+	--bg-main: #0f172a;
+	--bg-surface: #1e293b;
+	--bg-body: #0b0f19;
+	--primary-teal: #0ea5e9;
+	--primary-hover: #0284c7;
+	--accent-green: #10b981;
+	--text-white: #f8fafc;
+	--text-muted: #94a3b8;
+	--accent-red: #ef4444; /* Dismissal & logout warning red */
+	--border-color: rgba(255, 255, 255, 0.08);
+	--radius: 12px;
+	--transition: all 0.25s ease;
+}
+
+* {
+	margin: 0;
+	padding: 0;
+	box-sizing: border-box;
+}
+
+body {
+	font-family: 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
+	background-color: var(--bg-body);
+	color: var(--text-white);
+	min-height: 100vh;
+	display: flex;
+	flex-direction: column;
+	overflow-x: hidden;
+}
+
+/* 1. STICKY TOP CORPORATE HEADER NAVBAR */
+.navbar {
+	background-color: var(--bg-surface);
+	border-bottom: 1px solid var(--border-color);
+	padding: 0 40px;
+	height: 70px;
+	position: sticky;
+	top: 0;
+	z-index: 100;
+	display: flex;
+	align-items: center;
+}
+
+.nav-container {
+	width: 100%;
+	max-width: 1400px;
+	margin: 0 auto;
+	display: flex;
+	align-items: center;
+	justify-content: space-between;
+}
+
+.logo {
+	display: flex;
+	align-items: center;
+	gap: 10px;
+	font-size: 1.25rem;
+	font-weight: 700;
+	color: var(--text-white);
+	text-decoration: none;
+}
+
+.logo span {
+	color: var(--primary-teal);
+}
+
+.btn-back {
+	background-color: rgba(239, 68, 68, 0.1);
+	color: var(--accent-red);
+	border: 1px solid rgba(239, 68, 68, 0.2);
+	padding: 10px 20px;
+	border-radius: 8px;
+	font-size: 0.9rem;
+	font-weight: 600;
+	text-decoration: none;
+	display: flex;
+	align-items: center;
+	gap: 8px;
+	transition: var(--transition);
+	cursor: pointer;
+}
+
+.btn-back:hover {
+	background-color: rgba(255, 255, 255, 0.08);
+	color: var(--text-white);
+}
+
+/* 2. CENTRALIZED BILL CARD LAYOUT STRUCTURAL WRAPPER */
+.bill-viewport-wrapper {
+	flex: 1;
+	display: flex;
+	align-items: center;
+	justify-content: center;
+	padding: 40px 20px;
+}
+
+.invoice-card {
+	background-color: var(--bg-surface);
+	border: 1px solid var(--border-color);
+	border-radius: var(--radius);
+	width: 100%;
+	max-width: 600px;
+	box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.4);
+	overflow: hidden;
+}
+
+.invoice-header {
+	background: linear-gradient(135deg, rgba(30, 41, 59, 1) 0%, rgba(14, 165, 233, 0.05) 100%);
+	padding: 12px;
+	border-bottom: 1px dotted var(--border-color);
+	text-align: center;
+}
+
+.invoice-header h2 {
+	font-size: 1.5rem;
+	font-weight: 700;
+	margin-bottom: 6px;
+}
+
+.invoice-body {
+	padding: 32px;
+}
+
+.meta-section-title {
+	font-size: 0.8rem;
+	font-weight: 700;
+	text-transform: uppercase;
+	letter-spacing: 0.05em;
+	color: var(--primary-teal);
+	margin-bottom: 14px;
+}
+
+.data-group-box {
+	background-color: rgba(15, 23, 42, 0.4);
+	border: 1px solid var(--border-color);
+	border-radius: 8px;
+	padding: 16px 20px;
+	margin-bottom: 24px;
+	display: flex;
+	flex-direction: column;
+	gap: 12px;
+}
+
+.data-row {
+	display: flex;
+	justify-content: space-between;
+	align-items: center;
+	font-size: 0.92rem;
+}
+
+.data-label {
+	color: var(--text-muted);
+}
+
+.data-value {
+	color: var(--text-white);
+	font-weight: 600;
+}
+
+/* FINANCIAL SUMMARY ITEMIZED LISTING */
+.financial-ledger {
+	margin-top: 10px;
+	padding-top: 6px;
+}
+
+.total-row {
+	border-top: 1px solid var(--border-color);
+	padding-top: 16px;
+	margin-top: 4px;
+}
+
+.btn-pay {
+	width: 100%;
+	background-color: var(--accent-green);
+	color: #0b0f19;
+	border: none;
+	padding: 16px;
+	border-radius: 8px;
+	font-size: 1rem;
+	font-weight: 700;
+	cursor: pointer;
+	display: flex;
+	align-items: center;
+	justify-content: center;
+	gap: 8px;
+	transition: var(--transition);
+	box-shadow: 0 4px 14px rgba(16, 185, 129, 0.25);
+}
+
+.btn-pay:hover {
+	background-color: #059669;
+	transform: translateY(-2px);
+	box-shadow: 0 6px 20px rgba(16, 185, 129, 0.35);
+}
+
+@keyframes modalFadeIn {
+    from { opacity: 0; transform: scale(0.95) translateY(10px); }
+    to { opacity: 1; transform: scale(1) translateY(0); }
+}
+
+/* FORCES NATIVE BROWSER CALENDAR PICKER ICONS TO BRIGHT WHITE */
+input[type="date"]::-webkit-calendar-picker-indicator {
+    filter: invert(1);
+    cursor: pointer;
+    opacity: 0.8;
+    transition: var(--transition);
+}
+
+input[type="date"]::-webkit-calendar-picker-indicator:hover {
+    opacity: 1;
+}
+
+</style>
+</head>
+<body>
+
+	<!-- 1. IDENTICAL TOP BRANDED NAVIGATION HEADER -->
+	<nav class="navbar">
+		<div class="nav-container">
+			<a th:href="@{/}" class="logo"> 
+				Hospital <span>Management System</span>
+			</a>
+			<a th:href="@{/patient/dashboard}" class="btn-back">Cancel Order</a>
+		</div>
+	</nav>
+
+	<!-- 2. CENTRAL CHECKOUT WRAPPER PANELS CONTAINER -->
+	<!-- 2. CENTRAL CHECKOUT WRAPPER PANELS CONTAINER -->
+<main class="bill-viewport-wrapper">
+    <div class="invoice-card">
+        
+        <div class="invoice-header">
+            <h2>Consultation Secure Checkout</h2>
+        </div>
+
+        <div class="invoice-body">
+            
+            <!-- THE MAIN FORM: Opened early to encapsulate the new inputs seamlessly -->
+            <form id="appointmentBillingForm" th:action="@{/patient/book-appointment/process-payment}" method="POST" onsubmit="interceptPaymentWorkflow(event)">
+                
+                <!-- Hidden Primary Key Payloads -->
+                <input type="hidden" name="doctorId" th:value="${doctor.doctorId}">
+                <input type="hidden" name="patientId" th:value="${patient != null ? patient.patientId : ''}">
+                <input type="hidden" id="selectedPaymentStatus" name="paymentStatus" value="UNPAID">
+                <input type="hidden" name="amount" th:value="${grandTotal}">
+
+                <!-- Section Block A: Patient File Metadata -->
+                <div class="meta-section-title">Patient Information</div>
+                <div class="data-group-box">
+                    <div class="data-row">
+                        <span class="data-label">Patient Name</span>
+                        <span class="data-value" th:text="${patient != null ? patient.name : 'Unregistered Patient'}">Aditya Kumar</span>
+                    </div>
+                    <div class="data-row">
+                        <span class="data-label">Contact Number</span>
+                        <span class="data-value" style="font-family: monospace;" th:text="${patient != null ? patient.contactNumber : 'N/A'}">9876543210</span>
+                    </div>
+                </div>
+
+                <!-- Section Block B: Designated Medical Practitioner Metadata -->
+                <div class="meta-section-title">Assigned Medical Specialist</div>
+                <div class="data-group-box">
+                    <div class="data-row">
+                        <span class="data-label">Doctor Name</span>
+                        <span class="data-value" th:text="${doctor.name}">Dr. Raj Sharma</span>
+                    </div>
+                    <div class="data-row">
+                        <span class="data-label">Specialist Department</span>
+                        <span class="data-value" th:text="${doctor.specialization}">Cardiology</span>
+                    </div>
+                </div>
+
+                <!-- ADDED: Section Block B2: Appointment Schedule Selectors -->
+                <div class="meta-section-title">Appointment Scheduling</div>
+                <div class="data-group-box" style="display: grid; grid-template-columns: 1fr 1fr; gap: 16px;">
+                    
+                    <!-- Date Input Selector Field -->
+                    <div style="display: flex; flex-direction: column; gap: 6px;">
+                        <label for="appointmentDate" style="font-size: 0.82rem; color: var(--text-muted); font-weight: 600;">Preferred Date</label>
+                        <input type="date" id="appointmentDate" name="appointmentDate" required
+                               style="background-color: #0b0f19; color: var(--text-white); border: 1px solid var(--border-color); border-radius: 6px; padding: 10px; font-size: 0.88rem; outline: none; transition: var(--transition); width: 100%;"
+                               onfocus="this.style.borderColor='var(--primary-teal)'"
+                               onblur="this.style.borderColor='var(--border-color)'">
+                    </div>
+
+                    <!-- Time Slot Dropdown Selector Field -->
+                    <div style="display: flex; flex-direction: column; gap: 6px;">
+                        <label for="timeSlot" style="font-size: 0.82rem; color: var(--text-muted); font-weight: 600;">Available Time Slot</label>
+                        <select id="timeSlot" name="timeSlot" required
+                                style="background-color: #0b0f19; color: var(--text-white); border: 1px solid var(--border-color); border-radius: 6px; padding: 10px; font-size: 0.88rem; outline: none; transition: var(--transition); width: 100; cursor: pointer;"
+                                onfocus="this.style.borderColor='var(--primary-teal)'"
+                                onblur="this.style.borderColor='var(--border-color)'">
+                            <option value="" disabled selected>-- Select Slot --</option>
+                            <option value="10:00 AM - 12:00 PM">10:00 AM to 12:00 PM</option>
+                            <option value="12:00 PM - 02:00 PM">12:00 PM to 02:00 PM</option>
+                            <option value="02:00 PM - 04:00 PM">02:00 PM to 04:00 PM</option>
+                            <option value="04:00 PM - 06:00 PM">04:00 PM to 06:00 PM</option>
+                        </select>
+                    </div>
+
+                </div>
+
+                <!-- Section Block C: Financial Summary Itemized Ledger -->
+                <div class="meta-section-title">Fee Breakdown Breakdown</div>
+                <div class="data-group-box financial-ledger">
+                    <div class="data-row">
+                        <span class="data-label">Consultation Fee</span>
+                        <span class="data-value" th:text="'₹' + ${consultationFee}">₹500.00</span>
+                    </div>
+                    <div class="data-row">
+                        <span class="data-label">Hospital Service CGST/SGST (18%)</span>
+                        <span class="data-value" th:text="'₹' + ${taxAmount}">₹90.00</span>
+                    </div>
+                    <div class="data-row total-row">
+						<span class="data-label" style="font-weight: 700; color: var(--text-white);">Total Outpatient Charges</span>
+                        <span class="data-value" style="font-size: 1.25rem; color: var(--primary-teal);" th:text="'₹' + ${grandTotal}">₹590.00</span>
+                    </div>
+                </div>
+
+                <!-- Checkout Process Action Submit Button Trigger -->
+                <button type="submit" class="btn-pay">
+                    <span style="display: inline-block; width: 10px; height: 8px; border: 2px solid #0b0f19; border-top: none; border-bottom-left-radius: 2px; border-bottom-right-radius: 2px; position: relative; margin-top: 4px;">
+                        <span style="position: absolute; bottom: 6px; left: 1px; width: 4px; height: 5px; border: 2px solid #0b0f19; border-bottom: none; border-top-left-radius: 50%; border-top-right-radius: 50%;"></span>
+                    </span>
+                    Process Secure Payment
+                </button>
+                
+            </form> <!-- THE MAIN FORM: Closes after wrapping all operational data parameters -->
+
+            <!-- 2. THEMATIC MODAL POPUP GATEWAY ELEMENT WRAPPER (HIDDEN BY DEFAULT) -->
+            <div id="paymentChoiceModal" style="display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background-color: rgba(11, 15, 25, 0.85); z-index: 999; align-items: center; justify-content: center; backdrop-filter: blur(4px); transition: var(--transition);">
+                <div style="background-color: var(--bg-surface); border: 1px solid var(--border-color); border-radius: var(--radius); width: 90%; max-width: 420px; padding: 32px; box-shadow: 0 25px 50px -12px rgba(0,0,0,0.5); text-align: center; animation: modalFadeIn 0.25s ease;">
+                    <div style="width: 56px; height: 56px; background-color: rgba(14, 165, 233, 0.1); border: 2px solid var(--primary-teal); border-radius: 50%; display: flex; align-items: center; justify-content: center; margin: 0 auto 20px;">
+                        <span style="display: inline-block; width: 6px; height: 12px; border-bottom: 2.5px solid var(--primary-teal); border-right: 2.5px solid var(--primary-teal); transform: rotate(45deg); margin-top: -2px;"></span>
+                    </div>
+                    <h3 style="font-size: 1.3rem; font-weight: 700; color: var(--text-white); margin-bottom: 8px;">Select Payment Status</h3>
+                    <p style="color: var(--text-muted); font-size: 0.9rem; margin-bottom: 24px; line-height: 1.5;">Please update the initial payment ledger state for this clinical consultation transaction line item.</p>
+                    <div style="display: flex; flex-direction: column; gap: 12px;">
+                        <button type="button" onclick="executePaymentSubmission('PAID')" style="width: 100%; background-color: var(--accent-green); color: #0b0f19; border: none; padding: 14px; border-radius: 8px; font-size: 0.95rem; font-weight: 700; cursor: pointer; transition: 0.2s;" onmouseover="this.style.backgroundColor='#059669';" onmouseout="this.style.backgroundColor='var(--accent-green)';">PAID</button>
+                        <button type="button" onclick="executePaymentSubmission('UNPAID')" style="width: 100%; background-color: var(--accent-red); color: var(--text-white); border: none; padding: 14px; border-radius: 8px; font-size: 0.95rem; font-weight: 700; cursor: pointer; transition: 0.2s;" onmouseover="this.style.backgroundColor='#dc2626';" onmouseout="this.style.backgroundColor='var(--accent-red)';">UNPAID</button>
+                        <button type="button" onclick="closePaymentSelectorModal()" style="background: none; border: none; color: var(--text-muted); font-size: 0.85rem; font-weight: 600; cursor: pointer; text-decoration: underline; margin-top: 8px; transition: 0.2s;" onmouseover="this.style.color='var(--text-white)'" onmouseout="this.style.color='var(--text-muted)'">Back to Invoice</button>
+                    </div>
+                </div>
+            </div>
+
+        </div>
+    </div>
+</main>
+
+<script>
+// Automatically restricts calendar picker from picking past dates
+document.addEventListener("DOMContentLoaded", function() {
+    const dateInput = document.getElementById("appointmentDate");
+    if(dateInput) {
+        const today = new Date().toISOString().split("T")[0];
+        dateInput.min = today;
+    }
+});
+
+function interceptPaymentWorkflow(event) {
+    event.preventDefault(); 
+    
+    // Explicit HTML5 validation enforcement guard check before drawing modal view popup
+    const form = document.getElementById('appointmentBillingForm');
+    if (!form.checkValidity()) {
+        form.reportValidity(); // Triggers native browser alert tooltips if inputs are missing
+        return;
+    }
+    
+    const modal = document.getElementById('paymentChoiceModal');
+    if (modal) { modal.style.display = 'flex'; }
+}
+
+function closePaymentSelectorModal() {
+    const modal = document.getElementById('paymentChoiceModal');
+    if (modal) { modal.style.display = 'none'; }
+}
+
+function executePaymentSubmission(statusChoice) {
+    document.getElementById('selectedPaymentStatus').value = statusChoice;
+    document.getElementById('appointmentBillingForm').submit();
+}
+	
+<!-- JAVASCRIPT EVENT INTERCEPTOR ENGINE -->
+
+// 1. Catches initial form submission clicks to halt the direct POST flow
+function interceptPaymentWorkflow(event) {
+    event.preventDefault(); // Prevents the browser from navigating or loading a new context page instantly
+    
+    // Reveal the popup selection window modal module using custom center flex rules
+    const modal = document.getElementById('paymentChoiceModal');
+    if (modal) {
+        modal.style.display = 'flex';
+    }
+}
+
+// 2. Closes the overlay window if the user chooses to cancel
+function closePaymentSelectorModal() {
+    const modal = document.getElementById('paymentChoiceModal');
+    if (modal) {
+        modal.style.display = 'none';
+    }
+}
+
+// 3. Inject selected keyword variable into hidden inputs and triggers final form send
+function executePaymentSubmission(statusChoice) {
+    // Inject choice state keyword ("PAID" / "UNPAID") straight into the designated hidden form input tracking row
+    document.getElementById('selectedPaymentStatus').value = statusChoice;
+    
+    // Execute raw form submit operation directly down path to your Controller endpoints
+    document.getElementById('appointmentBillingForm').submit();
+}
+</script>
+
+
+</body>
+</html>

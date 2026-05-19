@@ -1,0 +1,425 @@
+<!DOCTYPE html>
+<html xmlns:th="thymeleaf.org" lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>HMS Login - Hospital Management System</title>
+<!-- FontAwesome for forms and eye icons -->
+<link rel="stylesheet" href="cloudflare.com">
+
+<style>
+/* MATCHING CLINICAL COLOR PALETTE */
+:root {
+	--bg-main: #0f172a; /* Deep professional navy slate */
+	--bg-surface: #1e293b; /* Lighter slate for form box */
+	--primary-teal: #0ea5e9; /* Electric healthcare blue */
+	--primary-hover: #0284c7; /* Sky blue accent */
+	--text-white: #f8fafc; /* Crisp text */
+	--text-muted: #94a3b8; /* Subtle text grey */
+	--border-color: rgba(255, 255, 255, 0.1);
+	--radius: 12px;
+	--transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+/* STRUCTURAL RESET */
+* {
+	margin: 0;
+	padding: 0;
+	box-sizing: border-box;
+}
+
+body {
+	font-family: 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
+	background-color: var(--bg-main);
+	color: var(--text-white);
+	min-height: 100vh;
+	display: flex;
+	flex-direction: column;
+}
+
+/* IDENTICAL TOP NAVIGATION BAR */
+.navbar {
+	background-color: var(--bg-surface);
+	border-bottom: 1px solid var(--border-color);
+	padding: 0 40px;
+	/* Reduced vertical padding since height is now locked */
+	height: 70px; /* Matches standard portal navbar heights perfectly */
+	position: sticky;
+	top: 0;
+	z-index: 100;
+	display: flex;
+	align-items: center;
+}
+
+.nav-container {
+	width: 100%;
+	max-width: 1400px;
+	margin: 0 auto;
+	display: flex;
+	align-items: center;
+	justify-content: space-between;
+	/* Crucial: Pushes logo to far left and button to far right */
+}
+
+.logo {
+	display: flex;
+	align-items: center;
+	gap: 10px;
+	font-size: 1.25rem;
+	font-weight: 700;
+	color: var(--text-white);
+	text-decoration: none;
+}
+
+.logo i, .logo span {
+	color: var(--primary-teal);
+}
+
+/* 4. BRAND NEW: BUTTON STYLE FOR CHECK REGISTRATION STATUS ACTION LINK */
+.btn-requestt {
+	/* Starting State: High Visibility Solid Teal Accent Button */
+	background-color: var(--primary-teal);
+	color: #0f172a;
+	/* Dark slate text for perfect contrast against solid teal */
+	border: 1px solid var(--primary-teal);
+	padding: 10px 20px;
+	border-radius: 8px;
+	font-size: 0.9rem;
+	font-weight: 600;
+	text-decoration: none;
+	display: inline-flex;
+	align-items: center;
+	transition: var(--transition);
+	cursor: pointer;
+	box-shadow: 0 4px 12px rgba(14, 165, 233, 0.2);
+}
+
+.btn-requestt:hover {
+	/* Hover State: Swaps to Minimal Ghost Style with Tinted Background Glow */
+	background-color: rgba(14, 165, 233, 0.1);
+	color: var(--primary-teal);
+	/* Switches text back to electric accent blue */
+	border-color: rgba(14, 165, 233, 0.3);
+	box-shadow: none;
+	transform: translateY(-1px);
+}
+
+/* CENTERED LOGIN CONTAINER */
+.login-wrapper {
+	flex: 1;
+	display: flex;
+	align-items: center;
+	justify-content: center;
+	padding: 40px 20px;
+}
+
+.login-card {
+	background-color: var(--bg-surface);
+	border-radius: var(--radius);
+	padding: 40px;
+	width: 100%;
+	max-width: 450px;
+	box-shadow: 0 25px 35px -12px rgba(0, 0, 0, 0.6);
+	border: 1px solid rgba(255, 255, 255, 0.03);
+}
+
+.login-header {
+	text-align: center;
+	margin-bottom: 32px;
+}
+
+.login-header h2 {
+	font-size: 1.75rem;
+	font-weight: 700;
+	margin-bottom: 8px;
+}
+
+.login-header p {
+	color: var(--text-muted);
+	font-size: 0.9rem;
+}
+
+/* ROLE SELECTOR (RADIO BUTTONS) */
+.role-section-title {
+	font-size: 0.8rem;
+	font-weight: 700;
+	text-transform: uppercase;
+	letter-spacing: 0.05em;
+	color: var(--text-muted);
+	margin-bottom: 10px;
+}
+
+.role-container {
+	display: grid;
+	grid-template-columns: repeat(3, 1fr);
+	gap: 12px;
+	margin-bottom: 24px;
+}
+
+.role-option {
+	position: relative;
+}
+
+.role-option input[type="radio"] {
+	position: absolute;
+	opacity: 0;
+	width: 0;
+	height: 0;
+}
+
+.role-label {
+	display: flex;
+	flex-direction: column;
+	align-items: center;
+	justify-content: center;
+	gap: 6px;
+	padding: 12px;
+	background-color: rgba(255, 255, 255, 0.02);
+	border: 2px solid var(--border-color);
+	border-radius: 8px;
+	cursor: pointer;
+	font-size: 0.85rem;
+	font-weight: 600;
+	text-align: center;
+	transition: var(--transition);
+}
+
+.role-label i {
+	font-size: 1.1rem;
+	color: var(--text-muted);
+	transition: var(--transition);
+}
+/* Radio Selection States */
+.role-option input[type="radio"]:checked+.role-label {
+	border-color: var(--primary-teal);
+	background-color: rgba(14, 165, 233, 0.08);
+	color: var(--primary-teal);
+}
+
+.role-option input[type="radio"]:checked+.role-label i {
+	color: var(--primary-teal);
+}
+
+.role-label:hover {
+	border-color: rgba(255, 255, 255, 0.3);
+}
+
+/* FORM INPUT FIELDS */
+.form-group {
+	margin-bottom: 20px;
+	position: relative;
+}
+
+.form-group label {
+	display: block;
+	font-size: 0.8rem;
+	font-weight: 700;
+	text-transform: uppercase;
+	letter-spacing: 0.05em;
+	color: var(--text-muted);
+	margin-bottom: 8px;
+}
+
+.input-wrapper {
+	position: relative;
+	display: flex;
+	align-items: center;
+}
+
+.input-wrapper i.input-icon {
+	position: absolute;
+	left: 14px;
+	color: var(--text-muted);
+	font-size: 1rem;
+}
+
+.form-control {
+	width: 100%;
+	padding: 14px 14px 14px 42px;
+	background-color: rgba(15, 23, 42, 0.6);
+	border: 1px solid var(--border-color);
+	border-radius: 8px;
+	color: var(--text-white);
+	font-size: 0.95rem;
+	outline: none;
+	transition: var(--transition);
+}
+
+.form-control:focus {
+	border-color: var(--primary-teal);
+	box-shadow: 0 0 0 3px rgba(14, 165, 233, 0.15);
+}
+
+/* PASSWORD EYE TOGGLE */
+.password-toggle {
+	position: absolute;
+	right: 14px;
+	color: var(--text-muted);
+	cursor: pointer;
+	transition: var(--transition);
+	background: none;
+	border: none;
+	font-size: 1rem;
+}
+
+.password-toggle:hover {
+	color: var(--text-white);
+}
+
+/* SUBMIT BUTTON */
+.btn-submit {
+	width: 100%;
+	background-color: var(--primary-teal);
+	color: var(--bg-main);
+	border: none;
+	padding: 14px;
+	border-radius: 8px;
+	font-size: 1rem;
+	font-weight: 600;
+	cursor: pointer;
+	box-shadow: 0 4px 14px rgba(14, 165, 233, 0.3);
+	transition: var(--transition);
+	margin-top: 10px;
+	display: flex;
+	align-items: center;
+	justify-content: center;
+	gap: 8px;
+}
+
+.btn-submit:hover {
+	background-color: var(--primary-hover);
+	transform: translateY(-1px);
+}
+
+/* FOOTER REGISTER REDIRECTION LINK */
+.login-footer {
+	text-align: center;
+	margin-top: 24px;
+	font-size: 0.9rem;
+	color: var(--text-muted);
+}
+
+.login-footer a {
+	color: var(--primary-teal);
+	text-decoration: none;
+	font-weight: 600;
+	transition: var(--transition);
+}
+
+.login-footer a:hover {
+	color: var(--primary-hover);
+	text-decoration: underline;
+}
+</style>
+</head>
+<body>
+
+	<!-- TOP NAVIGATION BAR -->
+	<nav class="navbar">
+		<div class="nav-container">
+			<a th:href="@{/}" class="logo"> <i
+				class="fa-solid fa-heart-pulse"></i> Hospital <span>Management
+					System</span>
+			</a> <a th:href="@{/register/check-request}" class="btn-requestt">
+				Check Registration Status </a>
+		</div>
+	</nav>
+
+	<!-- CONTENT WRAPPER -->
+	<main class="login-wrapper">
+		<div class="login-card">
+
+			<div class="login-header">
+				<h2>Welcome Back</h2>
+				<p>Please select your role and enter your credentials</p>
+			</div>
+
+			<!-- LOGIN POST FORM -->
+			<form th:action="@{/login}" method="POST">
+
+				<!-- 1. ROLE SELECTOR FIELD -->
+				<p class="role-section-title">Select Portal Role</p>
+				<div class="role-container">
+					<!-- Admin Option -->
+					<div class="role-option">
+						<input type="radio" id="roleAdmin" name="role" value="ADMIN"
+							required> <label for="roleAdmin" class="role-label">
+							<i class="fa-solid fa-user-shield"></i> Admin
+						</label>
+					</div>
+					<!-- Doctor Option -->
+					<div class="role-option">
+						<input type="radio" id="roleDoctor" name="role" value="DOCTOR">
+						<label for="roleDoctor" class="role-label"> <i
+							class="fa-solid fa-user-doctor"></i> Doctor
+						</label>
+					</div>
+					<!-- Patient Option (Selected by Default) -->
+					<div class="role-option">
+						<input type="radio" id="rolePatient" name="role" value="PATIENT"
+							checked> <label for="rolePatient" class="role-label">
+							<i class="fa-solid fa-hospital-user"></i> Patient
+						</label>
+					</div>
+				</div>
+
+				<!-- 2. USERNAME INPUT FIELD -->
+				<div class="form-group">
+					<label for="username">Username</label>
+					<div class="input-wrapper">
+						<i class="fa-solid fa-user input-icon"></i> <input type="text"
+							id="username" name="username" class="form-control"
+							placeholder="Enter your Mobile number" required>
+					</div>
+				</div>
+
+				<!-- 3. PASSWORD INPUT FIELD WITH TOGGLE EYE -->
+				<div class="form-group">
+					<label for="password">Password</label>
+					<div class="input-wrapper">
+						<i class="fa-solid fa-lock input-icon"></i> <input type="password"
+							id="password" name="password" class="form-control"
+							placeholder="••••••••" required>
+						<button type="button" id="togglePasswordBtn"
+							class="password-toggle" onclick="togglePasswordVisibility()">
+							<i class="fa-solid fa-eye" id="eyeIcon"></i>
+						</button>
+					</div>
+				</div>
+
+				<!-- LOGIN SUBMIT -->
+				<button type="submit" class="btn-submit">
+					Sign In <i class="fa-solid fa-arrow-right"></i>
+				</button>
+
+			</form>
+
+			<!-- 4. PATIENT REGISTRATION ROUTING LINK -->
+			<div class="login-footer">
+				New Patient? <a th:href="@{/register}">Register here to open an
+					account</a>
+			</div>
+
+		</div>
+	</main>
+
+	<!-- VISIBILITY TOGGLE SCRIPT -->
+	<script>
+		function togglePasswordVisibility() {
+			const passwordInput = document.getElementById('password');
+			const eyeIcon = document.getElementById('eyeIcon');
+
+			if (passwordInput.type === 'password') {
+				passwordInput.type = 'text';
+				eyeIcon.classList.remove('fa-eye');
+				eyeIcon.classList.add('fa-eye-slash');
+			} else {
+				passwordInput.type = 'password';
+				eyeIcon.classList.remove('fa-eye-slash');
+				eyeIcon.classList.add('fa-eye');
+			}
+		}
+	</script>
+
+</body>
+</html>

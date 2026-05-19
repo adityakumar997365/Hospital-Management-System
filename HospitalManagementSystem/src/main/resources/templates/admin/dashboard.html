@@ -1,0 +1,999 @@
+<!DOCTYPE html>
+<html xmlns:th="thymeleaf.org" lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Admin Dashboard - HMS</title>
+<!-- FontAwesome for executive portal icons -->
+<link rel="stylesheet" href="https://cloudflare.com">
+<style>
+/* MATCHING CORPOARTE DEEP-NAVY & TEAL THEME DESIGN */
+:root {
+	--bg-main: #0f172a; /* Deep base layout slate */
+	--bg-surface: #1e293b; /* Navbar & sidebar base */
+	--bg-body: #0b0f19; /* Central content viewport base */
+	--primary-teal: #0ea5e9; /* Electric accent blue */
+	--primary-hover: #0284c7;
+	--accent-red: #ef4444; /* Dismissal & logout warning red */
+	--text-white: #f8fafc;
+	--text-muted: #94a3b8;
+	--border-color: rgba(255, 255, 255, 0.08);
+	--radius: 12px;
+	--transition: all 0.25s ease;
+}
+
+* {
+	margin: 0;
+	padding: 0;
+	box-sizing: border-box;
+}
+
+body {
+	font-family: 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
+	background-color: var(--bg-body);
+	color: var(--text-white);
+	min-height: 100vh;
+	display: flex;
+	flex-direction: column;
+	overflow-x: hidden;
+}
+
+/* 1. STICKY TOP EXECUTIVE NAVIGATION BAR */
+.navbar {
+	background-color: var(--bg-surface);
+	border-bottom: 1px solid var(--border-color);
+	padding: 0 40px;
+	height: 70px;
+	position: sticky;
+	top: 0;
+	z-index: 100;
+	display: flex;
+	align-items: center;
+	justify-content: space-between;
+}
+
+.logo {
+	display: flex;
+	align-items: center;
+	gap: 10px;
+	font-size: 1.25rem;
+	font-weight: 700;
+	color: var(--text-white);
+	text-decoration: none;
+}
+
+.logo i, .logo span {
+	color: var(--primary-teal);
+}
+
+.btn-logout {
+	background-color: rgba(239, 68, 68, 0.1);
+	color: var(--accent-red);
+	border: 1px solid rgba(239, 68, 68, 0.2);
+	padding: 10px 20px;
+	border-radius: 8px;
+	font-size: 0.9rem;
+	font-weight: 600;
+	text-decoration: none;
+	display: flex;
+	align-items: center;
+	gap: 8px;
+	transition: var(--transition);
+	cursor: pointer;
+}
+
+.btn-logout:hover {
+	background-color: var(--accent-red);
+	color: var(--text-white);
+	box-shadow: 0 4px 12px rgba(239, 68, 68, 0.2);
+}
+/* DASHBOARD SPLIT BODY CONTAINER */
+.dashboard-container {
+	flex: 1;
+	display: flex;
+	position: relative;
+	/* Allows natural document flow height */
+	min-height: calc(100vh - 70px);
+	align-items: flex-start;
+	/* Crucial: Prevents sidebar from stretching to full height */
+}
+
+/* 2. LEFT HAND SIDEBAR MENU (STICKY IMPLEMENTATION) */
+.sidebar {
+	width: 280px;
+	background-color: var(--bg-surface);
+	border-right: 1px solid var(--border-color);
+	padding: 24px 16px;
+	display: flex;
+	flex-direction: column;
+	gap: 8px;
+	flex-shrink: 0;
+	/* THIS FORCES THE SIDEBAR TO STICK WHILE THE PAGE SCROLLS */
+	position: sticky;
+	top: 70px; /* Aligns perfectly right below your 70px sticky navbar */
+	height: calc(100vh - 70px);
+	/* Sets height to cover exactly the remaining viewport */
+	overflow-y: auto;
+	/* Just in case your menu items grow, they scroll inside sidebar */
+}
+
+.sidebar-btn {
+	width: 100%;
+	background: none;
+	border: none;
+	color: var(--text-muted);
+	padding: 14px 16px;
+	border-radius: 8px;
+	font-size: 0.95rem;
+	font-weight: 600;
+	text-align: left;
+	cursor: pointer;
+	display: flex;
+	align-items: center;
+	gap: 12px;
+	transition: var(--transition);
+}
+
+.sidebar-btn i {
+	font-size: 1.1rem;
+	width: 24px;
+}
+
+.sidebar-btn:hover {
+	color: var(--text-white);
+	background-color: rgba(255, 255, 255, 0.03);
+}
+
+/* Active Sidebar Selector Hook */
+.sidebar-btn.active {
+	background-color: rgba(14, 165, 233, 0.1);
+	color: var(--primary-teal);
+	border-left: 4px solid var(--primary-teal);
+	border-top-left-radius: 0;
+	border-bottom-left-radius: 0;
+}
+
+/* 3. RIGHT HAND VIEWPORT PANEL CONTENT */
+.main-content {
+	flex: 1;
+	padding: 40px;
+	/* Removed height limits so it scrolls the main document body naturally */
+}
+
+/* CENTRAL MAIN WORKSPACE PANELS */
+.main-content {
+	flex: 1;
+	padding: 40px;
+	overflow-y: auto;
+}
+
+/* 3. WELCOME SUB-HEADER META CARD */
+.welcome-header {
+	background-color: var(--bg-surface);
+	border: 1px solid var(--border-color);
+	border-radius: var(--radius);
+	padding: 24px 32px;
+	margin-bottom: 32px;
+	display: flex;
+	align-items: center;
+	justify-content: space-between;
+	box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.2);
+}
+
+.welcome-text h1 {
+	font-size: 1.75rem;
+	font-weight: 700;
+	margin-bottom: 4px;
+}
+
+.welcome-text h1 span {
+	color: var(--primary-teal);
+}
+
+.welcome-text p {
+	color: var(--text-muted);
+	font-size: 0.95rem;
+}
+
+.live-badge {
+	background-color: rgba(14, 165, 233, 0.1);
+	color: var(--primary-teal);
+	padding: 6px 14px;
+	border-radius: 50px;
+	font-size: 0.8rem;
+	font-weight: 700;
+	border: 1px solid rgba(14, 165, 233, 0.2);
+}
+
+/* TAB INTERACTION VIEWS CONTAINER */
+.tab-panel {
+	display: none; /* Controlled via embedded JS Engine */
+	background-color: var(--bg-surface);
+	border: 1px solid var(--border-color);
+	border-radius: var(--radius);
+	padding: 32px;
+	box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.3);
+	animation: fadeIn 0.3s ease;
+}
+
+.tab-panel.active-panel {
+	display: block;
+}
+
+@keyframes fadeIn {from { opacity:0;
+	transform: translateY(5px);
+}
+
+to {
+	opacity: 1;
+	transform: translateY(0);
+}
+
+}
+.tab-panel h2 {
+	font-size: 1.35rem;
+	font-weight: 700;
+	margin-bottom: 12px;
+	border-bottom: 1px solid var(--border-color);
+	padding-bottom: 12px;
+	display: flex;
+	align-items: center;
+	gap: 10px;
+}
+
+.tab-panel h2 i {
+	color: var(--primary-teal);
+}
+
+.tab-panel p {
+	color: var(--text-muted);
+	font-size: 0.95rem;
+	line-height: 1.6;
+}
+
+/* RESPONSIVE DESIGN CONSTRAINTS */
+@media ( max-width : 1024px) {
+	.dashboard-container {
+		flex-direction: column;
+	}
+	.sidebar {
+		width: 100%;
+		border-right: none;
+		border-bottom: 1px solid var(--border-color);
+	}
+	.main-content {
+		padding: 24px;
+	}
+}
+</style>
+</head>
+<body>
+
+	<!-- 1. TOP NAVIGATION BAR WITH LOGOUT -->
+	<nav class="navbar">
+		<a th:href="@{/}" class="logo"> <i class="fa-solid fa-heart-pulse"></i>
+			Hospital <span>Management System</span>
+		</a>
+		<!-- Action Hook routing out of Session State to Login Gateway -->
+		<a th:href="@{/login}" class="btn-logout"> Log Out <i
+			class="fa-solid fa-right-from-bracket"></i>
+		</a>
+	</nav>
+
+	<!-- MAIN BODY CONSOLE FRAME -->
+	<div class="dashboard-container">
+
+		<!-- 2. SIDEBAR NAVIGATION CONTROLS -->
+		<aside class="sidebar">
+			<button class="sidebar-btn active"
+				onclick="switchTab(event, 'dashboardTab')">
+				<i class="fa-solid fa-calendar-check"></i> Admin Dashboard
+			</button>
+			<button class="sidebar-btn"
+				onclick="switchTab(event, 'appointmentsTab')">
+				<i class="fa-solid fa-calendar-check"></i> Appointment Requests
+			</button>
+			<button class="sidebar-btn"
+				onclick="switchTab(event, 'accessRequestsTab')">
+				<i class="fa-solid fa-user-shield"></i> HMS Access Requests
+			</button>
+			<button class="sidebar-btn"
+				onclick="switchTab(event, 'doctorsListTab')">
+				<i class="fa-solid fa-user-doctor"></i> Doctor Directory
+			</button>
+			<button class="sidebar-btn"
+				onclick="switchTab(event, 'patientsListTab')">
+				<i class="fa-solid fa-hospital-user"></i> Patient Directory
+			</button>
+			<button class="sidebar-btn"
+				onclick="switchTab(event, 'addDoctorTab')">
+				<i class="fa-solid fa-user-plus"></i> Add New Doctor
+			</button>
+			<button class="sidebar-btn"
+				onclick="switchTab(event, 'adminProfileTab')">
+				<i class="fa-solid fa-sliders"></i> Admin Profile
+			</button>
+		</aside>
+
+		<!-- CENTRAL INTERACTIVE MAIN DESKTOP -->
+		<main class="main-content">
+			<div id="dashboardTab" class="tab-panel active-panel">
+				<!-- 3. ADMINISTRATIVE DYNAMIC GREETING BLOCK -->
+				<header class="welcome-header">
+					<div class="welcome-text">
+						<!-- Fetches String attribute variable passed via Spring Controller Session Map -->
+						<h1>
+							Welcome Back, <span
+								th:text="${adminName != null ? adminName : 'System Admin'}"></span>...!
+						</h1>
+						<p>System operational checks are clear. Ready to manage clinic
+							schedules.</p>
+					</div>
+					<div class="live-badge">
+						<i class="fa-solid fa-circle text-xs text-green-500 animate-pulse"></i>
+						Admin Panel
+					</div>
+				</header>
+			</div>
+			<!-- 4. VIEW LAYOUT WORKSPACES (CONTROLLED BY INNER BUTTON EVENT ENGINE) -->
+
+			<!-- Tab View 1: Appointment Queries Table View -->
+			<div id="appointmentsTab" class="tab-panel">
+				<div
+					style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px; border-bottom: 1px solid var(--border-color); padding-bottom: 12px;">
+					<h2>
+						<i class="fa-solid fa-calendar-check"></i> Patient Appointment
+						Requests
+					</h2>
+					<span
+						style="background-color: rgba(14, 165, 233, 0.1); color: var(--primary-teal); padding: 4px 12px; border-radius: 4px; font-size: 0.85rem; font-weight: 600;">
+						Pending Actions </span>
+				</div>
+
+				<!-- RESPONSIVE TABLE WRAP CONTAINER -->
+				<div
+					style="width: 100%; overflow-x: auto; background-color: rgba(15, 23, 42, 0.3); border-radius: 8px; border: 1px solid var(--border-color);">
+					<table
+						style="width: 100%; border-collapse: collapse; text-align: left; font-size: 0.9rem;">
+
+						<!-- TABLE HEADERS -->
+						<thead>
+							<tr
+								style="background-color: rgba(255, 255, 255, 0.02); border-bottom: 1px solid var(--border-color); color: var(--text-white); font-weight: 700;">
+								<th style="padding: 16px 20px;">Patient Name</th>
+								<th style="padding: 16px 20px;">Appointment Date</th>
+								<th style="padding: 16px 20px;">Doctor Name</th>
+								<th style="padding: 16px 20px;">Time Slot</th>
+								<th style="padding: 16px 20px;">Payment Status</th>
+								<th style="padding: 16px 20px;">Appointment Status</th>
+								<th style="padding: 16px 20px; text-align: center;">Actions</th>
+							</tr>
+						</thead>
+
+						<!-- TABLE BODY DATA ROWS (Loops through the model array using Thymeleaf th:each) -->
+						<tbody>
+							<!-- Placeholder row for design testing; Spring Boot loops over these automatically -->
+							<tr th:each="appointment : ${appointmentsList}"
+								style="border-bottom: 1px solid var(--border-color); color: var(--text-muted); transition: background 0.2s;"
+								onmouseover="this.style.backgroundColor='rgba(255,255,255,0.01)'"
+								onmouseout="this.style.backgroundColor='transparent'">
+
+								<td style="padding: 14px 20px;"
+									th:text="${appointment.patient.name}"></td>
+								<td style="padding: 14px 20px; color: var(--text-white);"
+									th:text="${appointment.appointmentDate}">14-May-2026</td>
+
+								<td style="padding: 14px 20px;"
+									th:text="${appointment.doctor.name}"></td>
+
+
+								<td style="padding: 14px 20px; color: var(--text-white);"
+									th:text="${appointment.timeSlot}">10:00 AM - 11:00 AM</td>
+
+								<td style="padding: 14px 20px; color: var(--text-white);"
+									th:text="${appointment.Bill.paymentStatus}"></td>
+
+								<td style="padding: 14px 20px; color: var(--text-white);"
+									th:text="${appointment.status}"></td>
+
+								<!-- ACTION INTERACTION BUTTONS -->
+								<td style="padding: 14px 20px; text-align: center;">
+									<div style="display: flex; gap: 8px; justify-content: center;">
+
+										<!-- CONFIRM APPOINTMENT FORM -->
+										<form
+											th:action="@{/admin/appointments/confirm/{id}(id=${appointment.appointmentId})}"
+											method="post" style="margin: 0;">
+											<button type="submit" title="Confirm Appointment"
+												style="background-color: rgba(16, 185, 129, 0.1); color: #10b981; border: 1px solid rgba(16, 185, 129, 0.2); width: 36px; height: 32px; border-radius: 6px; cursor: pointer; display: flex; align-items: center; justify-content: center; transition: 0.2s;"
+												onmouseover="this.style.backgroundColor='#10b981'; this.querySelector('.css-check').style.borderColor='#0f172a'"
+												onmouseout="this.style.backgroundColor='rgba(16, 185, 129, 0.1)'; this.querySelector('.css-check').style.borderColor='#10b981'">
+												<!-- Pure CSS Custom Checkmark shape element -->
+												<span class="css-check"
+													style="display: inline-block; width: 6px; height: 12px; border-bottom: 2.5px solid #10b981; border-right: 2.5px solid #10b981; transform: rotate(45deg); margin-top: -3px; transition: 0.2s;"></span>
+											</button>
+										</form>
+
+										<!-- CANCEL/DENY APPOINTMENT FORM -->
+										<form
+											th:action="@{/admin/appointments/cancel/{id}(id=${appointment.appointmentId})}"
+											method="post" style="margin: 0;">
+											<button type="submit" title="Deny Request"
+												style="background-color: rgba(239, 68, 68, 0.1); color: #ef4444; border: 1px solid rgba(239, 68, 68, 0.2); width: 36px; height: 32px; border-radius: 6px; cursor: pointer; display: flex; align-items: center; justify-content: center; transition: 0.2s;"
+												onmouseover="this.style.backgroundColor='#ef4444'; this.querySelectorAll('.css-cross').forEach(el => el.style.backgroundColor='#ffffff')"
+												onmouseout="this.style.backgroundColor='rgba(239, 68, 68, 0.1)'; this.querySelectorAll('.css-cross').forEach(el => el.style.backgroundColor='#ef4444')">
+												<!-- Pure CSS Custom Cross shape elements -->
+												<div
+													style="position: relative; width: 14px; height: 14px; display: flex; align-items: center; justify-content: center;">
+													<span class="css-cross"
+														style="position: absolute; width: 14px; height: 2.5px; background-color: #ef4444; transform: rotate(45deg); transition: 0.2s;"></span>
+													<span class="css-cross"
+														style="position: absolute; width: 14px; height: 2.5px; background-color: #ef4444; transform: rotate(-45deg); transition: 0.2s;"></span>
+												</div>
+											</button>
+										</form>
+
+									</div>
+								</td>
+
+
+							</tr>
+						</tbody>
+
+					</table>
+				</div>
+			</div>
+
+			<!-- Tab View 2: Patient Registration Access Requests Table View -->
+			<div id="accessRequestsTab" class="tab-panel">
+				<div
+					style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px; border-bottom: 1px solid var(--border-color); padding-bottom: 12px;">
+					<h2>
+						<i class="fa-solid fa-user-shield"></i> Patient Registration
+						Access Requests
+					</h2>
+					<span
+						style="background-color: rgba(245, 158, 11, 0.1); color: var(--accent-amber); padding: 4px 12px; border-radius: 4px; font-size: 0.85rem; font-weight: 600;">
+						Verification Queue </span>
+				</div>
+
+				<!-- RESPONSIVE TABLE CONTAINER -->
+				<div
+					style="width: 100%; overflow-x: auto; background-color: rgba(15, 23, 42, 0.3); border-radius: 8px; border: 1px solid var(--border-color);">
+					<table
+						style="width: 100%; border-collapse: collapse; text-align: left; font-size: 0.9rem;">
+
+						<!-- TABLE HEADERS -->
+						<thead>
+							<tr
+								style="background-color: rgba(255, 255, 255, 0.02); border-bottom: 1px solid var(--border-color); color: var(--text-white); font-weight: 700;">
+								<th style="padding: 16px 20px;">Patient Name</th>
+								<th style="padding: 16px 20px;">Date of Birth</th>
+								<th style="padding: 16px 20px;">Gender</th>
+								<th style="padding: 16px 20px;">Contact No</th>
+								<th style="padding: 16px 20px;">Address</th>
+								<th style="padding: 16px 20px;">Password Hash</th>
+								<th style="padding: 16px 20px; text-align: center;">Account
+									Actions</th>
+							</tr>
+						</thead>
+
+						<!-- TABLE BODY DATA ROWS (Loops using Thymeleaf th:each) -->
+						<tbody>
+							<!-- Placeholder row for design preview; replaced dynamically by Spring Book backend -->
+							<tr th:each="request : ${registerPateintList}"
+								style="border-bottom: 1px solid var(--border-color); color: var(--text-muted); transition: background 0.2s;"
+								onmouseover="this.style.backgroundColor='rgba(255,255,255,0.01)'"
+								onmouseout="this.style.backgroundColor='transparent'">
+
+								<td
+									style="padding: 14px 20px; font-weight: 600; color: var(--text-white);"
+									th:text="${request.name}"></td>
+								<td style="padding: 14px 20px;" th:text="${request.dateOfBirth}"></td>
+								<td style="padding: 14px 20px;" th:text="${request.gender}"></td>
+								<td
+									style="padding: 14px 20px; color: var(--primary-teal); font-weight: 600;"
+									th:text="${request.contactNumber}"></td>
+								<td
+									style="padding: 14px 20px; max-width: 200px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap;"
+									th:title="${request.address}" th:text="${request.address}"></td>
+
+								<!-- Secured Encrypted Password Column view -->
+								<td
+									style="padding: 14px 20px; font-family: monospace; font-size: 0.8rem; color: var(--text-muted);"
+									th:text="${request.password != null ? '••••••••' : 'N/A'}"></td>
+
+								<!-- APPROVAL OR REJECTION INTERACTION ACTION BUTTONS -->
+								<td style="padding: 14px 20px; text-align: center;">
+									<div style="display: flex; gap: 8px; justify-content: center;">
+
+										<!-- APPROVE FORM -->
+										<form
+											th:action="@{/admin/patient-registration/approve/{id}(id=${request.patientRegisterId})}"
+											method="post" style="margin: 0;">
+											<button type="submit" title="Grant Portal Access"
+												style="background-color: rgba(16, 185, 129, 0.1); color: #10b981; border: 1px solid rgba(16, 185, 129, 0.2); width: 36px; height: 32px; border-radius: 6px; cursor: pointer; display: flex; align-items: center; justify-content: center; transition: 0.2s;"
+												onmouseover="this.style.backgroundColor='#10b981'; this.querySelector('.css-check').style.borderColor='#0f172a'"
+												onmouseout="this.style.backgroundColor='rgba(16, 185, 129, 0.1)'; this.querySelector('.css-check').style.borderColor='#10b981'">
+												<span class="css-check"
+													style="display: inline-block; width: 6px; height: 12px; border-bottom: 2.5px solid #10b981; border-right: 2.5px solid #10b981; transform: rotate(45deg); margin-top: -3px; transition: 0.2s;"></span>
+											</button>
+										</form>
+
+										<!-- REJECT FORM -->
+										<form
+											th:action="@{/admin/patient-registration/reject/{id}(id=${request.patientRegisterId})}"
+											method="post" style="margin: 0;">
+											<button type="submit" title="Deny Request"
+												style="background-color: rgba(239, 68, 68, 0.1); color: #ef4444; border: 1px solid rgba(239, 68, 68, 0.2); width: 36px; height: 32px; border-radius: 6px; cursor: pointer; display: flex; align-items: center; justify-content: center; transition: 0.2s;"
+												onmouseover="this.style.backgroundColor='#ef4444'; this.querySelectorAll('.css-cross').forEach(el => el.style.backgroundColor='#ffffff')"
+												onmouseout="this.style.backgroundColor='rgba(239, 68, 68, 0.1)'; this.querySelectorAll('.css-cross').forEach(el => el.style.backgroundColor='#ef4444')">
+												<div
+													style="position: relative; width: 14px; height: 14px; display: flex; align-items: center; justify-content: center;">
+													<span class="css-cross"
+														style="position: absolute; width: 14px; height: 2.5px; background-color: #ef4444; transform: rotate(45deg); transition: 0.2s;"></span>
+													<span class="css-cross"
+														style="position: absolute; width: 14px; height: 2.5px; background-color: #ef4444; transform: rotate(-45deg); transition: 0.2s;"></span>
+												</div>
+											</button>
+										</form>
+
+									</div>
+								</td>
+							</tr>
+						</tbody>
+
+					</table>
+				</div>
+			</div>
+
+
+			<!-- Tab View 3: Doctor Directory Box Grid View -->
+			<div id="doctorsListTab" class="tab-panel">
+				<div
+					style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 24px; border-bottom: 1px solid var(--border-color); padding-bottom: 12px;">
+					<h2>
+						<i class="fa-solid fa-user-doctor"></i> Medical Specialists
+						Directory
+					</h2>
+					<span
+						style="background-color: rgba(16, 185, 129, 0.1); color: var(--accent-green); padding: 4px 12px; border-radius: 4px; font-size: 0.85rem; font-weight: 600;">
+						Active Medical Staff </span>
+				</div>
+
+				<!-- BOX COMPONENT GRID WRAPPER -->
+				<div
+					style="display: grid; grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); gap: 24px;">
+
+					<!-- THYMELEAF LOOP CARD (Iterates over your database records array) -->
+					<div th:each="doctor : ${doctorsList}"
+						style="background-color: rgba(14, 165, 233, 0.1); border: 1px solid var(--border-color); border-radius: 10px; padding: 24px; box-shadow: var(--shadow-sm); position: relative; transition: var(--transition);"
+						onmouseover="this.style.transform='translateY(-4px)'; this.style.borderColor='var(--primary-teal)';"
+						onmouseout="this.style.transform='translateY(0)'; this.style.borderColor='var(--border-color)';">
+
+						<!-- Doctor Avatar Concept & ID Header Row -->
+						<div
+							style="display: flex; align-items: center; gap: 14px; margin-bottom: 18px;">
+							<!-- DYNAMIC DOCTOR AVATAR BUBBLE WITH PREFIX STRIPPING -->
+							<div
+								style="width: 50px; height: 50px; background-color: rgba(14, 165, 233, 0.1); border: 2px solid var(--primary-teal); color: var(--primary-teal); border-radius: 50%; display: flex; align-items: center; justify-content: center; font-weight: bold; font-size: 1.2rem; text-transform: uppercase;"
+								th:text="${doctor.name != null and !#strings.isEmpty(doctor.name)} ? (${#strings.startsWith(doctor.name, 'Dr. ')} ? ${#strings.substring(doctor.name, 4, 5)} : ${#strings.substring(doctor.name, 0, 1)}) : 'D'">
+							</div>
+							<div>
+								<!-- Doctor Name field rendering -->
+								<h3
+									style="font-size: 1.1rem; font-weight: 700; color: var(--text-white);"
+									th:text="${doctor.name}"></h3>
+								<!-- Doctor ID Badge -->
+								<span
+									style="font-family: monospace; font-size: 0.75rem; color: var(--text-muted);"
+									th:text="${doctor.doctorId}"></span>
+							</div>
+						</div>
+
+						<!-- Profile Parameters Stack -->
+						<div
+							style="display: flex; flex-direction: column; gap: 10px; font-size: 0.88rem; border-top: 1px solid rgba(255, 255, 255, 0.04); padding-top: 14px; margin-bottom: 18px;">
+							<!-- Specialization Parameter Line -->
+							<div style="display: flex; gap: 8px; align-items: center;">
+								<i class="fa-solid fa-stethoscope"
+									style="color: var(--primary-teal); width: 16px;"></i> <span
+									style="color: var(--text-muted);">Specialty:</span> <strong
+									style="color: var(--text-white);"
+									th:text="${doctor.specialization}"></strong>
+							</div>
+
+							<!-- Availability Schedule Parameter Line -->
+							<div style="display: flex; gap: 8px; align-items: flex-start;">
+								<i class="fa-solid fa-clock"
+									style="color: var(--accent-amber); width: 16px; margin-top: 2px;"></i>
+								<span style="color: var(--text-muted); flex-shrink: 0;">Schedule:</span>
+								<strong style="color: var(--text-white); font-size: 0.82rem;"
+									th:text="${doctor.availabilitySchedule}"> </strong>
+							</div>
+
+							<!-- Contact Parameters Line -->
+							<div style="display: flex; gap: 8px; align-items: center;">
+								<i class="fa-solid fa-envelope"
+									style="color: var(--text-muted); width: 16px;"></i> <span
+									style="color: var(--text-muted);">Contact:</span> <strong
+									style="color: var(--primary-teal);"
+									th:text="${doctor.contactNumber}"></strong>
+							</div>
+						</div>
+
+						<!-- Interactive Action Button Layer inside Box view -->
+						<div style="display: flex; gap: 10px;">
+							<button title="Modify Doctor Information"
+								style="flex: 1; background-color: rgba(255, 255, 255, 0.03); color: var(--text-muted); border: 1px solid var(--border-color); padding: 8px; border-radius: 6px; font-size: 0.8rem; font-weight: 600; cursor: pointer; transition: 0.2s;"
+								onmouseover="this.style.borderColor='var(--text-white)'; this.style.color='var(--text-white)';"
+								onmouseout="this.style.borderColor='var(--border-color)'; this.style.color='var(--text-muted)';">
+								<i class="fa-solid fa-pen-to-square"></i> Edit Profile
+							</button>
+							<button title="Remove Allocation"
+								style="background-color: rgba(239, 68, 68, 0.1); color: var(--accent-red); border: 1px solid rgba(239, 68, 68, 0.15); width: 36px; border-radius: 6px; cursor: pointer; display: flex; align-items: center; justify-content: center; transition: 0.2s;"
+								onmouseover="this.style.backgroundColor='var(--accent-red)'; this.style.color='#ffffff';"
+								onmouseout="this.style.backgroundColor='rgba(239, 68, 68, 0.1)'; this.style.color='var(--accent-red)';">
+								<i class="fa-solid fa-trash-can"></i>
+							</button>
+						</div>
+
+					</div>
+
+				</div>
+			</div>
+
+
+			<!-- Tab View 4: Patient Directory Box Grid View -->
+			<div id="patientsListTab" class="tab-panel">
+				<div
+					style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 24px; border-bottom: 1px solid var(--border-color); padding-bottom: 12px;">
+					<h2>
+						<i class="fa-solid fa-hospital-user"></i> Patient Medical File
+						Directory
+					</h2>
+					<span
+						style="background-color: rgba(14, 165, 233, 0.1); color: var(--primary-teal); padding: 4px 12px; border-radius: 4px; font-size: 0.85rem; font-weight: 600;">
+						Registered Records </span>
+				</div>
+
+				<!-- PATIENT CARD GRID WRAPPER -->
+				<div
+					style="display: grid; grid-template-columns: repeat(auto-fill, minmax(320px, 1fr)); gap: 24px;">
+
+					<!-- THYMELEAF LOOP CARD (Iterates over existing patient records) -->
+					<div th:each="patient : ${patientsList}"
+						style="background-color: rgba(15, 23, 42, 0.4); border: 1px solid var(--border-color); border-radius: 10px; padding: 24px; box-shadow: var(--shadow-sm); position: relative; transition: var(--transition);"
+						onmouseover="this.style.transform='translateY(-4px)'; this.style.borderColor='var(--primary-teal)';"
+						onmouseout="this.style.transform='translateY(0)'; this.style.borderColor='var(--border-color)';">
+
+						<!-- Patient Initials Avatar & Core ID Header -->
+						<div
+							style="display: flex; align-items: center; gap: 14px; margin-bottom: 18px;">
+							<div
+								style="width: 48px; height: 48px; background-color: var(--bg-main); border: 2px solid var(--primary-teal); border-radius: 50%; display: flex; align-items: center; justify-content: center; font-weight: bold; color: var(--primary-teal); font-size: 1.2rem; text-transform: uppercase;"
+								th:text="${patient.name != null and !#strings.isEmpty(patient.name)} ? ${#strings.substring(patient.name, 0, 1)} : 'P'">
+							</div>
+							<div>
+								<h3
+									style="font-size: 1.1rem; font-weight: 700; color: var(--text-white);"
+									th:text="${patient.name}"></h3>
+								<span
+									style="font-family: monospace; font-size: 0.75rem; color: var(--text-muted);"
+									th:text="'ID: ' + ${patient.patientId}"></span>
+							</div>
+						</div>
+
+						<!-- Profile Parameters Stack -->
+						<div
+							style="display: flex; flex-direction: column; gap: 10px; font-size: 0.88rem; border-top: 1px solid rgba(255, 255, 255, 0.04); padding-top: 14px; margin-bottom: 18px;">
+
+							<!-- DOB & Gender Row Split -->
+							<div
+								style="display: grid; grid-template-columns: 1fr 1fr; gap: 10px;">
+								<div style="display: flex; gap: 6px; align-items: center;">
+									<i class="fa-solid fa-cake-candles"
+										style="color: var(--text-muted); width: 14px;"></i> <span
+										style="color: var(--text-muted);">DOB:</span> <strong
+										style="color: var(--text-white);"
+										th:text="${patient.dateOfBirth}"></strong>
+								</div>
+								<div style="display: flex; gap: 6px; align-items: center;">
+									<i class="fa-solid fa-venus-mars"
+										style="color: var(--text-muted); width: 14px;"></i> <span
+										style="color: var(--text-muted);">Gender:</span> <strong
+										style="color: var(--text-white);" th:text="${patient.gender}"></strong>
+								</div>
+							</div>
+
+							<!-- Contact Parameter Line -->
+							<div style="display: flex; gap: 8px; align-items: center;">
+								<i class="fa-solid fa-phone"
+									style="color: var(--primary-teal); width: 14px;"></i> <span
+									style="color: var(--text-muted);">Contact:</span> <strong
+									style="color: var(--primary-teal);"
+									th:text="${patient.contactNumber}">+91 98765 43210</strong>
+							</div>
+
+							<!-- Permanent Address Line -->
+							<div style="display: flex; gap: 8px; align-items: flex-start;">
+								<i class="fa-solid fa-location-dot"
+									style="color: var(--text-muted); width: 14px; margin-top: 2px;"></i>
+								<span style="color: var(--text-muted); flex-shrink: 0;">Address:</span>
+								<span style="color: var(--text-white); font-size: 0.85rem;"
+									th:text="${patient.address}">123 Medical Park Lane,
+									Sector 4</span>
+							</div>
+
+							<!-- MEDICAL HISTORY HIGHLIGHT FIELD (Isolated inside stylized warning banner) -->
+							<div
+								style="background-color: rgba(245, 158, 11, 0.05); border: 1px dashed rgba(245, 158, 11, 0.2); border-radius: 6px; padding: 12px; margin-top: 4px;">
+								<p
+									style="font-size: 0.75rem; font-weight: 700; text-transform: uppercase; letter-spacing: 0.05em; color: var(--accent-amber); margin-bottom: 4px;">
+									<i class="fa-solid fa-file-medical"></i> Medical History Log
+								</p>
+								<p
+									style="color: var(--text-white); font-size: 0.82rem; line-height: 1.4;"
+									th:text="${patient.medicalHistory != null ? patient.medicalHistory : 'No recorded historical cases or chronic allergies.'}">
+								</p>
+							</div>
+						</div>
+
+						<!-- Card Actions Row Layer -->
+						<div style="display: flex; gap: 10px;">
+							<button title="View Full EHR File"
+								style="flex: 1; background-color: rgba(255, 255, 255, 0.03); color: var(--text-muted); border: 1px solid var(--border-color); padding: 8px; border-radius: 6px; font-size: 0.8rem; font-weight: 600; cursor: pointer; transition: 0.2s;"
+								onmouseover="this.style.borderColor='var(--text-white)'; this.style.color='var(--text-white)';"
+								onmouseout="this.style.borderColor='var(--border-color)'; this.style.color='var(--text-muted)';">
+								<i class="fa-solid fa-folder-open"></i> Open Medical Records
+							</button>
+							<!-- ARCHIVE RECORD BUTTON WITH PURE CSS BOX GRAPHIC DESIGN -->
+							<button title="Delete Record"
+								style="background-color: rgba(239, 68, 68, 0.1); border: 1px solid rgba(239, 68, 68, 0.15); width: 36px; height: 32px; border-radius: 6px; cursor: pointer; display: flex; align-items: center; justify-content: center; transition: 0.2s;"
+								onmouseover="this.style.backgroundColor='var(--accent-red)'; this.querySelector('.css-box-top').style.backgroundColor='#ffffff'; this.querySelector('.css-box-bottom').style.borderColor='#ffffff';"
+								onmouseout="this.style.backgroundColor='rgba(239, 68, 68, 0.1)'; this.querySelector('.css-box-top').style.backgroundColor='var(--accent-red)'; this.querySelector('.css-box-bottom').style.borderColor='var(--accent-red)';">
+
+								<!-- Pure CSS Geometric Archive Container Construct -->
+								<div
+									style="position: relative; width: 16px; height: 14px; display: flex; flex-direction: column; align-items: center; gap: 2px;">
+									<!-- Box Top Lid Element -->
+									<span class="css-box-top"
+										style="width: 16px; height: 3px; background-color: var(--accent-red); border-radius: 1px; transition: 0.2s;"></span>
+									<!-- Box Lower Body Element -->
+									<span class="css-box-bottom"
+										style="width: 12px; height: 8px; border: 2.5px solid var(--accent-red); border-top: none; border-bottom-left-radius: 2px; border-bottom-right-radius: 2px; transition: 0.2s; position: relative;">
+										<!-- Inner Box Handle Slot Overlay --> <span
+										style="position: absolute; top: 1px; left: 3px; width: 6px; height: 1.5px; background-color: rgba(255, 255, 255, 0.2); border-radius: 0.5px;"></span>
+									</span>
+								</div>
+							</button>
+						</div>
+
+					</div>
+
+				</div>
+			</div>
+
+			<!-- Tab View 5: Add New Doctor Onboarding Form Pane -->
+			<div id="addDoctorTab" class="tab-panel">
+				<div
+					style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 24px; border-bottom: 1px solid var(--border-color); padding-bottom: 12px;">
+					<h2>
+						<i class="fa-solid fa-user-plus"></i> Onboard New Medical
+						Specialist
+					</h2>
+					<span
+						style="background-color: rgba(14, 165, 233, 0.1); color: var(--primary-teal); padding: 4px 12px; border-radius: 4px; font-size: 0.85rem; font-weight: 600;">
+						Resource Creation </span>
+				</div>
+
+				<!-- ONBOARDING FORM CONTEXT FRAME -->
+				<form th:action="@{/admin/add-doctor}" method="POST"
+					style="max-width: 650px; width: 100%; display: flex; flex-direction: column; gap: 20px;">
+
+					<!-- 1. FULL NAME FIELD -->
+					<div style="display: flex; flex-direction: column; gap: 8px;">
+						<label
+							style="font-size: 0.8rem; font-weight: 700; text-transform: uppercase; letter-spacing: 0.05em; color: var(--text-muted);">Doctor
+							Full Name</label>
+						<div
+							style="position: relative; display: flex; align-items: center;">
+							<i class="fa-solid fa-user-md"
+								style="position: absolute; left: 14px; color: var(--text-muted); font-size: 1rem;"></i>
+							<input type="text" name="name" maxlength="100" required
+								style="width: 100%; padding: 14px 14px 14px 42px; background-color: rgba(15, 23, 42, 0.6); border: 1px solid var(--border-color); border-radius: 8px; color: var(--text-white); font-size: 0.95rem; outline: none; transition: var(--transition);"
+								onfocus="this.style.borderColor='var(--primary-teal)'"
+								onblur="this.style.borderColor='var(--border-color)'"
+								placeholder="Enter doctor's full name">
+						</div>
+					</div>
+
+					<!-- 2. SPECIALIZATION DISCIPLINE SELECTOR -->
+					<div style="display: flex; flex-direction: column; gap: 8px;">
+						<label
+							style="font-size: 0.8rem; font-weight: 700; text-transform: uppercase; letter-spacing: 0.05em; color: var(--text-muted);">Specialization
+							/ Department</label>
+						<div
+							style="position: relative; display: flex; align-items: center;">
+							<i class="fa-solid fa-stethoscope"
+								style="position: absolute; left: 14px; color: var(--text-muted); font-size: 1rem;"></i>
+							<select name="specialization" required
+								style="width: 100%; padding: 14px 14px 14px 42px; background-color: rgba(15, 23, 42, 0.6); border: 1px solid var(--border-color); border-radius: 8px; color: var(--text-white); font-size: 0.95rem; outline: none; appearance: none; cursor: pointer; transition: var(--transition);"
+								onfocus="this.style.borderColor='var(--primary-teal)'"
+								onblur="this.style.borderColor='var(--border-color)'">
+								<option value="" disabled selected hidden="">Select
+									medical specialty</option>
+								<option value="Cardiology">Cardiology</option>
+								<option value="Neurology">Neurology</option>
+								<option value="Pediatrics">Pediatrics</option>
+								<option value="Orthopedics">Orthopedics</option>
+								<option value="General Medicine">General Medicine</option>
+							</select>
+						</div>
+					</div>
+
+					<!-- 3. CONTACT NUMBER FIELD -->
+					<div style="display: flex; flex-direction: column; gap: 8px;">
+						<label
+							style="font-size: 0.8rem; font-weight: 700; text-transform: uppercase; letter-spacing: 0.05em; color: var(--text-muted);">Contact
+							Number</label>
+						<div
+							style="position: relative; display: flex; align-items: center;">
+							<i class="fa-solid fa-phone"
+								style="position: absolute; left: 14px; color: var(--text-muted); font-size: 1rem;"></i>
+							<input type="tel" name="contactNumber" maxlength="15" required
+								style="width: 100%; padding: 14px 14px 14px 42px; background-color: rgba(15, 23, 42, 0.6); border: 1px solid var(--border-color); border-radius: 8px; color: var(--text-white); font-size: 0.95rem; outline: none; transition: var(--transition);"
+								onfocus="this.style.borderColor='var(--primary-teal)'"
+								onblur="this.style.borderColor='var(--border-color)'"
+								placeholder="E.g., +91 94412 34567">
+						</div>
+					</div>
+
+					<!-- 4. AVAILABILITY SCHEDULE TEXT AREA FIELD -->
+					<div style="display: flex; flex-direction: column; gap: 8px;">
+						<label
+							style="font-size: 0.8rem; font-weight: 700; text-transform: uppercase; letter-spacing: 0.05em; color: var(--text-muted);">Availability
+							Schedule (TEXT)</label>
+						<div
+							style="position: relative; display: flex; align-items: flex-start;">
+							<i class="fa-solid fa-clock"
+								style="position: absolute; left: 14px; top: 16px; color: var(--text-muted); font-size: 1rem;"></i>
+							<textarea name="availabilitySchedule" rows="4" required
+								style="width: 100%; padding: 14px 14px 14px 42px; background-color: rgba(15, 23, 42, 0.6); border: 1px solid var(--border-color); border-radius: 8px; color: var(--text-white); font-size: 0.95rem; outline: none; font-family: inherit; line-height: 1.5; resize: none; transition: var(--transition);"
+								onfocus="this.style.borderColor='var(--primary-teal)'"
+								onblur="this.style.borderColor='var(--border-color)'"
+								placeholder="E.g., Mon - Wed - Fri (09:00 AM to 01:00 PM), Thu (02:00 PM to 06:00 PM)"></textarea>
+						</div>
+					</div>
+
+					<!-- FORM SUBMIT EXECUTOR -->
+					<button type="submit"
+						style="width: 100%; max-width: 250px; background-color: var(--primary-teal); color: var(--bg-main); border: none; padding: 14px; border-radius: 8px; font-size: 1rem; font-weight: 600; cursor: pointer; box-shadow: 0 4px 14px rgba(14, 165, 233, 0.3); transition: var(--transition); display: flex; align-items: center; justify-content: center; gap: 8px; margin-top: 10px;"
+						onmouseover="this.style.backgroundColor='var(--primary-hover)'; this.style.transform='translateY(-1px)';"
+						onmouseout="this.style.backgroundColor='var(--primary-teal)'; this.style.transform='translateY(0)';">
+						Onboard Doctor <i class="fa-solid fa-user-plus"></i>
+					</button>
+
+				</form>
+
+			</div>
+
+
+			<!-- Tab View 6: Administrative Security Profile Box View -->
+			<div id="adminProfileTab" class="tab-panel">
+				<div
+					style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 24px; border-bottom: 1px solid var(--border-color); padding-bottom: 12px;">
+					<h2 style="display: flex; align-items: center; gap: 10px;">
+
+						<span
+							style="position: relative; width: 18px; height: 18px; display: inline-block; margin-right: 4px;">
+							<span
+							style="position: absolute; left: 0; top: 0; width: 14px; height: 12px; border: 2px solid var(--primary-teal); border-bottom-left-radius: 8px; border-bottom-right-radius: 8px; border-top-left-radius: 2px; border-top-right-radius: 2px;"></span>
+							<span
+							style="position: absolute; left: 7px; top: 2px; width: 2px; height: 8px; background-color: var(--primary-teal);"></span>
+						</span> Personal Administrative Details
+					</h2>
+					<span
+						style="background-color: rgba(14, 165, 233, 0.1); color: var(--primary-teal); padding: 4px 12px; border-radius: 4px; font-size: 0.85rem; font-weight: 600;">
+						Role: Root Administrator </span>
+				</div>
+
+				<!-- PROFILE DATA PANEL COVER BOX -->
+				<div
+					style="background-color: rgba(15, 23, 42, 0.4); border: 1px solid var(--border-color); border-radius: 12px; max-width: 600px; width: 100%; box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.3); overflow: hidden;">
+
+					<!-- Profile Highlight Banner -->
+					<div
+						style="background: linear-gradient(135deg, var(--bg-surface) 0%, rgba(14, 165, 233, 0.1) 100%); padding: 24px 30px; border-bottom: 1px solid var(--border-color); display: flex; align-items: center; gap: 16px;">
+
+						<!-- DYNAMIC AVATAR BUBBLE EXTRACTION USING THYMELEAF -->
+						<div
+							style="width: 48px; height: 48px; background-color: var(--bg-main); border: 2px solid var(--primary-teal); border-radius: 50%; display: flex; align-items: center; justify-content: center; font-weight: bold; color: var(--primary-teal); font-size: 1.2rem; text-transform: uppercase;"
+							th:text="${adminDetails.name != null and !#strings.isEmpty(adminDetails.name)} ? ${#strings.substring(adminDetails.name, 0, 1)} : 'D'">
+						</div>
+
+						<div>
+							<!-- Reads admin name from your backend model parameter map -->
+							<h3
+								style="font-size: 1.25rem; font-weight: 700; color: var(--text-white);"
+								th:text="${adminDetails.name != null ? adminDetails.name : 'System User'}"></h3>
+							<p
+								style="color: var(--text-muted); font-size: 0.85rem; margin-top: 2px;">HMS
+								Executive Center</p>
+						</div>
+					</div>
+
+					<!-- Meta Properties Data Rows -->
+					<div
+						style="padding: 24px 30px; display: flex; flex-direction: column; gap: 14px;">
+
+						<!-- Field 1: Admin ID -->
+						<div
+							style="display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid rgba(255, 255, 255, 0.03); padding-bottom: 10px;">
+							<span style="color: var(--text-muted); font-size: 0.95rem;">Admin
+								ID</span> <strong
+								style="font-family: monospace; font-size: 1rem; color: var(--text-white);"
+								th:text="${adminDetails.adminId}"></strong>
+						</div>
+
+						<!-- Field 2: Gender -->
+						<div
+							style="display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid rgba(255, 255, 255, 0.03); padding-bottom: 10px;">
+							<span style="color: var(--text-muted); font-size: 0.95rem;">Gender</span>
+							<strong style="color: var(--text-white);"
+								th:text="${adminDetails.gender}"></strong>
+						</div>
+
+						<!-- Field 3: Date of Birth -->
+						<div
+							style="display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid rgba(255, 255, 255, 0.03); padding-bottom: 10px;">
+							<span style="color: var(--text-muted); font-size: 0.95rem;">Date
+								of Birth</span> <strong style="color: var(--text-white);"
+								th:text="${adminDetails.dateOfBirth}"></strong>
+						</div>
+
+						<!-- Field 4: Mobile No -->
+						<div
+							style="display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid rgba(255, 255, 255, 0.03); padding-bottom: 10px;">
+							<span style="color: var(--text-muted); font-size: 0.95rem;">Mobile
+								No</span> <strong style="color: var(--primary-teal);"
+								th:text="${adminDetails.contactNumber}"></strong>
+						</div>
+
+						<!-- Field 5: Permanent Address -->
+						<div
+							style="display: flex; flex-direction: column; gap: 6px; padding-top: 4px;">
+							<span style="color: var(--text-muted); font-size: 0.95rem;">Address</span>
+							<span
+								style="color: var(--text-white); font-size: 0.9rem; background-color: rgba(15, 23, 42, 0.5); padding: 12px; border-radius: 6px; border: 1px solid var(--border-color); line-height: 1.5; margin-top: 2px;"
+								th:text="${adminDetails.address}"> </span>
+						</div>
+
+					</div>
+
+				</div>
+			</div>
+
+
+		</main>
+	</div>
+
+	<!-- TAB SWITCH ENGINE MECHANICAL LOGIC -->
+	<script>
+        function switchTab(event, targetPanelId) {
+            // 1. Remove active state styling from all sidebar button items
+            const sidebarButtons = document.querySelectorAll('.sidebar-btn');
+            sidebarButtons.forEach(btn => btn.classList.remove('active'));
+
+            // 2. Hide all central content viewport panels
+            const contentPanels = document.querySelectorAll('.tab-panel');
+            contentPanels.forEach(panel => panel.classList.remove('active-panel'));
+
+            // 3. Mount active flags onto targeted triggers and related panels
+            event.currentTarget.classList.add('active');
+            document.getElementById(targetPanelId).classPack = document.getElementById(targetPanelId).classList.add('active-panel');
+        }
+    </script>
+
+</body>
+</html>

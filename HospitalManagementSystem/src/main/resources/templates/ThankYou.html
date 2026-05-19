@@ -1,0 +1,263 @@
+<!DOCTYPE html>
+<html xmlns:th="thymeleaf.org" lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Registration Received - HMS</title>
+    <!-- FontAwesome for professional medical status icons -->
+    <link rel="stylesheet" href="cloudflare.com">
+    
+    <style>
+        /* CORE REUSABLE NAVY STYLING CONFIGURATION */
+        :root {
+            --bg-main: #0f172a;          /* Deep professional navy slate */
+            --bg-surface: #1e293b;       /* Surface panel background */
+            --primary-teal: #0ea5e9;     /* Electric healthcare blue */
+            --primary-hover: #0284c7;    /* Sky blue accent */
+            --accent-amber: #f59e0b;     /* Pending alert status warning gold */
+            --text-white: #f8fafc;       
+            --text-muted: #94a3b8;       
+            --border-color: rgba(255, 255, 255, 0.1);
+            --radius: 12px;
+            --transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        body {
+            font-family: 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
+            background-color: var(--bg-main);
+            color: var(--text-white);
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+        }
+
+        /* IDENTICAL TOP NAVIGATION BAR */
+        .navbar {
+            background-color: var(--bg-surface);
+            border-bottom: 1px solid var(--border-color);
+            padding: 16px 40px;
+            position: sticky;
+            top: 0;
+            z-index: 100;
+        }
+        .nav-container {
+            max-width: 1400px;
+            margin: 0 auto;
+            display: flex;
+            align-items: center;
+        }
+        .logo {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            font-size: 1.25rem;
+            font-weight: 700;
+            color: var(--text-white);
+            text-decoration: none;
+        }
+        .logo i, .logo span {
+            color: var(--primary-teal);
+        }
+
+        /* CENTRAL PLACEMENT LAYOUT FRAME */
+        .thankyou-wrapper {
+            flex: 1;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 40px 20px;
+        }
+        .thankyou-card {
+            background-color: var(--bg-surface);
+            border-radius: var(--radius);
+            padding: 45px;
+            width: 100%;
+            max-width: 650px;
+            box-shadow: 0 25px 35px -12px rgba(0, 0, 0, 0.6);
+            border: 1px solid rgba(255, 255, 255, 0.03);
+            text-align: center;
+        }
+
+        /* STATUS DISPLAY GRAPHICS */
+        .status-icon-box {
+            width: 80px;
+            height: 80px;
+            background-color: rgba(245, 158, 11, 0.1);
+            color: var(--accent-amber);
+            border-radius: 50%;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 2.5rem;
+            margin-bottom: 24px;
+            border: 2px dashed rgba(245, 158, 11, 0.3);
+            animation: pulseGlow 2s infinite ease-in-out;
+        }
+        @keyframes pulseGlow {
+            0% { transform: scale(1); box-shadow: 0 0 0 0 rgba(245, 158, 11, 0.2); }
+            50% { transform: scale(1.03); box-shadow: 0 0 0 10px rgba(245, 158, 11, 0); }
+            100% { transform: scale(1); box-shadow: 0 0 0 0 rgba(245, 158, 11, 0); }
+        }
+
+        .thankyou-card h2 {
+            font-size: 2rem;
+            font-weight: 700;
+            margin-bottom: 12px;
+        }
+        .thankyou-card .notice-text {
+            color: var(--text-muted);
+            font-size: 1.05rem;
+            line-height: 1.6;
+            max-width: 520px;
+            margin: 0 auto 30px auto;
+        }
+        .notice-text span {
+            color: var(--primary-teal);
+            font-weight: 600;
+        }
+
+        /* DATA REGISTRATION FIELD SHOWCASE BOX */
+        .details-display-box {
+            background-color: rgba(15, 23, 42, 0.4);
+            border: 1px solid var(--border-color);
+            border-radius: 8px;
+            padding: 24px;
+            text-align: left;
+            margin-bottom: 35px;
+        }
+        .details-display-box h3 {
+            font-size: 0.9rem;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+            color: var(--primary-teal);
+            margin-bottom: 16px;
+            border-bottom: 1px solid var(--border-color);
+            padding-bottom: 8px;
+        }
+        .detail-row {
+            display: flex;
+            justify-content: space-between;
+            padding: 8px 0;
+            font-size: 0.95rem;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.02);
+        }
+        .detail-row:last-child { border-bottom: none; }
+        .detail-label { color: var(--text-muted); font-weight: 500; }
+        .detail-value { color: var(--text-white); font-weight: 600; }
+
+        /* INTERACTIVE REDIRECT BUTTONS */
+        .action-holder {
+            display: flex;
+            flex-direction: column;
+            gap: 14px;
+            align-items: center;
+        }
+        .btn-action {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            gap: 10px;
+            width: 100%;
+            max-width: 380px;
+            padding: 14px 28px;
+            border-radius: 8px;
+            font-size: 1rem;
+            font-weight: 600;
+            text-decoration: none;
+            cursor: pointer;
+            transition: var(--transition);
+        }
+        .btn-teal {
+            background-color: var(--primary-teal);
+            color: var(--bg-main);
+            border: none;
+            box-shadow: 0 4px 14px rgba(14, 165, 233, 0.3);
+        }
+        .btn-teal:hover {
+            background-color: var(--primary-hover);
+            transform: translateY(-1px);
+        }
+        .btn-link {
+            color: var(--text-muted);
+            font-size: 0.9rem;
+            text-decoration: none;
+        }
+        .btn-link:hover {
+            color: var(--text-white);
+            text-decoration: underline;
+        }
+    </style>
+</head>
+<body>
+
+    <!-- TOP NAVIGATION BAR -->
+    <nav class="navbar">
+        <div class="nav-container">
+            <a th:href="@{/}" class="logo">
+                <i class="fa-solid fa-heart-pulse"></i>
+                Hospital <span>Management System</span>
+            </a>
+        </div>
+    </nav>
+
+    <!-- CONTENT WRAPPER -->
+    <main class="thankyou-wrapper">
+        <div class="thankyou-card">
+            
+            <!-- Animated Pending Review Verification State Indicator -->
+            <div class="status-icon-box">
+                <i class="fa-solid fa-user-clock"></i>
+            </div>
+
+            <h2>Registration Received!</h2>
+            <p class="notice-text">
+                Thank you for choosing our facility. Please wait while an administrator verifies your details. We will provide profile dashboard access <span>as soon as possible</span>.
+            </p>
+
+            <!-- PROFILE FIELD SUMMARY DATA SHOWCASE DISPLAY BOX -->
+            <div class="details-display-box">
+                <h3>Submitted Profile Records</h3>
+                
+                <div class="detail-row">
+                    <span class="detail-label">Patient Full Name</span>
+                    <span class="detail-value" th:text="${registeredPatient.name}">Aditya Kumar</span>
+                </div>
+                <div class="detail-row">
+                    <span class="detail-label">Date of Birth</span>
+                    <span class="detail-value" th:text="${registeredPatient.dateOfBirth}">1998-05-14</span>
+                </div>
+                <div class="detail-row">
+                    <span class="detail-label">Assigned Contact</span>
+                    <span class="detail-value" th:text="${registeredPatient.contactNumber}">+91 98765 43210</span>
+                </div>
+                <div class="detail-row">
+                    <span class="detail-label">Submission Status</span>
+                    <span class="detail-value" style="color: var(--accent-amber);">
+                        <i class="fa-solid fa-circle-dot" style="font-size:0.75rem; margin-right:4px;"></i> Pending Review
+                    </span>
+                </div>
+            </div>
+
+            <!-- INTERACTIVE STEERING NAVIGATION LINKS -->
+            <div class="action-holder">
+                <!-- Direct Route Button targeting the Application Tracker Request Dashboard Module -->
+                <a th:href="@{/register/check-request(phone=${registeredPatient.contactNumber})}" class="btn-action btn-teal">
+                    <i class="fa-solid fa-magnifying-glass-chart"></i> Check Request Status
+                </a>
+                
+                <a th:href="@{/}" class="btn-link">
+                    <i class="fa-solid fa-house-user"></i> Return to Homepage
+                </a>
+            </div>
+
+        </div>
+    </main>
+
+</body>
+</html>

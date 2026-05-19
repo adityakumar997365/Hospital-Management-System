@@ -1,0 +1,307 @@
+<!DOCTYPE html>
+<html xmlns:th="thymeleaf.org" lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Track Request Status - HMS</title>
+    <!-- FontAwesome for clinical tracking icons -->
+    <link rel="stylesheet" href="cloudflare.com">
+    
+    <style>
+        /* MATCHING NAVY & TEAL THEME CONFIGURATION */
+        :root {
+            --bg-main: #0f172a;          
+            --bg-surface: #1e293b;       
+            --primary-teal: #0ea5e9;     
+            --primary-hover: #0284c7;    
+            --accent-amber: #f59e0b;     
+            --accent-green: #10b981;     
+            --text-white: #f8fafc;       
+            --text-muted: #94a3b8;       
+            --border-color: rgba(255, 255, 255, 0.1);
+            --radius: 12px;
+            --transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        body {
+            font-family: 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
+            background-color: var(--bg-main);
+            color: var(--text-white);
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+        }
+
+        /* TOP NAVIGATION BAR */
+        .navbar {
+            background-color: var(--bg-surface);
+            border-bottom: 1px solid var(--border-color);
+            padding: 16px 40px;
+            position: sticky;
+            top: 0;
+            z-index: 100;
+        }
+        .nav-container {
+            max-width: 1400px;
+            margin: 0 auto;
+            display: flex;
+            align-items: center;
+        }
+        .logo {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            font-size: 1.25rem;
+            font-weight: 700;
+            color: var(--text-white);
+            text-decoration: none;
+        }
+        .logo i, .logo span {
+            color: var(--primary-teal);
+        }
+
+        /* SINGLE CENTERED TRACKING BOX */
+        .tracker-wrapper {
+            flex: 1;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 40px 20px;
+        }
+        .tracker-card {
+            background-color: var(--bg-surface);
+            border-radius: var(--radius);
+            padding: 40px;
+            width: 100%;
+            max-width: 480px;
+            box-shadow: 0 25px 35px -12px rgba(0, 0, 0, 0.6);
+            border: 1px solid rgba(255, 255, 255, 0.03);
+        }
+        .tracker-header {
+            text-align: center;
+            margin-bottom: 30px;
+        }
+        .tracker-header i {
+            font-size: 2.5rem;
+            color: var(--primary-teal);
+            margin-bottom: 16px;
+        }
+        .tracker-header h2 {
+            font-size: 1.5rem;
+            font-weight: 700;
+            margin-bottom: 6px;
+        }
+        .tracker-header p {
+            color: var(--text-muted);
+            font-size: 0.9rem;
+            line-height: 1.4;
+        }
+
+        /* TRACKING INPUT FIELD */
+        .form-group {
+            margin-bottom: 24px;
+        }
+        .form-group label {
+            display: block;
+            font-size: 0.8rem;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+            color: var(--text-muted);
+            margin-bottom: 8px;
+        }
+        .input-wrapper {
+            position: relative;
+            display: flex;
+            align-items: center;
+        }
+        .input-wrapper i.input-icon {
+            position: absolute;
+            left: 14px;
+            color: var(--text-muted);
+            font-size: 1rem;
+        }
+        .form-control {
+            width: 100%;
+            padding: 14px 14px 14px 42px;
+            background-color: rgba(15, 23, 42, 0.6);
+            border: 1px solid var(--border-color);
+            border-radius: 8px;
+            color: var(--text-white);
+            font-size: 1rem;
+            outline: none;
+            transition: var(--transition);
+        }
+        .form-control:focus {
+            border-color: var(--primary-teal);
+            box-shadow: 0 0 0 3px rgba(14, 165, 233, 0.15);
+        }
+
+        /* SUBMIT BUTTON */
+        .btn-submit {
+            width: 100%;
+            background-color: var(--primary-teal);
+            color: var(--bg-main);
+            border: none;
+            padding: 14px;
+            border-radius: 8px;
+            font-size: 1rem;
+            font-weight: 600;
+            cursor: pointer;
+            box-shadow: 0 4px 14px rgba(14, 165, 233, 0.3);
+            transition: var(--transition);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+        }
+        .btn-submit:hover {
+            background-color: var(--primary-hover);
+            transform: translateY(-1px);
+        }
+
+        /* STATUS DISPLAY HOOKS (DYNAMIC RESULTS) */
+        .status-result-box {
+            background-color: rgba(15, 23, 42, 0.4);
+            border: 1px solid var(--border-color);
+            border-radius: 8px;
+            padding: 20px;
+            margin-top: 24px;
+            text-align: center;
+        }
+        .status-badge {
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            padding: 6px 14px;
+            border-radius: 4px;
+            font-size: 0.9rem;
+            font-weight: 700;
+            text-transform: uppercase;
+            margin-top: 10px;
+        }
+        .status-pending { background-color: rgba(245, 158, 11, 0.15); color: var(--accent-amber); }
+        .status-approved { background-color: rgba(16, 185, 129, 0.15); color: var(--accent-green); }
+
+        /* FOOTER BACK LINK */
+        .tracker-footer {
+            text-align: center;
+            margin-top: 24px;
+            font-size: 0.9rem;
+            color: var(--text-muted);
+        }
+        .tracker-footer a {
+            color: var(--primary-teal);
+            text-decoration: none;
+            font-weight: 600;
+            transition: var(--transition);
+        }
+        .tracker-footer a:hover {
+            color: var(--primary-hover);
+            text-decoration: underline;
+        }
+    </style>
+</head>
+<body>
+
+    <!-- TOP NAVIGATION BAR -->
+    <nav class="navbar">
+        <div class="nav-container">
+            <a th:href="@{/}" class="logo">
+                <i class="fa-solid fa-heart-pulse"></i>
+                Hospital <span>Management System</span>
+            </a>
+        </div>
+    </nav>
+
+    <!-- CONTENT WRAPPER -->
+    <main class="tracker-wrapper">
+        <div class="tracker-card">
+            
+            <div class="tracker-header">
+                <i class="fa-solid fa-file-invoice"></i>
+                <h2>Track Profile Request</h2>
+                <p>Enter your registered contact number to check system verification and approval status</p>
+            </div>
+
+            <!-- SEARCH REQUEST STATUS FORM -->
+            <form th:action="@{/register/check-status-query}" method="GET">
+                
+                <div class="form-group">
+                    <label for="contactNumber">Registered Contact Number</label>
+                    <div class="input-wrapper">
+                        <i class="fa-solid fa-phone input-icon"></i>
+                        <!-- Automatically binds phone parameter passed from Thank You screen -->
+                        <input type="tel" id="contactNumber" name="phone" th:value="${param.phone}" class="form-control" placeholder="E.g.- 98XXX 43XX0" required>
+                    </div>
+                </div>
+
+                <button type="submit" class="btn-submit">
+                    Search Status <i class="fa-solid fa-magnifying-glass"></i>
+                </button>
+
+            </form>
+
+ <!-- DYNAMIC RESULT SCREEN SECTION (FIXED LOGIC SEPARATION) -->
+<div class="status-result-box" th:if="${patientSearchStatus != null}">
+
+    <!-- SCENARIO A: PATIENT FOUND (PENDING, APPROVED, OR REJECTED) -->
+    <div th:if="${patientSearchStatus != 'NOT_FOUND'}">
+        
+        <!-- Displays the Profile Name -->
+        <p style="color: var(--text-muted); font-size: 0.9rem; margin-bottom: 12px;">
+            Patient Profile: <strong style="color: var(--text-white);" th:text="${patientName}">Aditya Kumar</strong>
+        </p>
+        
+        <!-- 1. Pending Verification Badge -->
+        <div th:if="${patientSearchStatus == 'PENDING'}" class="status-badge status-pending"
+             style="background-color: rgba(245, 158, 11, 0.1); color: #f59e0b; border: 1px solid rgba(245, 158, 11, 0.2); padding: 10px 14px; border-radius: 6px; font-size: 0.9rem; font-weight: 700; display: inline-flex; align-items: center; gap: 8px;">
+            <span class="pure-css-spinner" style="width: 12px; height: 12px; border: 2px solid rgba(245, 158, 11, 0.2); border-top-color: #f59e0b; border-radius: 50%; display: inline-block; animation: cssSpin 1s linear infinite;"></span>
+            Pending Review
+        </div>
+        
+        <!-- 2. Approved Profile Badge -->
+        <div th:if="${patientSearchStatus == 'APPROVED'}" class="status-badge status-approved"
+             style="background-color: rgba(16, 185, 129, 0.1); color: #10b981; border: 1px solid rgba(16, 185, 129, 0.2); padding: 10px 14px; border-radius: 6px; font-size: 0.9rem; font-weight: 700; display: inline-flex; align-items: center; gap: 8px;">
+            <span style="display: inline-block; width: 5px; height: 9px; border-bottom: 2px solid currentColor; border-right: 2px solid currentColor; transform: rotate(45deg); margin-top: -2px; margin-right: 2px;"></span>
+            Approved 
+        </div>
+        
+        <!-- 3. Rejected Profile Badge -->
+        <div th:if="${patientSearchStatus == 'REJECTED'}" class="status-badge status-rejected" 
+             style="background-color: rgba(239, 68, 68, 0.1); color: #ef4444; border: 1px solid rgba(239, 68, 68, 0.2); padding: 10px 14px; border-radius: 6px; font-size: 0.9rem; font-weight: 700; display: inline-flex; align-items: center; gap: 8px;">
+            <span style="display: inline-block; width: 10px; height: 10px; position: relative;">
+                <span style="position: absolute; width: 10px; height: 2px; background: currentColor; transform: rotate(45deg); top: 4px;"></span>
+                <span style="position: absolute; width: 10px; height: 2px; background: currentColor; transform: rotate(-45deg); top: 4px;"></span>
+            </span>
+            Profile Rejected
+        </div>
+    </div>
+
+    <!-- SCENARIO B: PATIENT NOT FOUND (Only displays the warning message) -->
+    <div th:if="${patientSearchStatus == 'NOT_FOUND'}" class="status-badge status-notfound" 
+         style="background-color: rgba(239, 68, 68, 0.1); color: #ef4444; border: 1px solid rgba(239, 68, 68, 0.2); padding: 10px 14px; border-radius: 6px; font-size: 0.9rem; font-weight: 700; display: inline-flex; align-items: center; gap: 8px; width: 100%; justify-content: center;">
+        <span style="font-weight: 900; font-size: 1.1rem; margin-top: -2px;">!</span> 
+        No Profile Found for this Number
+    </div>
+
+</div>
+
+
+
+            <!-- BACK TO SYSTEM PORTAL REDIRECT HOOKS -->
+            <div class="tracker-footer">
+                <a th:href="@{/login}"><i class="fa-solid fa-arrow-left"></i> Return to Sign-in Panel</a>
+            </div>
+
+        </div>
+    </main>
+
+
+</body>
+</html>

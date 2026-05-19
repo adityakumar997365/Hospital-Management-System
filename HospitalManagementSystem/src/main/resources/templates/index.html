@@ -1,0 +1,397 @@
+<!DOCTYPE html>
+<html xmlns:th="thymeleaf.org" lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Hospital Management System</title>
+<!-- FontAwesome for professional medical icons -->
+<link rel="stylesheet" href="cloudflare.com">
+
+<style>
+/* CLINICAL COLOR PALETTE */
+:root {
+	--bg-main: #0f172a; /* Deep professional navy slate */
+	--bg-surface: #1e293b; /* Slightly lighter slate for contrast */
+	--primary-teal: #0ea5e9; /* Electric healthcare blue */
+	--primary-hover: #0284c7; /* Deep sky blue accent */
+	--accent-green: #10b981; /* Success metric emerald green */
+	--text-white: #f8fafc; /* Crisp text readability */
+	--text-muted: #94a3b8; /* Subtle detail text grey */
+	--shadow-sm: 0 4px 6px -1px rgba(0, 0, 0, 0.3);
+	--shadow-md: 0 12px 20px -3px rgba(0, 0, 0, 0.5);
+	--shadow-lg: 0 25px 35px -12px rgba(0, 0, 0, 0.6);
+	--radius: 12px;
+	--transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+/* STRUCTURAL LAYOUT BUILD */
+* {
+	margin: 0;
+	padding: 0;
+	box-sizing: border-box;
+}
+
+body {
+	font-family: 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
+	background-color: var(--bg-main);
+	color: var(--text-white);
+	min-height: 100vh;
+	display: flex;
+	align-items: center;
+	justify-content: center;
+	padding: 40px 20px;
+}
+
+.main-wrapper {
+	max-width: 1400px;
+	width: 100%;
+	display: grid;
+	grid-template-columns: 1fr 1fr;
+	gap: 60px;
+	align-items: center;
+}
+
+/* LEFT SCREEN PANEL - BRAND IDENTITY */
+.brand-panel {
+	padding-right: 20px;
+}
+
+.brand-panel .badge {
+	display: inline-flex;
+	align-items: center;
+	gap: 8px;
+	background-color: rgba(14, 165, 233, 0.15);
+	color: var(--primary-teal);
+	padding: 8px 16px;
+	border-radius: 50px;
+	font-size: 0.85rem;
+	font-weight: 600;
+	text-transform: uppercase;
+	letter-spacing: 0.05em;
+	margin-bottom: 24px;
+	border: 1px solid rgba(14, 165, 233, 0.2);
+}
+
+.brand-panel h1 {
+	font-size: 3.5rem;
+	font-weight: 800;
+	line-height: 1.15;
+	letter-spacing: -0.02em;
+	margin-bottom: 24px;
+}
+
+.brand-panel h1 span {
+	color: var(--primary-teal);
+	display: block;
+}
+
+.brand-panel p {
+	color: var(--text-muted);
+	font-size: 1.1rem;
+	line-height: 1.6;
+	margin-bottom: 40px;
+	max-width: 540px;
+}
+
+/* REVENUE & PORTAL CALL-TO-ACTION BUTTONS */
+.action-container {
+	display: flex;
+	flex-wrap: wrap;
+	gap: 20px;
+}
+
+.btn {
+	display: inline-flex;
+	align-items: center;
+	justify-content: center;
+	gap: 10px;
+	padding: 16px 32px;
+	border-radius: var(--radius);
+	font-size: 1rem;
+	font-weight: 600;
+	text-decoration: none;
+	cursor: pointer;
+	transition: var(--transition);
+	min-width: 220px;
+}
+
+.btn-primary {
+	background-color: var(--primary-teal);
+	color: var(--bg-main);
+	border: none;
+	box-shadow: 0 4px 14px rgba(14, 165, 233, 0.3);
+}
+
+.btn-primary:hover {
+	background-color: var(--primary-hover);
+	transform: translateY(-2px);
+	box-shadow: 0 6px 20px rgba(14, 165, 233, 0.4);
+}
+
+.btn-secondary {
+	background-color: transparent;
+	color: var(--text-white);
+	border: 2px solid rgba(255, 255, 255, 0.15);
+}
+
+.btn-secondary:hover {
+	border-color: var(--text-white);
+	background-color: rgba(255, 255, 255, 0.05);
+	transform: translateY(-2px);
+}
+
+/* RIGHT SCREEN PANEL - METRICS & BENEFITS */
+.info-panel {
+	display: flex;
+	flex-direction: column;
+	gap: 24px;
+}
+
+/* SHADOWED BENIFIT CARD COMPONENT */
+.info-card {
+	background-color: var(--bg-surface);
+	border-radius: var(--radius);
+	padding: 24px;
+	display: flex;
+	gap: 20px;
+	align-items: flex-start;
+	box-shadow: var(--shadow-md);
+	border: 1px solid rgba(255, 255, 255, 0.03);
+	transition: var(--transition);
+}
+
+.info-card:hover {
+	transform: translateX(5px);
+	box-shadow: var(--shadow-lg);
+	border-color: rgba(14, 165, 233, 0.2);
+}
+
+.card-icon {
+	width: 48px;
+	height: 48px;
+	background-color: rgba(255, 255, 255, 0.05);
+	color: var(--primary-teal);
+	border-radius: 8px;
+	display: flex;
+	align-items: center;
+	justify-content: center;
+	font-size: 1.25rem;
+	flex-shrink: 0;
+}
+
+.card-body h3 {
+	font-size: 1.15rem;
+	font-weight: 600;
+	margin-bottom: 6px;
+	color: var(--text-white);
+}
+
+.card-body p {
+	color: var(--text-muted);
+	font-size: 0.9rem;
+	line-height: 1.5;
+}
+
+/* SPECIAL GROWTH STATISTICAL COMPONENT */
+.growth-card {
+	border-left: 4px solid var(--accent-green);
+}
+
+.growth-card .card-icon {
+	color: var(--accent-green);
+}
+
+.growth-badge {
+	background-color: rgba(16, 185, 129, 0.15);
+	color: var(--accent-green);
+	padding: 2px 8px;
+	border-radius: 4px;
+	font-size: 0.75rem;
+	font-weight: 700;
+	margin-left: 8px;
+}
+
+/* RESPONSIVE LAYOUT CONSTRAINTS */
+@media ( max-width : 1024px) {
+	body {
+		padding: 40px 24px;
+	}
+	.main-wrapper {
+		grid-template-columns: 1fr;
+		gap: 50px;
+	}
+	.brand-panel {
+		text-align: center;
+		padding-right: 0;
+	}
+	.brand-panel p {
+		margin-left: auto;
+		margin-right: auto;
+	}
+	.action-container {
+		justify-content: center;
+	}
+	.info-card:hover {
+		transform: translateY(-3px);
+	}
+}
+</style>
+</head>
+<body>
+
+	<main class="main-wrapper">
+
+		<!-- LEFT PANEL: HALF SCREEN CONTENT TITLE & BRAND ENTRY ACTIONS -->
+		<section class="brand-panel">
+			<div class="badge">
+				<i class="fa-solid fa-shield-halved"></i> Next-Gen Medical
+				Enterprise
+			</div>
+			<h1>
+				Hospital <span>Management System</span>
+			</h1>
+			<p>An all-in-one digital tool to help your hospital take better
+				care of patients and manage data easily.</p>
+
+			<div class="action-container">
+				<!-- Login Link mapping to your Security/Controller Context -->
+				<a th:href="@{/login}" class="btn btn-primary"> <i
+					class="fa-solid fa-right-to-bracket"></i> Login to HMS
+				</a>
+				<!-- Patient Onboarding Signup Registration Form Context Link -->
+				<a th:href="@{/register}" class="btn btn-secondary"> <i
+					class="fa-solid fa-user-plus"></i> Register as Patient
+				</a>
+			</div>
+		</section>
+
+		<!-- RIGHT PANEL: BENEFITS AND PERFORMANCE GROWTH METRICS SECTION -->
+		<section class="info-panel">
+
+			<!-- Benefit Item 1 -->
+			<div class="info-card">
+				<!-- SYSTEM HISTORY CLOCK CARD ICON - PURE CSS REPLACEMENT -->
+				<div class="card-icon"
+					style="width: 48px; height: 48px; display: flex; align-items: center; justify-content: center; position: relative;">
+
+					<!-- Outer History Clock Ring Bounding Box -->
+					<div
+						style="position: relative; width: 20px; height: 20px; border: 2px solid var(--primary-teal); border-radius: 50%; display: flex; align-items: center; justify-content: center; background-color: transparent;">
+
+						<!-- Center Dial Dot -->
+						<span
+							style="width: 2px; height: 2px; background-color: var(--primary-teal); border-radius: 50%;"></span>
+
+						<!-- Hour Hand (Pointing Up/Left) -->
+						<span
+							style="position: absolute; bottom: 8px; left: 8px; width: 4px; height: 2px; background-color: var(--primary-teal); transform: rotate(-30deg); transform-origin: right center; border-radius: 0.5px;"></span>
+
+						<!-- Minute Hand (Pointing Up) -->
+						<span
+							style="position: absolute; bottom: 8px; width: 2px; height: 5px; background-color: var(--primary-teal); border-radius: 0.5px;"></span>
+
+						<!-- Historical Counter-Clockwise Rotation Indicator Arrow Tip -->
+						<span
+							style="position: absolute; top: -2px; left: 6px; width: 0; height: 0; border-top: 3px solid transparent; border-bottom: 3px solid transparent; border-right: 4px solid var(--primary-teal); transform: rotate(-15deg);"></span>
+
+					</div>
+				</div>
+
+				<div class="card-body">
+					<h3>Live Patient Waitlist</h3>
+					<p>Track patients across departments automatically. Cut down
+						waiting room times and speed up check-ins.</p>
+				</div>
+
+			</div>
+
+			<!-- Benefit Item 2 -->
+			<div class="info-card">
+				<!-- SYSTEM MEDICAL FILE CARD ICON - PURE CSS REPLACEMENT -->
+				<div class="card-icon"
+					style="width: 48px; height: 48px; display: flex; align-items: center; justify-content: center; position: relative;">
+
+					<!-- Document Page Outline -->
+					<div
+						style="position: relative; width: 18px; height: 22px; border: 2px solid var(--primary-teal); border-radius: 3px; background-color: transparent; display: flex; flex-direction: column; padding: 3px; gap: 2px; justify-content: flex-end;">
+
+						<!-- Folded Page Corner Effect (Top Right) -->
+						<span
+							style="position: absolute; top: -2px; right: -2px; width: 5px; height: 5px; background-color: var(--bg-surface); border-bottom: 2px solid var(--primary-teal); border-left: 2px solid var(--primary-teal); border-bottom-left-radius: 2px;"></span>
+
+						<!-- Document Text Line Placeholder 1 -->
+						<span
+							style="width: 100%; height: 1.5px; background-color: rgba(14, 165, 233, 0.4); border-radius: 0.5px;"></span>
+						<!-- Document Text Line Placeholder 2 -->
+						<span
+							style="width: 75%; height: 1.5px; background-color: rgba(14, 165, 233, 0.4); border-radius: 0.5px;"></span>
+
+						<!-- Floating Medical Cross Badge Overlay -->
+						<div
+							style="position: absolute; top: 2px; left: 2px; width: 8px; height: 8px; display: flex; align-items: center; justify-content: center;">
+							<!-- Horizontal Cross Bar -->
+							<span
+								style="position: absolute; width: 8px; height: 2px; background-color: var(--primary-teal); border-radius: 0.5px;"></span>
+							<!-- Vertical Cross Bar -->
+							<span
+								style="position: absolute; width: 2px; height: 8px; background-color: var(--primary-teal); border-radius: 0.5px;"></span>
+						</div>
+
+					</div>
+				</div>
+
+				<div class="card-body">
+					<h3>All-in-One Patient Records</h3>
+					<p>See safe patient histories, lab results, and digital
+						prescriptions instantly with just one click.</p>
+				</div>
+
+			</div>
+
+			<!-- Benefit Item 3 (System Growth Track Card) -->
+			<div class="info-card growth-card">
+				<!-- SYSTEM METRIC CARD ICON VIEW - PURE CSS REPLACEMENT -->
+				<div class="card-icon"
+					style="width: 48px; height: 48px; display: flex; align-items: center; justify-content: center; position: relative;">
+
+					<!-- Geometric Data Chart Graph Shape Engine -->
+					<div
+						style="position: relative; width: 22px; height: 18px; display: flex; align-items: flex-end; gap: 3px; border-bottom: 2px solid var(--primary-teal); border-left: 2px solid var(--primary-teal); padding-left: 1px; padding-bottom: 1px;">
+
+						<!-- Graph Column 1 -->
+						<span
+							style="width: 3px; height: 5px; background-color: rgba(14, 165, 233, 0.4); border-radius: 0.5px;"></span>
+						<!-- Graph Column 2 -->
+						<span
+							style="width: 3px; height: 10px; background-color: rgba(14, 165, 233, 0.6); border-radius: 0.5px;"></span>
+						<!-- Graph Column 3 -->
+						<span
+							style="width: 3px; height: 14px; background-color: var(--primary-teal); border-radius: 0.5px;"></span>
+
+						<!-- Ascending Vector Trend Arrow Overlay -->
+						<span
+							style="position: absolute; left: 2px; bottom: 3px; width: 16px; height: 2px; background-color: var(--primary-teal); transform: rotate(-38deg); transform-origin: left bottom; border-radius: 1px;">
+							<!-- Tiny Arrow Tip Cap Element --> <span
+							style="position: absolute; right: 0; top: -2px; width: 4px; height: 4px; border-top: 1.5px solid var(--primary-teal); border-right: 1.5px solid var(--primary-teal); transform: rotate(45deg);"></span>
+						</span>
+
+					</div>
+				</div>
+
+				<div class="card-body">
+					<h3>
+						Business Growth Results <span class="growth-badge"><i
+							class="fa-solid fa-arrow-trend-up"></i> +42% YoY</span>
+					</h3>
+					<p>Automated booking has helped us serve more patients and keep
+						them coming back to all our clinics worldwide.</p>
+				</div>
+
+			</div>
+
+		</section>
+
+	</main>
+
+</body>
+</html>

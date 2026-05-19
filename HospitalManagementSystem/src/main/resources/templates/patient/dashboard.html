@@ -1,0 +1,608 @@
+<!DOCTYPE html>
+<html xmlns:th="thymeleaf.org" lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Patient Dashboard - HMS</title>
+<!-- FontAwesome for executive portal icons -->
+<link rel="stylesheet" href="https://cloudflare.com">
+<style>
+/* MATCHING CORPOARTE DEEP-NAVY & TEAL THEME DESIGN */
+:root {
+	--bg-main: #0f172a; /* Deep base layout slate */
+	--bg-surface: #1e293b; /* Navbar & sidebar base */
+	--bg-body: #0b0f19; /* Central content viewport base */
+	--primary-teal: #0ea5e9; /* Electric accent blue */
+	--primary-hover: #0284c7;
+	--accent-red: #ef4444; /* Dismissal & logout warning red */
+	--text-white: #f8fafc;
+	--text-muted: #94a3b8;
+	--border-color: rgba(255, 255, 255, 0.08);
+	--radius: 12px;
+	--transition: all 0.25s ease;
+}
+
+* {
+	margin: 0;
+	padding: 0;
+	box-sizing: border-box;
+}
+
+body {
+	font-family: 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
+	background-color: var(--bg-body);
+	color: var(--text-white);
+	min-height: 100vh;
+	display: flex;
+	flex-direction: column;
+	overflow-x: hidden;
+}
+
+/* 1. STICKY TOP EXECUTIVE NAVIGATION BAR */
+.navbar {
+	background-color: var(--bg-surface);
+	border-bottom: 1px solid var(--border-color);
+	padding: 0 40px;
+	height: 70px;
+	position: sticky;
+	top: 0;
+	z-index: 100;
+	display: flex;
+	align-items: center;
+	justify-content: space-between;
+}
+
+.logo {
+	display: flex;
+	align-items: center;
+	gap: 10px;
+	font-size: 1.25rem;
+	font-weight: 700;
+	color: var(--text-white);
+	text-decoration: none;
+}
+
+.logo i, .logo span {
+	color: var(--primary-teal);
+}
+
+.btn-logout {
+	background-color: rgba(239, 68, 68, 0.1);
+	color: var(--accent-red);
+	border: 1px solid rgba(239, 68, 68, 0.2);
+	padding: 10px 20px;
+	border-radius: 8px;
+	font-size: 0.9rem;
+	font-weight: 600;
+	text-decoration: none;
+	display: flex;
+	align-items: center;
+	gap: 8px;
+	transition: var(--transition);
+	cursor: pointer;
+}
+
+.btn-logout:hover {
+	background-color: var(--accent-red);
+	color: var(--text-white);
+	box-shadow: 0 4px 12px rgba(239, 68, 68, 0.2);
+}
+/* DASHBOARD SPLIT BODY CONTAINER */
+.dashboard-container {
+	flex: 1;
+	display: flex;
+	position: relative;
+	/* Allows natural document flow height */
+	min-height: calc(100vh - 70px);
+	align-items: flex-start;
+	/* Crucial: Prevents sidebar from stretching to full height */
+}
+
+/* 2. LEFT HAND SIDEBAR MENU (STICKY IMPLEMENTATION) */
+.sidebar {
+	width: 280px;
+	background-color: var(--bg-surface);
+	border-right: 1px solid var(--border-color);
+	padding: 24px 16px;
+	display: flex;
+	flex-direction: column;
+	gap: 8px;
+	flex-shrink: 0;
+	/* THIS FORCES THE SIDEBAR TO STICK WHILE THE PAGE SCROLLS */
+	position: sticky;
+	top: 70px; /* Aligns perfectly right below your 70px sticky navbar */
+	height: calc(100vh - 70px);
+	/* Sets height to cover exactly the remaining viewport */
+	overflow-y: auto;
+	/* Just in case your menu items grow, they scroll inside sidebar */
+}
+
+.sidebar-btn {
+	width: 100%;
+	background: none;
+	border: none;
+	color: var(--text-muted);
+	padding: 14px 16px;
+	border-radius: 8px;
+	font-size: 0.95rem;
+	font-weight: 600;
+	text-align: left;
+	cursor: pointer;
+	display: flex;
+	align-items: center;
+	gap: 12px;
+	transition: var(--transition);
+}
+
+.sidebar-btn i {
+	font-size: 1.1rem;
+	width: 24px;
+}
+
+.sidebar-btn:hover {
+	color: var(--text-white);
+	background-color: rgba(255, 255, 255, 0.03);
+}
+
+/* Active Sidebar Selector Hook */
+.sidebar-btn.active {
+	background-color: rgba(14, 165, 233, 0.1);
+	color: var(--primary-teal);
+	border-left: 4px solid var(--primary-teal);
+	border-top-left-radius: 0;
+	border-bottom-left-radius: 0;
+}
+
+/* 3. RIGHT HAND VIEWPORT PANEL CONTENT */
+.main-content {
+	flex: 1;
+	padding: 40px;
+	/* Removed height limits so it scrolls the main document body naturally */
+}
+
+/* CENTRAL MAIN WORKSPACE PANELS */
+.main-content {
+	flex: 1;
+	padding: 40px;
+	overflow-y: auto;
+}
+
+/* 3. WELCOME SUB-HEADER META CARD */
+.welcome-header {
+	background-color: var(--bg-surface);
+	border: 1px solid var(--border-color);
+	border-radius: var(--radius);
+	padding: 24px 32px;
+	margin-bottom: 32px;
+	display: flex;
+	align-items: center;
+	justify-content: space-between;
+	box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.2);
+}
+
+.welcome-text h1 {
+	font-size: 1.75rem;
+	font-weight: 700;
+	margin-bottom: 4px;
+}
+
+.welcome-text h1 span {
+	color: var(--primary-teal);
+}
+
+.welcome-text p {
+	color: var(--text-muted);
+	font-size: 0.95rem;
+}
+
+.live-badge {
+	background-color: rgba(14, 165, 233, 0.1);
+	color: var(--primary-teal);
+	padding: 6px 14px;
+	border-radius: 50px;
+	font-size: 0.8rem;
+	font-weight: 700;
+	border: 1px solid rgba(14, 165, 233, 0.2);
+}
+
+/* TAB INTERACTION VIEWS CONTAINER */
+.tab-panel {
+	display: none; /* Controlled via embedded JS Engine */
+	background-color: var(--bg-surface);
+	border: 1px solid var(--border-color);
+	border-radius: var(--radius);
+	padding: 32px;
+	box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.3);
+	animation: fadeIn 0.3s ease;
+}
+
+.tab-panel.active-panel {
+	display: block;
+}
+
+@keyframes fadeIn {from { opacity:0;
+	transform: translateY(5px);
+}
+
+to {
+	opacity: 1;
+	transform: translateY(0);
+}
+
+}
+.tab-panel h2 {
+	font-size: 1.35rem;
+	font-weight: 700;
+	margin-bottom: 12px;
+	border-bottom: 1px solid var(--border-color);
+	padding-bottom: 12px;
+	display: flex;
+	align-items: center;
+	gap: 10px;
+}
+
+.tab-panel h2 i {
+	color: var(--primary-teal);
+}
+
+.tab-panel p {
+	color: var(--text-muted);
+	font-size: 0.95rem;
+	line-height: 1.6;
+}
+
+/* RESPONSIVE DESIGN CONSTRAINTS */
+@media ( max-width : 1024px) {
+	.dashboard-container {
+		flex-direction: column;
+	}
+	.sidebar {
+		width: 100%;
+		border-right: none;
+		border-bottom: 1px solid var(--border-color);
+	}
+	.main-content {
+		padding: 24px;
+	}
+}
+</style>
+</head>
+<body>
+
+	<!-- 1. TOP NAVIGATION BAR WITH LOGOUT -->
+	<nav class="navbar">
+		<a th:href="@{/}" class="logo"> <i class="fa-solid fa-heart-pulse"></i>
+			Hospital <span>Management System</span>
+		</a>
+		<!-- Action Hook routing out of Session State to Login Gateway -->
+		<a th:href="@{/login}" class="btn-logout"> Log Out <i
+			class="fa-solid fa-right-from-bracket"></i>
+		</a>
+	</nav>
+
+	<!-- MAIN BODY CONSOLE FRAME -->
+	<div class="dashboard-container">
+
+		<!-- 2. SIDEBAR NAVIGATION CONTROLS -->
+		<aside class="sidebar">
+
+			<button class="sidebar-btn active"
+				onclick="switchTab(event, 'patientDashboardTab')">
+				<i class="fa-solid fa-user-doctor"></i> Dashboard
+			</button>
+			<button class="sidebar-btn"
+				onclick="switchTab(event, 'doctorsListTab')">
+				<i class="fa-solid fa-user-doctor"></i> Doctor Directory
+			</button>
+			<button class="sidebar-btn"
+				onclick="switchTab(event, 'patientHistoryTab')">
+				<i class="fa-solid fa-hospital-user"></i> MY Medical History
+			</button>
+			<button class="sidebar-btn"
+				onclick="switchTab(event, 'patientProfileTab')">
+				<i class="fa-solid fa-sliders"></i> My Profile
+			</button>
+		</aside>
+
+		<!-- CENTRAL INTERACTIVE MAIN DESKTOP -->
+		<main class="main-content">
+
+			<!-- 3. PAIENT DYNAMIC GREETING BLOCK -->
+			<div id="patientDashboardTab" class="tab-panel active-panel">
+				<header class="welcome-header">
+					<div class="welcome-text">
+						<!-- Fetches String attribute variable passed via Spring Controller Session Map -->
+						<h1>
+							Welcome Back, <span
+								th:text="${patientName != null ? patientName : 'System Patient'}"></span>...!
+						</h1>
+						<p>View your health records, monitor prescription details, and
+							coordinate your upcoming clinical consultations.</p>
+
+					</div>
+					<div class="live-badge">
+						<i class="fa-solid fa-circle text-xs text-green-500 animate-pulse"></i>
+						Patient Panel
+					</div>
+				</header>
+			</div>
+
+			<!-- Tab View 1: Doctor Table View -->
+
+			<div id="doctorsListTab" class="tab-panel">
+				<div
+					style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 24px; border-bottom: 1px solid var(--border-color); padding-bottom: 12px;">
+					<h2>
+						<i class="fa-solid fa-user-doctor"></i> Medical Specialists
+						Directory
+					</h2>
+					<span
+						style="background-color: rgba(16, 185, 129, 0.1); color: var(--accent-green); padding: 4px 12px; border-radius: 4px; font-size: 0.85rem; font-weight: 600;">
+						Active Doctors </span>
+				</div>
+
+				<!-- BOX COMPONENT GRID WRAPPER -->
+				<div
+					style="display: grid; grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); gap: 24px;">
+
+					<!-- THYMELEAF LOOP CARD (Iterates over your database records array) -->
+					<div th:each="doctor : ${doctorsList}"
+						style="background-color: rgba(14, 165, 233, 0.1); border: 1px solid var(--border-color); border-radius: 10px; padding: 24px; box-shadow: var(--shadow-sm); position: relative; transition: var(--transition);"
+						onmouseover="this.style.transform='translateY(-4px)'; this.style.borderColor='var(--primary-teal)';"
+						onmouseout="this.style.transform='translateY(0)'; this.style.borderColor='var(--border-color)';">
+
+						<!-- Doctor Avatar Concept & ID Header Row -->
+						<div
+							style="display: flex; align-items: center; gap: 14px; margin-bottom: 18px;">
+
+							<!-- DYNAMIC DOCTOR AVATAR BUBBLE WITH PREFIX STRIPPING -->
+							<div
+								style="width: 50px; height: 50px; background-color: rgba(14, 165, 233, 0.1); border: 2px solid var(--primary-teal); color: var(--primary-teal); border-radius: 50%; display: flex; align-items: center; justify-content: center; font-weight: bold; font-size: 1.2rem; text-transform: uppercase;"
+								th:text="${doctor.name != null and !#strings.isEmpty(doctor.name)} ? (${#strings.startsWith(doctor.name, 'Dr. ')} ? ${#strings.substring(doctor.name, 4, 5)} : ${#strings.substring(doctor.name, 0, 1)}) : 'D'">
+							</div>
+
+							<div>
+								<!-- Doctor Name field rendering -->
+								<h3
+									style="font-size: 1.1rem; font-weight: 700; color: var(--text-white);"
+									th:text="${doctor.name != null ? doctor.name : 'Unknown Specialist'}">Dr.
+									Raj Sharma</h3>
+							</div>
+						</div>
+
+
+						<!-- Profile Parameters Stack -->
+						<div
+							style="display: flex; flex-direction: column; gap: 10px; font-size: 0.88rem; border-top: 1px solid rgba(255, 255, 255, 0.04); padding-top: 14px; margin-bottom: 18px;">
+							<!-- Specialization Parameter Line -->
+							<div style="display: flex; gap: 8px; align-items: center;">
+								<i class="fa-solid fa-stethoscope"
+									style="color: var(--primary-teal); width: 16px;"></i> <span
+									style="color: var(--text-muted);">Specialty:</span> <strong
+									style="color: var(--text-white);"
+									th:text="${doctor.specialization}"></strong>
+							</div>
+
+							<!-- Availability Schedule Parameter Line -->
+							<div style="display: flex; gap: 8px; align-items: flex-start;">
+								<i class="fa-solid fa-clock"
+									style="color: var(--accent-amber); width: 16px; margin-top: 2px;"></i>
+								<span style="color: var(--text-muted); flex-shrink: 0;">Availability:</span>
+								<strong style="color: var(--text-white); font-size: 0.82rem;"
+									th:text="${doctor.availabilitySchedule}"> </strong>
+							</div>
+
+
+							<!-- Interactive Action Button Layer inside Box view -->
+							<div style="display: flex; gap: 10px; margin-top: auto;">
+								<!-- UPDATED TO ANCHOR TAG ROUTER MATCHING PORTAL ARCHITECTURE -->
+								<a
+									th:href="@{/patient/book-appointment(doctorId=${doctor.doctorId})}"
+									title="Booking Appointment"
+									style="flex: 1; text-align: center; background-color: var(--primary-teal); color: #0f172a; border: 1px solid transparent; padding: 10px; border-radius: 6px; font-size: 0.85rem; font-weight: 700; cursor: pointer; text-decoration: none; display: inline-flex; align-items: center; justify-content: center; gap: 8px; transition: 0.2s;"
+									onmouseover="this.style.backgroundColor='var(--primary-hover)'; this.style.color='var(--text-white)';"
+									onmouseout="this.style.backgroundColor='var(--primary-teal)'; this.style.color='#0f172a';">
+									<span
+									style="display: inline-block; width: 6px; height: 6px; border-top: 2px solid currentColor; border-right: 2px solid currentColor; transform: rotate(45deg);"></span>
+									Book Appointment
+								</a>
+							</div>
+
+
+						</div>
+
+					</div>
+				</div>
+			</div>
+
+			<!-- Tab View 2: Patient History Table View -->
+			<div id="patientHistoryTab" class="tab-panel">
+				<div
+					style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px; border-bottom: 1px solid var(--border-color); padding-bottom: 12px;">
+					<h2>
+						<i class="fa-solid fa-user-shield"></i> Patient Medical History
+					</h2>
+					<span
+						style="background-color: rgba(245, 158, 11, 0.1); color: var(--accent-amber); padding: 4px 12px; border-radius: 4px; font-size: 0.85rem; font-weight: 600;">
+						Verification Queue </span>
+				</div>
+
+				<!-- RESPONSIVE TABLE CONTAINER -->
+				<div
+					style="width: 100%; overflow-x: auto; background-color: rgba(15, 23, 42, 0.3); border-radius: 8px; border: 1px solid var(--border-color);">
+					<table
+						style="width: 100%; border-collapse: collapse; text-align: left; font-size: 0.9rem;">
+
+						<!-- TABLE HEADERS -->
+						<thead>
+							<tr
+								style="background-color: rgba(255, 255, 255, 0.02); border-bottom: 1px solid var(--border-color); color: var(--text-white); font-weight: 700;">
+								<th style="padding: 16px 20px;">Doctor Name</th>
+								<th style="padding: 16px 20px;">Date of Appointment</th>
+								<th style="padding: 16px 20px;">Diagnose</th>
+								<th style="padding: 16px 20px; text-align: center;">View
+									Prescription</th>
+							</tr>
+						</thead>
+
+						<!-- TABLE BODY DATA ROWS (Loops using Thymeleaf th:each) -->
+						<tbody>
+							<!-- Placeholder row for design preview; replaced dynamically by Spring Book backend -->
+							<tr th:each="history : ${pateintAppointmentList}"
+								style="border-bottom: 1px solid var(--border-color); color: var(--text-muted); transition: background 0.2s;"
+								onmouseover="this.style.backgroundColor='rgba(255,255,255,0.01)'"
+								onmouseout="this.style.backgroundColor='transparent'">
+
+								<td
+									style="padding: 14px 20px; font-weight: 600; color: var(--text-white);"
+									th:text="${history.doctor.name}"></td>
+								<td style="padding: 14px 20px;"
+									th:text="${history.appointment.appointmentDate}"></td>
+								<td style="padding: 14px 20px;" th:text="${history.diagnose}"></td>
+
+								<!-- View ACTION BUTTON -->
+								<td style="padding: 14px 20px; text-align: center;">
+									<div style="display: flex; gap: 8px; justify-content: center;">
+
+										<!-- VIEW MEDICINE HISTORY ANCHOR LINK ROUTER (UPDATED) -->
+										<a
+											th:href="@{/patient/prescription/view(appointmentId=${history.appointment.appointmentId})}"
+											title="View Medicine History"
+											style="background-color: rgba(16, 185, 129, 0.1); color: #10b981; border: 1px solid rgba(16, 185, 129, 0.2); padding: 0 14px; height: 32px; border-radius: 6px; cursor: pointer; display: inline-flex; align-items: center; justify-content: center; font-size: 0.85rem; font-weight: 700; text-decoration: none; transition: 0.2s;"
+											onmouseover="this.style.backgroundColor='#10b981'; this.style.color='#0f172a'"
+											onmouseout="this.style.backgroundColor='rgba(16, 185, 129, 0.1)'; this.style.color='#10b981'">
+											View </a>
+
+									</div>
+								</td>
+
+							</tr>
+						</tbody>
+
+					</table>
+				</div>
+			</div>
+
+
+			<!-- Tab View 3: Patient Profile Box View -->
+			<div id="patientProfileTab" class="tab-panel">
+				<div
+					style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 24px; border-bottom: 1px solid var(--border-color); padding-bottom: 12px;">
+					<h2 style="display: flex; align-items: center; gap: 10px;">
+
+						<span
+							style="position: relative; width: 18px; height: 18px; display: inline-block; margin-right: 4px;">
+							<span
+							style="position: absolute; left: 0; top: 0; width: 14px; height: 12px; border: 2px solid var(--primary-teal); border-bottom-left-radius: 8px; border-bottom-right-radius: 8px; border-top-left-radius: 2px; border-top-right-radius: 2px;"></span>
+							<span
+							style="position: absolute; left: 7px; top: 2px; width: 2px; height: 8px; background-color: var(--primary-teal);"></span>
+						</span> Personal Patient Details
+					</h2>
+					<span
+						style="background-color: rgba(14, 165, 233, 0.1); color: var(--primary-teal); padding: 4px 12px; border-radius: 4px; font-size: 0.85rem; font-weight: 600;">
+						Role: Patient </span>
+				</div>
+
+				<!-- PROFILE DATA PANEL COVER BOX -->
+				<div
+					style="background-color: rgba(15, 23, 42, 0.4); border: 1px solid var(--border-color); border-radius: 12px; max-width: 600px; width: 100%; box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.3); overflow: hidden;">
+
+					<!-- Profile Highlight Banner -->
+					<div
+						style="background: linear-gradient(135deg, var(--bg-surface) 0%, rgba(14, 165, 233, 0.1) 100%); padding: 24px 30px; border-bottom: 1px solid var(--border-color); display: flex; align-items: center; gap: 16px;">
+
+						<!-- DYNAMIC AVATAR BUBBLE EXTRACTION USING THYMELEAF -->
+						<div
+							style="width: 48px; height: 48px; background-color: var(--bg-main); border: 2px solid var(--primary-teal); border-radius: 50%; display: flex; align-items: center; justify-content: center; font-weight: bold; color: var(--primary-teal); font-size: 1.2rem; text-transform: uppercase;"
+							th:text="${patientDetails.name != null and !#strings.isEmpty(patientDetails.name)} ? ${#strings.substring(patientDetails.name, 0, 1)} : 'P'">
+						</div>
+
+						<div>
+							<!-- Reads admin name from your backend model parameter map -->
+							<h3
+								style="font-size: 1.25rem; font-weight: 700; color: var(--text-white);"
+								th:text="${patientDetails.name != null ? patientDetails.name : 'Patient User'}"></h3>
+							<p
+								style="color: var(--text-muted); font-size: 0.85rem; margin-top: 2px;">HMS
+								Executive Center</p>
+						</div>
+					</div>
+
+
+					<!-- Meta Properties Data Rows -->
+					<div
+						style="padding: 24px 30px; display: flex; flex-direction: column; gap: 14px;">
+
+						<!-- Field 1: Patient ID -->
+						<div
+							style="display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid rgba(255, 255, 255, 0.03); padding-bottom: 10px;">
+							<span style="color: var(--text-muted); font-size: 0.95rem;">Patient
+								ID</span> <strong
+								style="font-family: monospace; font-size: 1rem; color: var(--text-white);"
+								th:text="${patientDetails.patientId}">PT-XXXX</strong>
+						</div>
+
+						<!-- Field 2: Gender -->
+						<div
+							style="display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid rgba(255, 255, 255, 0.03); padding-bottom: 10px;">
+							<span style="color: var(--text-muted); font-size: 0.95rem;">Gender</span>
+							<strong style="color: var(--text-white);"
+								th:text="${patientDetails.gender}">Gender Status</strong>
+						</div>
+
+						<!-- Field 3: Date of Birth -->
+						<div
+							style="display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid rgba(255, 255, 255, 0.03); padding-bottom: 10px;">
+							<span style="color: var(--text-muted); font-size: 0.95rem;">Date
+								of Birth(YYYY-MM-DD)</span> <strong style="color: var(--text-white);"
+								th:text="${patientDetails.dateOfBirth}">YYYY-MM-DD</strong>
+						</div>
+
+						<!-- Field 4: Mobile No -->
+						<div
+							style="display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid rgba(255, 255, 255, 0.03); padding-bottom: 10px;">
+							<span style="color: var(--text-muted); font-size: 0.95rem;">Mobile
+								No</span> <strong style="color: var(--primary-teal);"
+								th:text="${patientDetails.contactNumber}">+91 00000
+								00000</strong>
+						</div>
+
+						<!-- Field 5: Permanent Address -->
+						<div
+							style="display: flex; flex-direction: column; gap: 6px; padding-top: 4px;">
+							<span style="color: var(--text-muted); font-size: 0.95rem;">Address</span>
+							<span
+								style="color: var(--text-white); font-size: 0.9rem; background-color: rgba(15, 23, 42, 0.5); padding: 12px; border-radius: 6px; border: 1px solid var(--border-color); line-height: 1.5; margin-top: 2px;"
+								th:text="${patientDetails.address}">No permanent address
+								record detected inside your active database entity
+								configuration.</span>
+						</div>
+
+					</div>
+
+				</div>
+			</div>
+
+
+		</main>
+	</div>
+
+	<!-- TAB SWITCH ENGINE MECHANICAL LOGIC -->
+	<script>
+        function switchTab(event, targetPanelId) {
+            // 1. Remove active state styling from all sidebar button items
+            const sidebarButtons = document.querySelectorAll('.sidebar-btn');
+            sidebarButtons.forEach(btn => btn.classList.remove('active'));
+
+            // 2. Hide all central content viewport panels
+            const contentPanels = document.querySelectorAll('.tab-panel');
+            contentPanels.forEach(panel => panel.classList.remove('active-panel'));
+
+            // 3. Mount active flags onto targeted triggers and related panels
+            event.currentTarget.classList.add('active');
+            document.getElementById(targetPanelId).classPack = document.getElementById(targetPanelId).classList.add('active-panel');
+        }
+    </script>
+
+</body>
+</html>
