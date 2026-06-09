@@ -41,8 +41,8 @@ public class AppointmentServicesImpl implements AppointmentServices {
 
 
 	@Override
-	public void updateStatus(Integer id, Status confirmed) {
-	      appointmentDAO.updateStatus(id, confirmed);
+	public void updateStatus(Integer id, Status status, String reason) {
+	      appointmentDAO.updateStatus(id, status, reason);
 	}
 
 
@@ -51,6 +51,20 @@ public class AppointmentServicesImpl implements AppointmentServices {
 	public AppointmentModel getAppointmentById(Integer id) {
 
 		return appointmentDAO.getAppointmentById(id);
+	}
+
+
+
+	@Override
+	public List<AppointmentModel> getCompletedAppointmentsByPatientId(Integer patientId) {
+		
+		return appointmentDAO.getCompletedAppointmentsByPatientId(patientId);
+	}
+
+
+	@Override
+	public List<AppointmentModel> getAllAppointmentsByPatientId(Integer patientId) {
+		return appointmentDAO.getAllAppointmentsByPatientId(patientId);
 	}
 
 }

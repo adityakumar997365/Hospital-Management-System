@@ -27,4 +27,11 @@ public class PatinetServicesImpl implements PatientServices {
 		return patientDAO.getUserByContact(contact);
 	}
 
+
+	@Override
+	public PatientModel getPatientById(Integer patinetid) {
+
+		return patientDAO.getPatientById(patinetid);
+	}
+
 }

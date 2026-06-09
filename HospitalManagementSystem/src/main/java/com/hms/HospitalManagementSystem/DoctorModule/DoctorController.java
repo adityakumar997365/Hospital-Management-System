@@ -92,9 +92,22 @@ public class DoctorController {
 	        // Executes multi-table service update changes cleanly inside an transactional context
 	        prescriptionServices.completeAppointmentWithPrescription(prescription);
 	        
-	        appointmentServices.updateStatus(id, AppointmentModel.Status.COMPLETED);
+	        appointmentServices.updateStatus(id, AppointmentModel.Status.COMPLETED,null);
 	        
 	        return "redirect:/doctor/dashboard";
 	    }
+	    
+	    @GetMapping("/prescription/view")
+		public String viewPrescriptionDetailsDataSummary(@RequestParam(name = "appointmentId") Integer appointmentId, 
+		                                                 Model model) {
+
+			PrescriptionModel prescription = prescriptionServices.findByAppointmentId(appointmentId);
+
+		    // 2. Bind the data context records directly into Thymeleaf template variable mappings
+		    model.addAttribute("prescription", prescription);
+		    
+		    // Renders the dedicated, read-only dashboard summary layout template file
+		    return "/doctor/prescriptionView"; 
+		}
 
 }

@@ -5,7 +5,8 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Doctor Dashboard - HMS</title>
 <!-- FontAwesome for executive portal icons -->
-<link rel="stylesheet" href="https://cloudflare.com">
+<link rel="stylesheet"
+	href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.7.2/css/all.min.css">
 <style>
 /* MATCHING CORPOARTE DEEP-NAVY & TEAL THEME DESIGN */
 :root {
@@ -288,7 +289,8 @@ to {
 
 			<button class="sidebar-btn active"
 				onclick="switchTab(event, 'doctorDashboardTab')">
-				<i class="fa-solid fa-user-doctor"></i> Dashboard
+				<!-- Updated to a professional analytical dashboard icon -->
+				<i class="fa-solid fa-chart-pie"></i> Dashboard
 			</button>
 			<button class="sidebar-btn"
 				onclick="switchTab(event, 'patientAppointmentListTab')">
@@ -302,6 +304,7 @@ to {
 				onclick="switchTab(event, 'doctorProfileTab')">
 				<i class="fa-solid fa-sliders"></i> Doctor Profile
 			</button>
+
 		</aside>
 
 		<!-- CENTRAL INTERACTIVE MAIN DESKTOP -->
@@ -446,12 +449,14 @@ to {
 								<td style="padding: 14px 20px; text-align: center;">
 									<div style="display: flex; gap: 8px; justify-content: center;">
 
-										<!-- VIEW MEDICINE HISTORY TEXT BUTTON -->
-										<button title="View Medicine History"
-											style="background-color: rgba(16, 185, 129, 0.1); color: #10b981; border: 1px solid rgba(16, 185, 129, 0.2); padding: 0 14px; height: 32px; border-radius: 6px; cursor: pointer; display: flex; align-items: center; justify-content: center; font-size: 0.85rem; font-weight: 700; transition: 0.2s;"
+										<!-- VIEW MEDICINE HISTORY ANCHOR LINK ROUTER (UPDATED) -->
+										<a
+											th:href="@{/doctor/prescription/view(appointmentId=${history.appointment.appointmentId})}"
+											title="View Medicine History"
+											style="background-color: rgba(16, 185, 129, 0.1); color: #10b981; border: 1px solid rgba(16, 185, 129, 0.2); padding: 0 14px; height: 32px; border-radius: 6px; cursor: pointer; display: inline-flex; align-items: center; justify-content: center; font-size: 0.85rem; font-weight: 700; text-decoration: none; transition: 0.2s;"
 											onmouseover="this.style.backgroundColor='#10b981'; this.style.color='#0f172a'"
 											onmouseout="this.style.backgroundColor='rgba(16, 185, 129, 0.1)'; this.style.color='#10b981'">
-											View</button>
+											View </a>
 
 									</div>
 								</td>

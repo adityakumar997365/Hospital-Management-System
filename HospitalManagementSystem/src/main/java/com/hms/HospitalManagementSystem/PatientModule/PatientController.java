@@ -10,6 +10,8 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 
+import com.hms.HospitalManagementSystem.AppointmentSchedulingModule.AppointmentModel;
+import com.hms.HospitalManagementSystem.AppointmentSchedulingModule.AppointmentServices;
 import com.hms.HospitalManagementSystem.DoctorModule.DoctorModel;
 import com.hms.HospitalManagementSystem.DoctorModule.DoctorRepository;
 import com.hms.HospitalManagementSystem.DoctorModule.DoctorServices;
@@ -25,17 +27,19 @@ public class PatientController {
 	private final DoctorServices doctorservices;
 	private final DoctorRepository doctorRepository;
 	private final PrescriptionServices prescriptionServices;
-	
+	private final AppointmentServices appointmentServices;
 
 	
 
 	public PatientController(PatientServices patientServices, DoctorServices doctorservices,
-			DoctorRepository doctorRepository, PrescriptionServices prescriptionServices) {
+			DoctorRepository doctorRepository, PrescriptionServices prescriptionServices,
+			AppointmentServices appointmentServices) {
 
 		this.patientServices = patientServices;
 		this.doctorservices = doctorservices;
 		this.doctorRepository = doctorRepository;
 		this.prescriptionServices = prescriptionServices;
+		this.appointmentServices = appointmentServices;
 	}
 
 	@GetMapping("/dashboard")
@@ -57,9 +61,27 @@ public class PatientController {
 		
 		// for prescription histroy
 		
-		List<PrescriptionModel> pateintAppointmentList = prescriptionServices.getPatientHistory(patient.getPatientId());
+		List<PrescriptionModel> pateintprescriptionList = prescriptionServices.getPatientHistory(patient.getPatientId());
 		
-		model.addAttribute("pateintAppointmentList", pateintAppointmentList);
+		// Sort by date in descending order (Newest/Latest dates first)
+				if (pateintprescriptionList != null) {
+					pateintprescriptionList.sort((a1, a2) -> a2.getCreatedDate().compareTo(a1.getCreatedDate()));
+				}
+
+		
+		model.addAttribute("pateintprescriptionList", pateintprescriptionList);
+		
+		// for appointment history
+		
+		List<AppointmentModel> patientAppointmentHistoryList = appointmentServices.getAllAppointmentsByPatientId(patient.getPatientId());
+		
+		// Sort by date in descending order (Newest/Latest dates first)
+		if (patientAppointmentHistoryList != null) {
+		    patientAppointmentHistoryList.sort((a1, a2) -> a2.getAppointmentDate().compareTo(a1.getAppointmentDate()));
+		}
+
+		
+		model.addAttribute("patientAppointmentHistoryList", patientAppointmentHistoryList);
 		
 		return "/patient/dashboard";
 

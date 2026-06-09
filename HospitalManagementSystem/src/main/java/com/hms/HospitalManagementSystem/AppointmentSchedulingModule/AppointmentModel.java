@@ -39,15 +39,7 @@ public class AppointmentModel {
     @JoinColumn(name = "billId")
     private BillModel bill;
 
-    public BillModel getBill() {
-		return bill;
-	}
-
-	public void setBill(BillModel bill) {
-		this.bill = bill;
-	}
-
-	@Column(name = "appointmentDate")
+    @Column(name = "appointmentDate")
     private LocalDate appointmentDate;
 
     @Column(name = "timeSlot", length = 20)
@@ -56,6 +48,10 @@ public class AppointmentModel {
     @Enumerated(EnumType.STRING)
     @Column(name = "status")
     private Status status;
+
+    // Added reason column with varchar(255)
+    @Column(name = "reason", length = 255)
+    private String reason;
 
     public enum Status {
         CONFIRMED, CANCELLED, COMPLETED, REVIEWING
@@ -87,6 +83,14 @@ public class AppointmentModel {
         this.doctor = doctor;
     }
 
+    public BillModel getBill() {
+        return bill;
+    }
+
+    public void setBill(BillModel bill) {
+        this.bill = bill;
+    }
+
     public LocalDate getAppointmentDate() {
         return appointmentDate;
     }
@@ -109,5 +113,14 @@ public class AppointmentModel {
 
     public void setStatus(Status status) {
         this.status = status;
+    }
+
+    // Getter and Setter for reason
+    public String getReason() {
+        return reason;
+    }
+
+    public void setReason(String reason) {
+        this.reason = reason;
     }
 }

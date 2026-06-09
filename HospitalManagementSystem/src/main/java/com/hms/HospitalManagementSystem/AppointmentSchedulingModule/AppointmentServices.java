@@ -13,8 +13,15 @@ public interface AppointmentServices {
 	
 	public List<AppointmentModel> getAllReviewedAppointments();
 
-	void updateStatus(Integer id, Status confirmed);
+	void updateStatus(Integer id, Status status, String reason);
 
 	public AppointmentModel getAppointmentById(Integer id);
+	
+	//for admin page open patient record
+	public List<AppointmentModel> getCompletedAppointmentsByPatientId(Integer patientId);
+
+	// for patient appointment history tab
+	public List<AppointmentModel> getAllAppointmentsByPatientId(Integer patientId);
+
 
 }

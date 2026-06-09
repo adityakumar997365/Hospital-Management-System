@@ -46,4 +46,13 @@ public class PatientDAOImpl implements PatientDAO {
 		return patient;
 	}
 
+
+	@Override
+	public PatientModel getPatientById(Integer patinetid) {
+
+		Optional<PatientModel> optional = patientRepository.findById(patinetid);
+		
+		return optional.get();
+	}
+
 }

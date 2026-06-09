@@ -36,9 +36,9 @@ public class PatientRegisterServicesImpl implements PatientRegisterServices {
 	}
 
 	@Override
-	public void rejectRegistration(Integer registerId) {
+	public void rejectRegistration(Integer registerId, String reason) {
 
-		patientRegisterDAO.rejectRegistration(registerId);
+		patientRegisterDAO.rejectRegistration(registerId, reason);
 	}
 
 	 

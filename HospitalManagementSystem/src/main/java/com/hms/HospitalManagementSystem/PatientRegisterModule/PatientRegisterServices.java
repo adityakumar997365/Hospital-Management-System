@@ -13,6 +13,6 @@ public interface PatientRegisterServices {
     //HMS New Patient Approval Request
 	public void approveRegistration(Integer registerId);
 	
-	public void rejectRegistration(Integer registerId);
+	public void rejectRegistration(Integer registerId, String reason);
 
 }

@@ -33,7 +33,7 @@ public class SecurityConfig {
         http
             .authorizeHttpRequests(auth -> auth
                 // Allow everyone to access the login page, registration, and static assets
-                .requestMatchers("/login", "/register", "/", "/register/patient", "/register/check-request", "/register/check-status-query").permitAll()
+                .requestMatchers("/login", "/register", "/", "/register/***","/forgot-password","/forgot-password/verify","/forgot-password/update","/forgot-password/change-password", "/forgot-password/change-success").permitAll()
                 
                 // Restrict specific URLs to specific user roles
                 .requestMatchers("/admin/**").hasRole("ADMIN")

@@ -8,5 +8,6 @@ public interface PatientDAO {
 	
 	PatientModel getUserByContact(String contact);
 	
+	PatientModel getPatientById(Integer patinetid);
 
 }

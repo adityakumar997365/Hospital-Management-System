@@ -40,11 +40,12 @@ public class AppointmentDAOImpl implements AppointmentDAO {
 	}
 
 	@Override
-	public void updateStatus(Integer id, Status confirmed) {
+	public void updateStatus(Integer id, Status status, String reason) {
 		AppointmentModel appointment = appointmentRepository.findById(id)
 				.orElseThrow(() -> new IllegalArgumentException("Appointment not found with ID: " + id));
 
-		appointment.setStatus(confirmed);
+		appointment.setStatus(status);
+		appointment.setReason(reason);
 		appointmentRepository.save(appointment);
 	}
 
@@ -53,6 +54,19 @@ public class AppointmentDAOImpl implements AppointmentDAO {
 		
 			return appointmentRepository.findById(id)
 					.orElseThrow(() -> new IllegalArgumentException("Appointment records not found: " + id));
+	}
+
+	@Override
+	public List<AppointmentModel> getCompletedAppointmentsByPatientId(Integer patientId) {
+
+		return appointmentRepository.findByPatientPatientIdAndStatus(patientId, AppointmentModel.Status.COMPLETED);
+		
+	}
+
+	@Override
+	public List<AppointmentModel> getAllAppointmentsByPatientId(Integer patientId) {
+
+		return appointmentRepository.findByPatientPatientId(patientId);
 	}
 
 	

@@ -9,4 +9,7 @@ public interface PatientRegisterRepository extends JpaRepository<PatientRegister
 
 	Optional<PatientRegisterModel> findByContactNumber(String contactNumber);
 	
+	//check existence for new registration
+	 boolean existsByContactNumber(String contactNumber);
+	
 }

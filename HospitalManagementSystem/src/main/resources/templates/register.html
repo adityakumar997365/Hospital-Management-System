@@ -4,8 +4,9 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Patient Registration - HMS</title>
-<!-- FontAwesome for clinical icons -->
-<link rel="stylesheet" href="cloudflare.com">
+<!-- FontAwesome for professional medical status icons -->
+<link rel="stylesheet"
+	href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.7.2/css/all.min.css">
 
 <style>
 /* CORE REUSABLE NAVY STYLING CONFIGURATION */
@@ -40,7 +41,8 @@ body {
 .navbar {
 	background-color: var(--bg-surface);
 	border-bottom: 1px solid var(--border-color);
-	padding: 0 40px; /* Reduced vertical padding since height is now locked */
+	padding: 0 40px;
+	/* Reduced vertical padding since height is now locked */
 	height: 70px; /* Matches standard portal navbar heights perfectly */
 	position: sticky;
 	top: 0;
@@ -55,7 +57,8 @@ body {
 	margin: 0 auto;
 	display: flex;
 	align-items: center;
-	justify-content: space-between; /* Crucial: Pushes logo to far left and button to far right */
+	justify-content: space-between;
+	/* Crucial: Pushes logo to far left and button to far right */
 }
 
 .logo {
@@ -76,7 +79,8 @@ body {
 .btn-requestt {
 	/* Starting State: High Visibility Solid Teal Accent Button */
 	background-color: var(--primary-teal);
-	color: #0f172a; /* Dark slate text for perfect contrast against solid teal */
+	color: #0f172a;
+	/* Dark slate text for perfect contrast against solid teal */
 	border: 1px solid var(--primary-teal);
 	padding: 10px 20px;
 	border-radius: 8px;
@@ -93,12 +97,12 @@ body {
 .btn-requestt:hover {
 	/* Hover State: Swaps to Minimal Ghost Style with Tinted Background Glow */
 	background-color: rgba(14, 165, 233, 0.1);
-	color: var(--primary-teal); /* Switches text back to electric accent blue */
+	color: var(--primary-teal);
+	/* Switches text back to electric accent blue */
 	border-color: rgba(14, 165, 233, 0.3);
 	box-shadow: none;
 	transform: translateY(-1px);
 }
-
 
 /* REGISTRATION GRID LAYOUT */
 .register-wrapper {
@@ -275,13 +279,11 @@ select.form-control {
 	<!-- TOP NAVIGATION BAR -->
 	<nav class="navbar">
 		<div class="nav-container">
-			<a th:href="@{/}" class="logo"> 
-			 Hospital <span>Management
+			<a th:href="@{/}" class="logo"> <i
+				class="fa-solid fa-heart-pulse"></i> Hospital <span>Management
 					System</span>
-			</a>
-			
-			<a th:href="@{/register/check-request}" class="btn-requestt"> Check Registration Status
-		   </a>
+			</a> <a th:href="@{/register/check-request}" class="btn-requestt">
+				Check Registration Status </a>
 		</div>
 	</nav>
 
@@ -318,6 +320,10 @@ select.form-control {
 						<div class="input-wrapper"
 							style="position: relative; display: flex; align-items: center;">
 
+							<!-- Font Awesome Calendar Icon Overlay -->
+							<i class="fa-solid fa-calendar-days"
+								style="position: absolute; left: 14px; color: var(--text-muted); font-size: 1rem; pointer-events: none;"></i>
+
 							<!-- Date Input Field with Explicit White Text/Icon Scheme Forced Overrides -->
 							<input type="date" id="dateOfBirth" name="dateOfBirth"
 								class="form-control color-forced-date" required
@@ -326,6 +332,7 @@ select.form-control {
 								onblur="this.style.borderColor='var(--border-color)'">
 						</div>
 					</div>
+
 
 					<!-- 3. GENDER SELECTION DROPDOWN -->
 					<div class="form-group">
@@ -347,10 +354,16 @@ select.form-control {
 						<label for="contactNumber">Contact Number</label>
 						<div class="input-wrapper">
 							<i class="fa-solid fa-phone input-icon"></i> <input type="tel"
-								id="contactNumber" name="contactNumber" maxlength="15"
-								class="form-control" placeholder="E.g., 99XXXX7890" required>
+								id="contactNumber" name="contactNumber" minlength="10"
+								maxlength="10" pattern="[0-9]{10}" class="form-control"
+								placeholder="E.g., 99XXXXX890" required>
+
 						</div>
+						<!-- Error container for jQuery to target -->
+						<small id="phoneError"
+							style="color: red; display: none; margin-top: 5px;"></small>
 					</div>
+
 
 					<!-- 5. ACCOUNT PASSWORD FIELD -->
 					<div class="form-group">
@@ -395,7 +408,7 @@ select.form-control {
 
 				<!-- SUBMIT REGISTER ACCELERATOR -->
 				<button type="submit" class="btn-submit">
-					Create Account <i class="fa-solid fa-user-plus"></i>
+					Submit Request <i class="fa-solid fa-user-plus"></i>
 				</button>
 
 			</form>
@@ -409,8 +422,65 @@ select.form-control {
 		</div>
 	</main>
 
+	<script
+		src="https://ajax.googleapis.com/ajax/libs/jquery/3.7.1/jquery.min.js"></script>
+
 	<!-- FORM VALIDATION AND MULTI-EYE TOGGLE LOGIC -->
 	<script>
+	$(document).ready(function() {
+	    $('#contactNumber').on('blur', function() {
+	        var $phoneInput = $(this);
+	        var phoneNumber = $phoneInput.val().trim();
+	        var $errorElement = $('#phoneError');
+	        var $submitBtn = $('.btn-submit'); // Target the submit button
+
+	        // 1. Clear error states if the input field is empty
+	        if (phoneNumber === "") {
+	            $errorElement.hide();
+	            $phoneInput.css('border-color', '');
+	            $phoneInput[0].setCustomValidity("");
+	            $submitBtn.prop('disabled', false); // Enable button
+	            return;
+	        }
+
+	        // 2. Local Validation: Check if input length is exactly 10 and contains only digits
+	        if (phoneNumber.length !== 10 || !/^\d+$/.test(phoneNumber)) {
+	            $errorElement.text("Please enter a valid 10-digit phone number.").show();
+	            $phoneInput.css('border-color', 'red');
+	            $phoneInput[0].setCustomValidity("Invalid phone number length");
+	            $submitBtn.prop('disabled', true); // Disable button due to invalid format
+	            return;
+	        }
+
+	        // 3. Send AJAX GET request to Spring Boot backend
+	        $.ajax({
+	            url : '/hms/register/check-phone',
+	            type : 'GET',
+	            data : {
+	                phone : phoneNumber
+	            },
+	            dataType : 'json',
+	            success : function(exists) {
+	                if (exists) {
+	                    $errorElement.text("This contact number is already registered. Check the Registration status.").show();
+	                    $phoneInput.css('border-color', 'red');
+	                    $phoneInput[0].setCustomValidity("Duplicate phone number");
+	                    $submitBtn.prop('disabled', true); // Disable button because it exists
+	                } else {
+	                    $errorElement.hide();
+	                    $phoneInput.css('border-color', 'green');
+	                    $phoneInput[0].setCustomValidity("");
+	                    $submitBtn.prop('disabled', false); // Enable button because it is unique
+	                }
+	            },
+	            error : function(xhr) {
+	                console.error("AJAX Error Status: " + xhr.status);
+	            }
+	        });
+	    });
+	});
+
+
 		// Intercepts submission to check passwords locally first
 		document
 				.querySelector('form')

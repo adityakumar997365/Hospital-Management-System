@@ -21,7 +21,7 @@ public class PatientRegisterModel {
     @Column(name = "gender", length = 10)
     private String gender;
 
-    @Column(name = "contactNumber", length = 15)
+    @Column(name = "contactNumber", length = 10)
     private String contactNumber;
 
     @Column(name = "address", length = 255)
@@ -30,12 +30,14 @@ public class PatientRegisterModel {
     @Column(name = "password", length = 255)
     private String password;
 
-    // Added Enum Column mapping
     @Enumerated(EnumType.STRING)
     @Column(name = "registrationStatus", nullable = false)
-    private RegistrationStatus registrationStatus = RegistrationStatus.PENDING; // Defaults new sign-ups to PENDING
+    private RegistrationStatus registrationStatus = RegistrationStatus.PENDING;
 
-    // Internal Enum Definition
+    // Added nullable reason column (nullable = true is the default JPA behavior)
+    @Column(name = "reason", length = 255, nullable = true)
+    private String reason;
+
     public enum RegistrationStatus {
         APPROVED, PENDING, REJECTED
     }
@@ -98,12 +100,20 @@ public class PatientRegisterModel {
         this.password = password;
     }
 
-    // Getter and Setter for the new column
     public RegistrationStatus getRegistrationStatus() {
         return registrationStatus;
     }
 
     public void setRegistrationStatus(RegistrationStatus registrationStatus) {
         this.registrationStatus = registrationStatus;
+    }
+
+    // Getter and Setter for reason
+    public String getReason() {
+        return reason;
+    }
+
+    public void setReason(String reason) {
+        this.reason = reason;
     }
 }

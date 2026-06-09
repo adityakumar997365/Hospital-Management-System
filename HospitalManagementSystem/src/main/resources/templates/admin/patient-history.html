@@ -1,0 +1,279 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>Patient Historical Archive | HMS Admin</title>
+    <!-- FontAwesome for executive portal icons -->
+<link rel="stylesheet"
+	href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.7.2/css/all.min.css">
+    <style>
+        /* MATCHING CORPORATE DEEP-NAVY & TEAL THEME DESIGN DEFINITIONS */
+        :root {
+            --bg-main: #0f172a; /* Deep base layout slate */
+            --bg-surface: #1e293b; /* Navbar base background scale */
+            --bg-body: #0b0f19; /* Central content viewport base */
+            --bg-card: rgba(30, 41, 59, 0.7);
+            --primary-teal: #0ea5e9; /* Electric accent blue */
+            --primary-hover: #0284c7;
+            --border-color: rgba(255, 255, 255, 0.08);
+            --text-white: #f8fafc;
+            --text-muted: #94a3b8;
+            --accent-green: #10b981;
+            --radius: 12px;
+            --transition: all 0.25s ease;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
+            background-color: var(--bg-body);
+            color: var(--text-white);
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            overflow-x: hidden;
+        }
+
+        /* 1. STICKY TOP EXECUTIVE NAVIGATION BAR */
+        .navbar {
+            background-color: var(--bg-surface);
+            border-bottom: 1px solid var(--border-color);
+            padding: 0 40px;
+            height: 70px;
+            position: sticky;
+            top: 0;
+            z-index: 100;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            width: 100%;
+        }
+
+        .logo {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            font-size: 1.25rem;
+            font-weight: 700;
+            color: var(--text-white);
+            text-decoration: none;
+        }
+
+        .logo span {
+            color: var(--primary-teal);
+        }
+
+        .logo i {
+            color: var(--primary-teal);
+        }
+
+        /* DYNAMIC BACK BUTTON STYLE PATTERN */
+        .back-btn {
+            background-color: rgba(14, 165, 233, 0.1);
+            color: var(--primary-teal);
+            border: 1px solid rgba(14, 165, 233, 0.2);
+            padding: 10px 20px;
+            border-radius: 8px;
+            font-size: 0.9rem;
+            font-weight: 600;
+            text-decoration: none;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            transition: var(--transition);
+            cursor: pointer;
+        }
+
+        .back-btn:hover {
+            background-color: var(--primary-teal);
+            color: var(--bg-surface);
+            box-shadow: 0 4px 12px rgba(14, 165, 233, 0.2);
+        }
+        
+        /* CENTRAL CONTENT WRAPPER CANVAS AREA */
+        .container {
+            max-width: 1200px;
+            width: 100%;
+            margin: 0 auto;
+            padding: 40px 24px;
+            flex: 1;
+        }
+
+        /* META CARD HEADER CARD */
+        .header-row {
+            background-color: var(--bg-surface);
+            border: 1px solid var(--border-color);
+            border-radius: var(--radius);
+            padding: 24px 32px;
+            margin-bottom: 32px;
+            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.2);
+        }
+
+        .header-row h1 {
+            font-size: 1.75rem;
+            font-weight: 700;
+            margin-bottom: 4px;
+        }
+
+        .header-row p {
+            color: var(--text-muted);
+            font-size: 0.95rem;
+        }
+
+        /* DATA REGISTRY GRID DATA TABLES */
+        .records-table {
+            width: 100%;
+            border-collapse: collapse;
+            background-color: var(--bg-card);
+            border: 1px solid var(--border-color);
+            border-radius: var(--radius);
+            overflow: hidden;
+            box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.3);
+        }
+
+        .records-table th {
+            background-color: rgba(15, 23, 42, 0.6);
+            color: var(--primary-teal);
+            text-align: left;
+            padding: 16px 24px;
+            font-size: 0.85rem;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+            border-bottom: 2px solid var(--border-color);
+        }
+
+        .records-table td {
+            padding: 16px 24px;
+            border-bottom: 1px solid var(--border-color);
+            font-size: 0.95rem;
+            color: var(--text-white);
+        }
+
+        .records-table tr:last-child td {
+            border-bottom: none;
+        }
+
+        .records-table tr:hover td {
+            background-color: rgba(255, 255, 255, 0.01);
+        }
+
+        /* BADGE INDICATOR GRAPHICS SYSTEM */
+        .status-badge {
+            background-color: rgba(16, 185, 129, 0.1);
+            color: var(--accent-green);
+            padding: 5px 12px;
+            border-radius: 6px;
+            font-size: 0.8rem;
+            font-weight: 600;
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+        }
+
+        .empty-state {
+            text-align: center;
+            padding: 60px;
+            color: var(--text-muted);
+            background-color: var(--bg-surface);
+            border: 1px dashed var(--border-color);
+            border-radius: var(--radius);
+            box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.3);
+        }
+    </style>
+</head>
+<body>
+	
+	<!-- 1. TOP NAVIGATION BAR WITH BACK CONTROL OPTION LINK -->
+	<nav class="navbar">
+		<a th:href="@{/admin/dashboard}" class="logo"> 
+			<i class="fa-solid fa-heart-pulse"></i> Hospital <span>Management System</span>
+		</a>
+        <a th:href="@{/admin/dashboard}" class="back-btn">
+            <i class="fa-solid fa-arrow-left"></i> Back to Dashboard
+        </a>
+	</nav>
+
+    <!-- MAIN PORTAL WRAPPER WRAPPING CONTEXT FRAMES -->
+   <div class="container">
+        
+    <!-- ADMINISTRATIVE AUDIT PORTAL HEADER METADATA CARD -->
+    <header class="header-row">
+        <h1>
+            <i class="fa-solid fa-book-medical" style="color: var(--primary-teal); margin-right: 6px;"></i> Clinical History Ledger
+        </h1>
+        <p>
+            <i class="fa-solid fa-file-waveform" style="color: var(--text-muted); font-size: 0.9rem; margin-right: 4px;"></i> 
+            Reviewing completed diagnostic files for Patient: 
+            <strong style="color: var(--text-white);" th:text="${patient.name}">John Doe</strong> 
+            (Contact: <i class="fa-solid fa-phone" style="font-size: 0.75rem; color: var(--text-muted); margin-left: 6px; margin-right: 2px;"></i> <span th:text="${patient.contactNumber}" style="color: var(--primary-teal);">+91 99999 99999</span>)
+        </p>
+    </header>
+
+    <!-- TABLE GRID LOOKUP: RUNS IF PREVIOUS MEDICAL REVIEWS EXIST -->
+    <table class="records-table" th:if="${not #lists.isEmpty(appointments)}" style="width: 100%; border-collapse: collapse; text-align: left; font-size: 0.9rem;">
+        <thead>
+            <tr style="color: var(--text-white); font-weight: 700;">
+                <th><i class="fa-solid fa-fingerprint" style="margin-right: 6px; color: var(--primary-teal);"></i> Record ID</th>
+                <th><i class="fa-solid fa-user-doctor" style="margin-right: 6px; color: var(--primary-teal);"></i> Doctor Name</th>
+                <th><i class="fa-solid fa-stethoscope" style="margin-right: 6px; color: var(--primary-teal);"></i> Specialty</th>
+                <th><i class="fa-solid fa-calendar-day" style="margin-right: 6px; color: var(--primary-teal);"></i> Consultation Date</th>
+                <th><i class="fa-solid fa-clock" style="margin-right: 6px; color: var(--primary-teal);"></i> Time Slot</th>
+                <th style="text-align: center;"><i class="fa-solid fa-signal" style="margin-right: 6px; color: var(--primary-teal);"></i> Appointment Status</th>
+            </tr>
+        </thead>
+        <tbody>
+            <tr th:each="appt : ${appointments}" style="transition: background 0.2s;">
+                <td style="font-weight: 700; color: var(--primary-teal);" th:text="'#' + ${appt.appointmentId}">#8024</td>
+                <td th:text="${appt.doctor.name}">Dr. Sarah Jenkins</td>
+                
+                <!-- FIXED: Changed specialist to specialization to match your given variable -->
+                <td th:text="${appt.doctor.specialization}">Orthopedics</td>
+                <td th:text="${appt.appointmentDate}">2026-05-10</td>
+                <td th:text="${appt.timeSlot}">02:30 PM</td>
+                
+                <!-- DYNAMIC LIFECYCLE CONDITIONAL ENUM STATE BADGES -->
+                <td style="text-align: center; vertical-align: middle;">
+                    
+                    <!-- REVIEWING BADGE -->
+                    <span th:if="${appt.status != null && appt.status.name() == 'REVIEWING'}"
+                          style="background-color: rgba(245, 158, 11, 0.1); color: var(--accent-amber, #f59e0b); border: 1px solid rgba(245, 158, 11, 0.2); padding: 4px 10px; border-radius: 6px; font-size: 0.8rem; font-weight: 700; display: inline-flex; align-items: center; gap: 6px;">
+                        <i class="fa-solid fa-spinner fa-spin" style="font-size: 0.75rem;"></i> Reviewing
+                    </span>
+                    
+                    <!-- CONFIRMED BADGE -->
+                    <span th:if="${appt.status != null && appt.status.name() == 'CONFIRMED'}"
+                          style="background-color: rgba(16, 185, 129, 0.1); color: var(--accent-green, #10b981); border: 1px solid rgba(16, 185, 129, 0.2); padding: 4px 10px; border-radius: 6px; font-size: 0.8rem; font-weight: 700; display: inline-flex; align-items: center; gap: 6px;">
+                        <i class="fa-solid fa-circle-check" style="font-size: 0.75rem;"></i> Confirmed
+                    </span>
+
+                    <!-- COMPLETED BADGE -->
+                    <span th:if="${appt.status != null && appt.status.name() == 'COMPLETED'}"
+                          style="background-color: rgba(14, 165, 233, 0.1); color: var(--primary-teal, #0ea5e9); border: 1px solid rgba(14, 165, 233, 0.2); padding: 4px 10px; border-radius: 6px; font-size: 0.8rem; font-weight: 700; display: inline-flex; align-items: center; gap: 6px;">
+                        <i class="fa-solid fa-circle-user" style="font-size: 0.75rem;"></i> Completed
+                    </span>
+                    
+                    <!-- CANCELLED BADGE -->
+                    <span th:if="${appt.status != null && appt.status.name() == 'CANCELLED'}"
+                          style="background-color: rgba(239, 68, 68, 0.1); color: var(--accent-red, #ef4444); border: 1px solid rgba(239, 68, 68, 0.2); padding: 4px 10px; border-radius: 6px; font-size: 0.8rem; font-weight: 700; display: inline-flex; align-items: center; gap: 6px;">
+                        <i class="fa-solid fa-circle-xmark" style="font-size: 0.75rem;"></i> Cancelled
+                    </span>
+                </td>
+            </tr>
+        </tbody>
+    </table>
+
+    <!-- IN CASE PATIENT HAS NO HISTORICAL ENTRIES RECORDED -->
+    <div class="empty-state" th:if="${#lists.isEmpty(appointments)}" style="text-align: center; padding: 40px 20px;">
+        <i class="fa-solid fa-folder-open" style="font-size: 3rem; margin-bottom: 16px; display: block; color: var(--text-muted);"></i>
+        <h3 style="color: var(--text-white); margin-bottom: 6px; font-size: 1.2rem; font-weight: 700;">No Historical Records Located</h3>
+        <p style="color: var(--text-muted); font-size: 0.95rem;">This patient profile does not currently contain any finalized or closed clinical log history entries.</p>
+    </div>
+</div>
+
+</body>
+</html>

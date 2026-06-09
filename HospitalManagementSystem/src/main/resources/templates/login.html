@@ -4,8 +4,8 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>HMS Login - Hospital Management System</title>
-<!-- FontAwesome for forms and eye icons -->
-<link rel="stylesheet" href="cloudflare.com">
+<!-- FontAwesome for professional medical status icons -->
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.7.2/css/all.min.css">
 
 <style>
 /* MATCHING CLINICAL COLOR PALETTE */
@@ -310,6 +310,114 @@ body {
 	color: var(--primary-hover);
 	text-decoration: underline;
 }
+/* ==========================================================================
+   MODAL ERROR POPUP STYLES (CLINICAL THEME INTEGRATION)
+   ========================================================================== */
+
+/* Modal Background Overlay */
+.modal-overlay {
+	position: fixed;
+	top: 0;
+	left: 0;
+	width: 100%;
+	height: 100%;
+	background: rgba(15, 23, 42, 0.8); /* Dark slate tinted transparent backdrop */
+	display: flex;
+	justify-content: center;
+	align-items: center;
+	z-index: 1000;
+	backdrop-filter: blur(4px); /* Modern frosted-glass effect */
+}
+
+/* Modal Box - Matches .login-card container styling */
+.modal-box {
+	background-color: var(--bg-surface);
+	border: 1px solid rgba(255, 255, 255, 0.05);
+	padding: 40px 30px;
+	border-radius: var(--radius);
+	max-width: 420px;
+	width: 90%;
+	text-align: center;
+	box-shadow: 0 25px 35px -12px rgba(0, 0, 0, 0.8);
+	animation: fadeIn 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+/* Error Icon Style - Clinical Emergency Accent */
+.modal-icon {
+	font-size: 48px;
+	color: #ef4444; /* Clean system red for critical alert visibility */
+	margin-bottom: 20px;
+	filter: drop-shadow(0 0 12px rgba(239, 68, 68, 0.2));
+}
+
+.modal-box h3 {
+	font-size: 1.5rem;
+	font-weight: 700;
+	margin: 0 0 12px 0;
+	color: var(--text-white);
+}
+
+.modal-box p {
+	color: var(--text-muted);
+	font-size: 0.95rem;
+	margin-bottom: 28px;
+	line-height: 1.6;
+}
+
+/* Modal Close Button - Direct Action Layout */
+.btn-close-modal {
+	background-color: #ef4444;
+	color: var(--text-white);
+	border: 1px solid #ef4444;
+	padding: 12px 28px;
+	border-radius: 8px;
+	font-size: 0.95rem;
+	font-weight: 600;
+	cursor: pointer;
+	width: 100%; /* Spans full modal width for easier click target */
+	transition: var(--transition);
+	box-shadow: 0 4px 12px rgba(239, 68, 68, 0.2);
+}
+
+.btn-close-modal:hover {
+	background-color: rgba(239, 68, 68, 0.1);
+	color: #ef4444;
+	border-color: rgba(239, 68, 68, 0.4);
+	box-shadow: none;
+	transform: translateY(-1px);
+}
+
+@keyframes fadeIn {
+	from { 
+		opacity: 0; 
+		transform: scale(0.95) translateY(10px); 
+	}
+	to { 
+		opacity: 1; 
+		transform: scale(1) translateY(0); 
+	}
+}
+
+/* FORGOT PASSWORD LINK STYLE */
+.forgot-password-container {
+	display: flex;
+	justify-content: flex-end; /* Aligns link neatly to the right edge */
+	margin-top: 8px;           /* Adds a clean space below the input box */
+}
+
+.link-forgot {
+	color: var(--text-muted);  /* Fits into the layout discretely */
+	font-size: 0.85rem;        /* Keeps it slightly smaller than input labels */
+	text-decoration: none;
+	transition: var(--transition);
+}
+
+.link-forgot:hover {
+	color: var(--primary-teal); /* Glows with the healthcare accent blue on hover */
+	text-decoration: underline;
+}
+
+
 </style>
 </head>
 <body>
@@ -373,19 +481,22 @@ body {
 					</div>
 				</div>
 
-				<!-- 3. PASSWORD INPUT FIELD WITH TOGGLE EYE -->
-				<div class="form-group">
-					<label for="password">Password</label>
-					<div class="input-wrapper">
-						<i class="fa-solid fa-lock input-icon"></i> <input type="password"
-							id="password" name="password" class="form-control"
-							placeholder="••••••••" required>
-						<button type="button" id="togglePasswordBtn"
-							class="password-toggle" onclick="togglePasswordVisibility()">
-							<i class="fa-solid fa-eye" id="eyeIcon"></i>
-						</button>
-					</div>
-				</div>
+				<!-- 3. PASSWORD INPUT FIELD WITH TOGGLE EYE & FORGOT LINK -->
+<div class="form-group">
+	<label for="password">Password</label>
+	<div class="input-wrapper">
+		<i class="fa-solid fa-lock input-icon"></i> 
+		<input type="password" id="password" name="password" class="form-control" placeholder="••••••••" required>
+		<button type="button" id="togglePasswordBtn" class="password-toggle" onclick="togglePasswordVisibility()">
+			<i class="fa-solid fa-eye" id="eyeIcon"></i>
+		</button>
+	</div>
+	<!-- FORGOT PASSWORD LINK -->
+	<div class="forgot-password-container">
+		<a th:href="@{/forgot-password}" class="link-forgot">Forgot Password?</a>
+	</div>
+</div>
+
 
 				<!-- LOGIN SUBMIT -->
 				<button type="submit" class="btn-submit">
@@ -402,8 +513,23 @@ body {
 
 		</div>
 	</main>
+	<!-- ERROR POPUP MODAL -->
+	<!-- SAFE POPUP MODAL FOR DEFAULT LOGIN ROUTING -->
+<div th:if="${param.error != null and session != null and session.containsKey('SPRING_SECURITY_LAST_EXCEPTION')}" 
+     id="errorModal" class="modal-overlay">
+    <div class="modal-box">
+        <div class="modal-icon">
+            <i class="fa-solid fa-triangle-exclamation"></i>
+        </div>
+        <h3>Login Failed</h3>
+        <!-- Safe way to extract the exception message text -->
+        <p th:text="${session.SPRING_SECURITY_LAST_EXCEPTION.message}">Error message goes here</p>
+        <button type="button" class="btn-close-modal" onclick="closeModal()">Try Again</button>
+    </div>
+</div>
 
-	<!-- VISIBILITY TOGGLE SCRIPT -->
+
+	<!-- VISIBILITY TOGGLE & MODAL SCRIPT -->
 	<script>
 		function togglePasswordVisibility() {
 			const passwordInput = document.getElementById('password');
@@ -419,7 +545,17 @@ body {
 				eyeIcon.classList.add('fa-eye');
 			}
 		}
+
+		// Function to close the error popup
+		function closeModal() {
+			const modal = document.getElementById('errorModal');
+			if (modal) {
+				modal.style.display = 'none';
+			}
+		}
 	</script>
+
+
 
 </body>
 </html>

@@ -21,4 +21,10 @@ public class IndexController {
     public String showRegistrationPage() {
         return "register"; // Resolves to templates/register.html
     }
+    
+    @GetMapping("/forgot-password")
+    public String showForgotPasswordPage() {
+        return "forgot-password"; // Resolves to templates/register.html
+    }
+    
 }

@@ -12,6 +12,6 @@ public interface PatientRegisterDAO {
 	
 	public void approveRegistration(Integer registerId);
 	
-	public void rejectRegistration(Integer registerId);
+	public void rejectRegistration(Integer registerId, String reason);
 
 }

@@ -5,7 +5,9 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Admin Dashboard - HMS</title>
 <!-- FontAwesome for executive portal icons -->
-<link rel="stylesheet" href="https://cloudflare.com">
+<link rel="stylesheet"
+	href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.7.2/css/all.min.css">
+
 <style>
 /* MATCHING CORPOARTE DEEP-NAVY & TEAL THEME DESIGN */
 :root {
@@ -287,7 +289,7 @@ to {
 		<aside class="sidebar">
 			<button class="sidebar-btn active"
 				onclick="switchTab(event, 'dashboardTab')">
-				<i class="fa-solid fa-calendar-check"></i> Admin Dashboard
+				<i class="fa-solid fa-chart-pie"></i> Admin Dashboard
 			</button>
 			<button class="sidebar-btn"
 				onclick="switchTab(event, 'appointmentsTab')">
@@ -334,7 +336,128 @@ to {
 						Admin Panel
 					</div>
 				</header>
+
+				<!-- SYSTEM FLASH ALERT NOTIFICATION BOX BANNER (APPOINTMENT CANCELLATION VARIANT) -->
+				<div th:if="${AppointmentRejectMessage}"
+					style="background-color: rgba(239, 68, 68, 0.08); border: 1px solid #ef4444; border-left: 4px solid #ef4444; color: #ef4444; padding: 18px 22px; border-radius: 8px; margin-top: 24px; margin-bottom: 24px; display: flex; align-items: flex-start; justify-content: space-between; gap: 16px; font-size: 0.95rem; box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.3); animation: fadeIn 0.3s ease;"
+					id="appointmentRejectFlashBanner">
+
+					<div
+						style="display: flex; align-items: flex-start; gap: 14px; line-height: 1.5; width: 100%;">
+						<!-- Medical File Cancellation Cross Icon -->
+						<i class="fa-solid fa-file-circle-xmark"
+							style="font-size: 1.25rem; color: #ef4444; flex-shrink: 0; margin-top: 2px;"></i>
+						<div
+							style="display: flex; flex-direction: column; gap: 4px; width: 100%;">
+							<!-- Dynamic Title Header -->
+							<strong
+								style="font-weight: 700; color: #ffffff; font-size: 1rem;">Appointment
+								Request Cancelled</strong>
+							<!-- Formatted text output tracking message parser string container -->
+							<span th:text="${AppointmentRejectMessage}"
+								style="font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace; font-weight: 500; letter-spacing: -0.01em; color: #fca5a5; word-break: break-word;">
+								Patient registration with ID: 12 has been rejected. Reason:
+								Selected slot window conflict encountered. </span>
+						</div>
+					</div>
+
+					<!-- Inline Interactive Close Action Trigger Switch button -->
+					<button type="button"
+						onclick="document.getElementById('appointmentRejectFlashBanner').remove()"
+						style="background: transparent; border: none; color: rgba(239, 68, 68, 0.6); font-size: 1.2rem; cursor: pointer; padding: 4px; display: flex; align-items: center; justify-content: center; border-radius: 4px; transition: 0.2s; flex-shrink: 0;"
+						onmouseover="this.style.backgroundColor='rgba(239, 68, 68, 0.15)'; this.style.color='#ef4444';"
+						onmouseout="this.style.backgroundColor='transparent'; this.style.color='rgba(239, 68, 68, 0.6)';">
+						<i class="fa-solid fa-xmark"></i>
+					</button>
+				</div>
+
+
+				<!-- SYSTEM FLASH ALERT NOTIFICATION BOX BANNER (UPDATED FOR CREDENTIALS) -->
+				<div th:if="${successMessage}"
+					style="background-color: rgba(16, 185, 129, 0.08); border: 1px solid #10b981; border-left: 4px solid #10b981; color: #10b981; padding: 18px 22px; border-radius: 8px; margin-top: 24px; margin-bottom: 24px; display: flex; align-items: flex-start; justify-content: space-between; gap: 16px; font-size: 0.95rem; box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.3); animation: fadeIn 0.3s ease;"
+					id="successFlashBanner">
+
+					<div
+						style="display: flex; align-items: flex-start; gap: 14px; line-height: 1.5; width: 100%;">
+						<i class="fa-solid fa-circle-check"
+							style="font-size: 1.25rem; color: #10b981; flex-shrink: 0; margin-top: 2px;"></i>
+						<div
+							style="display: flex; flex-direction: column; gap: 4px; width: 100%;">
+							<!-- Notice/Title Header Link -->
+							<strong
+								style="font-weight: 700; color: #ffffff; font-size: 1rem;">Specialist
+								Access Provisioned</strong>
+							<!-- Formatted text output target string parser container -->
+							<span th:text="${successMessage}"
+								style="font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace; font-weight: 500; letter-spacing: -0.01em; color: #a7f3d0; word-break: break-word;">
+								Doctor onboarding completed! Login ID: 12 [Username: 9876543210
+								| Password: samplePass123] </span>
+						</div>
+
+					</div>
+
+					<!-- Inline Interactive Close Action Trigger Switch button -->
+					<button type="button"
+						onclick="document.getElementById('successFlashBanner').remove()"
+						style="background: transparent; border: none; color: rgba(16, 185, 129, 0.6); font-size: 1.2rem; cursor: pointer; padding: 4px; display: flex; align-items: center; justify-content: center; border-radius: 4px; transition: 0.2s; flex-shrink: 0;"
+						onmouseover="this.style.backgroundColor='rgba(16, 185, 129, 0.15)'; this.style.color='#10b981';"
+						onmouseout="this.style.backgroundColor='transparent'; this.style.color='rgba(16, 185, 129, 0.6)';">
+						<i class="fa-solid fa-xmark"></i>
+					</button>
+				</div>
+
+				<!-- PATIENT APPROVAL SYSTEM FLASH ALERT BANNER -->
+				<div th:if="${patientSuccessMessage}"
+					style="background-color: rgba(14, 165, 233, 0.08); border: 1px solid var(--primary-teal, #0ea5e9); border-left: 4px solid var(--primary-teal, #0ea5e9); color: var(--primary-teal, #0ea5e9); padding: 16px 20px; border-radius: 8px; margin-top: 24px; margin-bottom: 24px; display: flex; align-items: center; justify-content: space-between; gap: 16px; font-size: 0.95rem; font-weight: 600; box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.3); animation: fadeIn 0.3s ease;"
+					id="patientSuccessFlashBanner">
+
+					<div
+						style="display: flex; align-items: center; gap: 12px; line-height: 1.4;">
+						<!-- Clean User-Check Verification Badge Icon -->
+						<i class="fa-solid fa-user-check"
+							style="font-size: 1.2rem; color: var(--primary-teal, #0ea5e9); flex-shrink: 0;"></i>
+						<span th:text="${patientSuccessMessage}" style="color: #f8fafc;">Patient
+							approval notification log message.</span>
+					</div>
+
+					<!-- Interactive Manual Close Action Toggle Switch -->
+					<button type="button"
+						onclick="document.getElementById('patientSuccessFlashBanner').remove()"
+						style="background: transparent; border: none; color: rgba(14, 165, 233, 0.6); font-size: 1.1rem; cursor: pointer; padding: 4px; display: flex; align-items: center; justify-content: center; border-radius: 4px; transition: 0.2s;"
+						onmouseover="this.style.backgroundColor='rgba(14, 165, 233, 0.15)'; this.style.color='var(--primary-teal)';"
+						onmouseout="this.style.backgroundColor='transparent'; this.style.color='rgba(14, 165, 233, 0.6)';">
+						<i class="fa-solid fa-xmark"></i>
+					</button>
+				</div>
+
+				<!-- PATIENT REJECTION SYSTEM FLASH ALERT BANNER -->
+				<div th:if="${patientRejectMessage}"
+					style="background-color: rgba(239, 68, 68, 0.08); border: 1px solid #ef4444; border-left: 4px solid #ef4444; color: #ef4444; padding: 16px 20px; border-radius: 8px; margin-top: 24px; margin-bottom: 24px; display: flex; align-items: center; justify-content: space-between; gap: 16px; font-size: 0.95rem; font-weight: 600; box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.3); animation: fadeIn 0.3s ease;"
+					id="patientRejectFlashBanner">
+
+					<div
+						style="display: flex; align-items: center; gap: 12px; line-height: 1.4;">
+						<!-- Clean User-Xmark Cancellation Badge Icon -->
+						<i class="fa-solid fa-user-xmark"
+							style="font-size: 1.2rem; color: #ef4444; flex-shrink: 0;"></i> <span
+							th:text="${patientRejectMessage}" style="color: #f8fafc;">Patient
+							rejection notification log message.</span>
+					</div>
+
+					<!-- Interactive Manual Close Action Toggle Button -->
+					<button type="button"
+						onclick="document.getElementById('patientRejectFlashBanner').remove()"
+						style="background: transparent; border: none; color: rgba(239, 68, 68, 0.6); font-size: 1.1rem; cursor: pointer; padding: 4px; display: flex; align-items: center; justify-content: center; border-radius: 4px; transition: 0.2s;"
+						onmouseover="this.style.backgroundColor='rgba(239, 68, 68, 0.15)'; this.style.color='#ef4444';"
+						onmouseout="this.style.backgroundColor='transparent'; this.style.color='rgba(239, 68, 68, 0.6)';">
+						<i class="fa-solid fa-xmark"></i>
+					</button>
+				</div>
+
+
+
 			</div>
+
 			<!-- 4. VIEW LAYOUT WORKSPACES (CONTROLLED BY INNER BUTTON EVENT ENGINE) -->
 
 			<!-- Tab View 1: Appointment Queries Table View -->
@@ -342,8 +465,9 @@ to {
 				<div
 					style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px; border-bottom: 1px solid var(--border-color); padding-bottom: 12px;">
 					<h2>
-						<i class="fa-solid fa-calendar-check"></i> Patient Appointment
-						Requests
+						<i class="fa-solid fa-calendar-check"
+							style="color: var(--primary-teal); margin-right: 4px;"></i>
+						Patient Appointment Requests
 					</h2>
 					<span
 						style="background-color: rgba(14, 165, 233, 0.1); color: var(--primary-teal); padding: 4px 12px; border-radius: 4px; font-size: 0.85rem; font-weight: 600;">
@@ -361,43 +485,76 @@ to {
 							<tr
 								style="background-color: rgba(255, 255, 255, 0.02); border-bottom: 1px solid var(--border-color); color: var(--text-white); font-weight: 700;">
 								<th style="padding: 16px 20px;">Patient Name</th>
-								<th style="padding: 16px 20px;">Appointment Date</th>
 								<th style="padding: 16px 20px;">Doctor Name</th>
-								<th style="padding: 16px 20px;">Time Slot</th>
+								<th style="padding: 16px 20px;">Date & Time Slot</th>
 								<th style="padding: 16px 20px;">Payment Status</th>
-								<th style="padding: 16px 20px;">Appointment Status</th>
 								<th style="padding: 16px 20px; text-align: center;">Actions</th>
 							</tr>
 						</thead>
 
-						<!-- TABLE BODY DATA ROWS (Loops through the model array using Thymeleaf th:each) -->
+						<!-- TABLE BODY DATA ROWS -->
 						<tbody>
-							<!-- Placeholder row for design testing; Spring Boot loops over these automatically -->
 							<tr th:each="appointment : ${appointmentsList}"
 								style="border-bottom: 1px solid var(--border-color); color: var(--text-muted); transition: background 0.2s;"
 								onmouseover="this.style.backgroundColor='rgba(255,255,255,0.01)'"
 								onmouseout="this.style.backgroundColor='transparent'">
 
-								<td style="padding: 14px 20px;"
-									th:text="${appointment.patient.name}"></td>
-								<td style="padding: 14px 20px; color: var(--text-white);"
-									th:text="${appointment.appointmentDate}">14-May-2026</td>
+								<!-- 1. Patient Name with User Profile Icon -->
+								<td
+									style="padding: 14px 20px; font-weight: 600; color: var(--text-white);">
+									<div style="display: flex; align-items: center; gap: 8px;">
+										<i class="fa-solid fa-user"
+											style="color: var(--primary-teal); font-size: 0.85rem; width: 14px;"></i>
+										<span th:text="${appointment.patient.name}">Aditya
+											Kumar</span>
+									</div>
+								</td>
 
-								<td style="padding: 14px 20px;"
-									th:text="${appointment.doctor.name}"></td>
+								<!-- 2. Doctor Name with Doctor Badge Icon -->
+								<td style="padding: 14px 20px; color: var(--text-white);">
+									<div style="display: flex; align-items: center; gap: 8px;">
+										<i class="fa-solid fa-user-doctor"
+											style="color: var(--primary-teal); font-size: 0.85rem; width: 14px;"></i>
+										<span th:text="${appointment.doctor.name}">Dr. Ramesh
+											Kumar</span>
+									</div>
+								</td>
 
+								<!-- 3. CONSOLIDATED: Date & Time Slot Column with Sub-Block Meta Icons -->
+								<td style="padding: 14px 20px;">
+									<div style="display: flex; flex-direction: column; gap: 2px;">
+										<span style="color: var(--text-white); font-weight: 500;">
+											<i class="fa-solid fa-calendar-day"
+											style="font-size: 0.8rem; margin-right: 4px; color: var(--text-muted);"></i>
+											<span th:text="${appointment.appointmentDate}">14-May-2026</span>
+										</span> <span style="font-size: 0.8rem; color: var(--text-muted);">
+											<i class="fa-solid fa-clock"
+											style="font-size: 0.75rem; margin-right: 4px;"></i> <span
+											th:text="${appointment.timeSlot}">10:00 AM - 11:00 AM</span>
+										</span>
+									</div>
+								</td>
 
-								<td style="padding: 14px 20px; color: var(--text-white);"
-									th:text="${appointment.timeSlot}">10:00 AM - 11:00 AM</td>
+								<!-- 4. Payment Status with Enum Evaluation (PAID / UNPAID) -->
+								<td style="padding: 14px 20px; vertical-align: middle;">
+									<!-- CASE A: ENUM IS PAID --> <span
+									th:if="${appointment.Bill != null && appointment.Bill.paymentStatus != null && appointment.Bill.paymentStatus.name() == 'PAID'}"
+									style="background-color: rgba(16, 185, 129, 0.1); color: #10b981; border: 1px solid rgba(16, 185, 129, 0.2); padding: 4px 10px; border-radius: 6px; font-size: 0.8rem; font-weight: 700; display: inline-flex; align-items: center; gap: 6px;">
+										<i class="fa-solid fa-file-circle-check"
+										style="font-size: 0.75rem;"></i> Paid
+								</span> <!-- CASE B: ENUM IS UNPAID (Or Bill/Status record fallback instances) -->
+									<span
+									th:if="${appointment.Bill == null || appointment.Bill.paymentStatus == null || appointment.Bill.paymentStatus.name() == 'UNPAID'}"
+									style="background-color: rgba(245, 158, 11, 0.1); color: var(--accent-amber, #f59e0b); border: 1px solid rgba(245, 158, 11, 0.2); padding: 4px 10px; border-radius: 6px; font-size: 0.8rem; font-weight: 700; display: inline-flex; align-items: center; gap: 6px;">
+										<i class="fa-solid fa-circle-dollar-to-slot"
+										style="font-size: 0.75rem;"></i> Unpaid
+								</span>
 
-								<td style="padding: 14px 20px; color: var(--text-white);"
-									th:text="${appointment.Bill.paymentStatus}"></td>
+								</td>
 
-								<td style="padding: 14px 20px; color: var(--text-white);"
-									th:text="${appointment.status}"></td>
-
-								<!-- ACTION INTERACTION BUTTONS -->
-								<td style="padding: 14px 20px; text-align: center;">
+								<!-- 5. ACTION INTERACTION BUTTONS -->
+								<td
+									style="padding: 14px 20px; text-align: center; vertical-align: middle;">
 									<div style="display: flex; gap: 8px; justify-content: center;">
 
 										<!-- CONFIRM APPOINTMENT FORM -->
@@ -406,30 +563,22 @@ to {
 											method="post" style="margin: 0;">
 											<button type="submit" title="Confirm Appointment"
 												style="background-color: rgba(16, 185, 129, 0.1); color: #10b981; border: 1px solid rgba(16, 185, 129, 0.2); width: 36px; height: 32px; border-radius: 6px; cursor: pointer; display: flex; align-items: center; justify-content: center; transition: 0.2s;"
-												onmouseover="this.style.backgroundColor='#10b981'; this.querySelector('.css-check').style.borderColor='#0f172a'"
-												onmouseout="this.style.backgroundColor='rgba(16, 185, 129, 0.1)'; this.querySelector('.css-check').style.borderColor='#10b981'">
-												<!-- Pure CSS Custom Checkmark shape element -->
-												<span class="css-check"
-													style="display: inline-block; width: 6px; height: 12px; border-bottom: 2.5px solid #10b981; border-right: 2.5px solid #10b981; transform: rotate(45deg); margin-top: -3px; transition: 0.2s;"></span>
+												onmouseover="this.style.backgroundColor='#10b981'; this.style.color='#0f172a';"
+												onmouseout="this.style.backgroundColor='rgba(16, 185, 129, 0.1)'; this.style.color='#10b981';">
+												<i class="fa-solid fa-check" style="font-size: 0.95rem;"></i>
 											</button>
 										</form>
 
-										<!-- CANCEL/DENY APPOINTMENT FORM -->
+										<!-- CANCEL/DENY APPOINTMENT FORM (WITH INTERCEPTOR FUNCTIONAL LOCK) -->
 										<form
 											th:action="@{/admin/appointments/cancel/{id}(id=${appointment.appointmentId})}"
-											method="post" style="margin: 0;">
+											method="post" style="margin: 0;"
+											th:onsubmit="return handleAppointmentCancellation(event)">
 											<button type="submit" title="Deny Request"
 												style="background-color: rgba(239, 68, 68, 0.1); color: #ef4444; border: 1px solid rgba(239, 68, 68, 0.2); width: 36px; height: 32px; border-radius: 6px; cursor: pointer; display: flex; align-items: center; justify-content: center; transition: 0.2s;"
-												onmouseover="this.style.backgroundColor='#ef4444'; this.querySelectorAll('.css-cross').forEach(el => el.style.backgroundColor='#ffffff')"
-												onmouseout="this.style.backgroundColor='rgba(239, 68, 68, 0.1)'; this.querySelectorAll('.css-cross').forEach(el => el.style.backgroundColor='#ef4444')">
-												<!-- Pure CSS Custom Cross shape elements -->
-												<div
-													style="position: relative; width: 14px; height: 14px; display: flex; align-items: center; justify-content: center;">
-													<span class="css-cross"
-														style="position: absolute; width: 14px; height: 2.5px; background-color: #ef4444; transform: rotate(45deg); transition: 0.2s;"></span>
-													<span class="css-cross"
-														style="position: absolute; width: 14px; height: 2.5px; background-color: #ef4444; transform: rotate(-45deg); transition: 0.2s;"></span>
-												</div>
+												onmouseover="this.style.backgroundColor='#ef4444'; this.style.color='#ffffff';"
+												onmouseout="this.style.backgroundColor='rgba(239, 68, 68, 0.1)'; this.style.color='#ef4444';">
+												<i class="fa-solid fa-xmark" style="font-size: 0.95rem;"></i>
 											</button>
 										</form>
 
@@ -444,12 +593,13 @@ to {
 				</div>
 			</div>
 
+
 			<!-- Tab View 2: Patient Registration Access Requests Table View -->
 			<div id="accessRequestsTab" class="tab-panel">
 				<div
 					style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px; border-bottom: 1px solid var(--border-color); padding-bottom: 12px;">
 					<h2>
-						<i class="fa-solid fa-user-shield"></i> Patient Registration
+						<i class="fa-solid fa-user-shield"></i> New Patient Registration
 						Access Requests
 					</h2>
 					<span
@@ -467,7 +617,7 @@ to {
 						<thead>
 							<tr
 								style="background-color: rgba(255, 255, 255, 0.02); border-bottom: 1px solid var(--border-color); color: var(--text-white); font-weight: 700;">
-								<th style="padding: 16px 20px;">Patient Name</th>
+								<th style="padding: 16px 20px;">Name</th>
 								<th style="padding: 16px 20px;">Date of Birth</th>
 								<th style="padding: 16px 20px;">Gender</th>
 								<th style="padding: 16px 20px;">Contact No</th>
@@ -513,30 +663,34 @@ to {
 											method="post" style="margin: 0;">
 											<button type="submit" title="Grant Portal Access"
 												style="background-color: rgba(16, 185, 129, 0.1); color: #10b981; border: 1px solid rgba(16, 185, 129, 0.2); width: 36px; height: 32px; border-radius: 6px; cursor: pointer; display: flex; align-items: center; justify-content: center; transition: 0.2s;"
-												onmouseover="this.style.backgroundColor='#10b981'; this.querySelector('.css-check').style.borderColor='#0f172a'"
-												onmouseout="this.style.backgroundColor='rgba(16, 185, 129, 0.1)'; this.querySelector('.css-check').style.borderColor='#10b981'">
-												<span class="css-check"
-													style="display: inline-block; width: 6px; height: 12px; border-bottom: 2.5px solid #10b981; border-right: 2.5px solid #10b981; transform: rotate(45deg); margin-top: -3px; transition: 0.2s;"></span>
+												onmouseover="this.style.backgroundColor='#10b981'; this.style.color='#0f172a';"
+												onmouseout="this.style.backgroundColor='rgba(16, 185, 129, 0.1)'; this.style.color='#10b981';">
+
+												<!-- Font Awesome Check icon replacing the custom span shape -->
+												<i class="fa-solid fa-check" style="font-size: 1rem;"></i>
 											</button>
 										</form>
 
 										<!-- REJECT FORM -->
-										<form
+										<form id="rejectForm_[[${request.patientRegisterId}]]"
 											th:action="@{/admin/patient-registration/reject/{id}(id=${request.patientRegisterId})}"
-											method="post" style="margin: 0;">
+											method="post" style="margin: 0;"
+											th:onsubmit="return handleRejection(event, [[${request.patientRegisterId}]])">
+
+											<!-- Hidden input that will hold the reason filled by JavaScript -->
+											<input type="hidden" name="rejectionReason"
+												id="reason_[[${request.patientRegisterId}]]" />
+
 											<button type="submit" title="Deny Request"
 												style="background-color: rgba(239, 68, 68, 0.1); color: #ef4444; border: 1px solid rgba(239, 68, 68, 0.2); width: 36px; height: 32px; border-radius: 6px; cursor: pointer; display: flex; align-items: center; justify-content: center; transition: 0.2s;"
-												onmouseover="this.style.backgroundColor='#ef4444'; this.querySelectorAll('.css-cross').forEach(el => el.style.backgroundColor='#ffffff')"
-												onmouseout="this.style.backgroundColor='rgba(239, 68, 68, 0.1)'; this.querySelectorAll('.css-cross').forEach(el => el.style.backgroundColor='#ef4444')">
-												<div
-													style="position: relative; width: 14px; height: 14px; display: flex; align-items: center; justify-content: center;">
-													<span class="css-cross"
-														style="position: absolute; width: 14px; height: 2.5px; background-color: #ef4444; transform: rotate(45deg); transition: 0.2s;"></span>
-													<span class="css-cross"
-														style="position: absolute; width: 14px; height: 2.5px; background-color: #ef4444; transform: rotate(-45deg); transition: 0.2s;"></span>
-												</div>
+												onmouseover="this.style.backgroundColor='#ef4444'; this.style.color='#ffffff';"
+												onmouseout="this.style.backgroundColor='rgba(239, 68, 68, 0.1)'; this.style.color='#ef4444';">
+
+												<!-- Font Awesome Xmark icon -->
+												<i class="fa-solid fa-xmark" style="font-size: 1rem;"></i>
 											</button>
 										</form>
+
 
 									</div>
 								</td>
@@ -567,7 +721,7 @@ to {
 
 					<!-- THYMELEAF LOOP CARD (Iterates over your database records array) -->
 					<div th:each="doctor : ${doctorsList}"
-						style="background-color: rgba(14, 165, 233, 0.1); border: 1px solid var(--border-color); border-radius: 10px; padding: 24px; box-shadow: var(--shadow-sm); position: relative; transition: var(--transition);"
+						style="background-color: rgba(15, 23, 42, 0.4); border: 1px solid var(--border-color); border-radius: 10px; padding: 24px; box-shadow: var(--shadow-sm); position: relative; transition: var(--transition);"
 						onmouseover="this.style.transform='translateY(-4px)'; this.style.borderColor='var(--primary-teal)';"
 						onmouseout="this.style.transform='translateY(0)'; this.style.borderColor='var(--border-color)';">
 
@@ -587,7 +741,7 @@ to {
 								<!-- Doctor ID Badge -->
 								<span
 									style="font-family: monospace; font-size: 0.75rem; color: var(--text-muted);"
-									th:text="${doctor.doctorId}"></span>
+									th:text="'ID: ' + ${doctor.doctorId}"></span>
 							</div>
 						</div>
 
@@ -630,12 +784,25 @@ to {
 								onmouseout="this.style.borderColor='var(--border-color)'; this.style.color='var(--text-muted)';">
 								<i class="fa-solid fa-pen-to-square"></i> Edit Profile
 							</button>
-							<button title="Remove Allocation"
-								style="background-color: rgba(239, 68, 68, 0.1); color: var(--accent-red); border: 1px solid rgba(239, 68, 68, 0.15); width: 36px; border-radius: 6px; cursor: pointer; display: flex; align-items: center; justify-content: center; transition: 0.2s;"
-								onmouseover="this.style.backgroundColor='var(--accent-red)'; this.style.color='#ffffff';"
-								onmouseout="this.style.backgroundColor='rgba(239, 68, 68, 0.1)'; this.style.color='var(--accent-red)';">
-								<i class="fa-solid fa-trash-can"></i>
-							</button>
+							<!-- <button title="Delete Record"
+								style="background-color: rgba(239, 68, 68, 0.1); border: 1px solid rgba(239, 68, 68, 0.15); width: 36px; height: 32px; border-radius: 6px; cursor: pointer; display: flex; align-items: center; justify-content: center; transition: 0.2s;"
+								onmouseover="this.style.backgroundColor='var(--accent-red)'; this.querySelector('.css-box-top').style.backgroundColor='#ffffff'; this.querySelector('.css-box-bottom').style.borderColor='#ffffff';"
+								onmouseout="this.style.backgroundColor='rgba(239, 68, 68, 0.1)'; this.querySelector('.css-box-top').style.backgroundColor='var(--accent-red)'; this.querySelector('.css-box-bottom').style.borderColor='var(--accent-red)';">
+
+								Pure CSS Geometric Archive Container Construct
+								<div
+									style="position: relative; width: 16px; height: 14px; display: flex; flex-direction: column; align-items: center; gap: 2px;">
+									Box Top Lid Element
+									<span class="css-box-top"
+										style="width: 16px; height: 3px; background-color: var(--accent-red); border-radius: 1px; transition: 0.2s;"></span>
+									Box Lower Body Element
+									<span class="css-box-bottom"
+										style="width: 12px; height: 8px; border: 2.5px solid var(--accent-red); border-top: none; border-bottom-left-radius: 2px; border-bottom-right-radius: 2px; transition: 0.2s; position: relative;">
+										Inner Box Handle Slot Overlay <span
+										style="position: absolute; top: 1px; left: 3px; width: 6px; height: 1.5px; background-color: rgba(255, 255, 255, 0.2); border-radius: 0.5px;"></span>
+									</span>
+								</div>
+							</button> -->
 						</div>
 
 					</div>
@@ -726,7 +893,7 @@ to {
 							</div>
 
 							<!-- MEDICAL HISTORY HIGHLIGHT FIELD (Isolated inside stylized warning banner) -->
-							<div
+							<!-- <div
 								style="background-color: rgba(245, 158, 11, 0.05); border: 1px dashed rgba(245, 158, 11, 0.2); border-radius: 6px; padding: 12px; margin-top: 4px;">
 								<p
 									style="font-size: 0.75rem; font-weight: 700; text-transform: uppercase; letter-spacing: 0.05em; color: var(--accent-amber); margin-bottom: 4px;">
@@ -734,39 +901,45 @@ to {
 								</p>
 								<p
 									style="color: var(--text-white); font-size: 0.82rem; line-height: 1.4;"
-									th:text="${patient.medicalHistory != null ? patient.medicalHistory : 'No recorded historical cases or chronic allergies.'}">
-								</p>
-							</div>
+									th:text="${countRecord != null} ? ${countRecord +'Records '}: 'NA'"></p>
+
+							</div> -->
 						</div>
 
 						<!-- Card Actions Row Layer -->
 						<div style="display: flex; gap: 10px;">
-							<button title="View Full EHR File"
-								style="flex: 1; background-color: rgba(255, 255, 255, 0.03); color: var(--text-muted); border: 1px solid var(--border-color); padding: 8px; border-radius: 6px; font-size: 0.8rem; font-weight: 600; cursor: pointer; transition: 0.2s;"
-								onmouseover="this.style.borderColor='var(--text-white)'; this.style.color='var(--text-white)';"
-								onmouseout="this.style.borderColor='var(--border-color)'; this.style.color='var(--text-muted)';">
-								<i class="fa-solid fa-folder-open"></i> Open Medical Records
-							</button>
+							<!-- ROUTE CONFIGURED FOR ADMINISTRATIVE OVERVIEW -->
+							<a
+								th:href="@{/admin/patient/completed-appointments/{id}(id=${patient.patientId})}"
+								style="text-decoration: none; flex: 1;">
+								<button title="View Full EHR File" type="button"
+									style="width: 100%; background-color: rgba(255, 255, 255, 0.03); color: var(--text-muted); border: 1px solid var(--border-color); padding: 8px; border-radius: 6px; font-size: 0.8rem; font-weight: 600; cursor: pointer; transition: 0.2s;"
+									onmouseover="this.style.borderColor='var(--text-white)'; this.style.color='var(--text-white)';"
+									onmouseout="this.style.borderColor='var(--border-color)'; this.style.color='var(--text-muted)';">
+									<i class="fa-solid fa-folder-open"></i> Open Medical Records
+								</button>
+							</a>
+
 							<!-- ARCHIVE RECORD BUTTON WITH PURE CSS BOX GRAPHIC DESIGN -->
-							<button title="Delete Record"
+							<!-- <button title="Delete Record"
 								style="background-color: rgba(239, 68, 68, 0.1); border: 1px solid rgba(239, 68, 68, 0.15); width: 36px; height: 32px; border-radius: 6px; cursor: pointer; display: flex; align-items: center; justify-content: center; transition: 0.2s;"
 								onmouseover="this.style.backgroundColor='var(--accent-red)'; this.querySelector('.css-box-top').style.backgroundColor='#ffffff'; this.querySelector('.css-box-bottom').style.borderColor='#ffffff';"
 								onmouseout="this.style.backgroundColor='rgba(239, 68, 68, 0.1)'; this.querySelector('.css-box-top').style.backgroundColor='var(--accent-red)'; this.querySelector('.css-box-bottom').style.borderColor='var(--accent-red)';">
 
-								<!-- Pure CSS Geometric Archive Container Construct -->
+								Pure CSS Geometric Archive Container Construct
 								<div
 									style="position: relative; width: 16px; height: 14px; display: flex; flex-direction: column; align-items: center; gap: 2px;">
-									<!-- Box Top Lid Element -->
+									Box Top Lid Element
 									<span class="css-box-top"
 										style="width: 16px; height: 3px; background-color: var(--accent-red); border-radius: 1px; transition: 0.2s;"></span>
-									<!-- Box Lower Body Element -->
+									Box Lower Body Element
 									<span class="css-box-bottom"
 										style="width: 12px; height: 8px; border: 2.5px solid var(--accent-red); border-top: none; border-bottom-left-radius: 2px; border-bottom-right-radius: 2px; transition: 0.2s; position: relative;">
-										<!-- Inner Box Handle Slot Overlay --> <span
+										Inner Box Handle Slot Overlay <span
 										style="position: absolute; top: 1px; left: 3px; width: 6px; height: 1.5px; background-color: rgba(255, 255, 255, 0.2); border-radius: 0.5px;"></span>
 									</span>
 								</div>
-							</button>
+							</button> -->
 						</div>
 
 					</div>
@@ -866,6 +1039,23 @@ to {
 						</div>
 					</div>
 
+					<!-- ADDED: 5. INITIAL SECURITY PASSWORD FIELD -->
+					<div style="display: flex; flex-direction: column; gap: 8px;">
+						<label
+							style="font-size: 0.8rem; font-weight: 700; text-transform: uppercase; letter-spacing: 0.05em; color: var(--text-muted);">Account
+							Password</label>
+						<div
+							style="position: relative; display: flex; align-items: center;">
+							<i class="fa-solid fa-lock"
+								style="position: absolute; left: 14px; color: var(--text-muted); font-size: 1rem;"></i>
+							<input type="password" name="password" min="6" required
+								style="width: 100%; padding: 14px 14px 14px 42px; background-color: rgba(15, 23, 42, 0.6); border: 1px solid var(--border-color); border-radius: 8px; color: var(--text-white); font-size: 0.95rem; outline: none; transition: var(--transition);"
+								onfocus="this.style.borderColor='var(--primary-teal)'"
+								onblur="this.style.borderColor='var(--border-color)'"
+								placeholder="Create an initial terminal password">
+						</div>
+					</div>
+
 					<!-- FORM SUBMIT EXECUTOR -->
 					<button type="submit"
 						style="width: 100%; max-width: 250px; background-color: var(--primary-teal); color: var(--bg-main); border: none; padding: 14px; border-radius: 8px; font-size: 1rem; font-weight: 600; cursor: pointer; box-shadow: 0 4px 14px rgba(14, 165, 233, 0.3); transition: var(--transition); display: flex; align-items: center; justify-content: center; gap: 8px; margin-top: 10px;"
@@ -879,23 +1069,22 @@ to {
 			</div>
 
 
+
 			<!-- Tab View 6: Administrative Security Profile Box View -->
 			<div id="adminProfileTab" class="tab-panel">
 				<div
 					style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 24px; border-bottom: 1px solid var(--border-color); padding-bottom: 12px;">
 					<h2 style="display: flex; align-items: center; gap: 10px;">
-
-						<span
-							style="position: relative; width: 18px; height: 18px; display: inline-block; margin-right: 4px;">
-							<span
-							style="position: absolute; left: 0; top: 0; width: 14px; height: 12px; border: 2px solid var(--primary-teal); border-bottom-left-radius: 8px; border-bottom-right-radius: 8px; border-top-left-radius: 2px; border-top-right-radius: 2px;"></span>
-							<span
-							style="position: absolute; left: 7px; top: 2px; width: 2px; height: 8px; background-color: var(--primary-teal);"></span>
-						</span> Personal Administrative Details
+						<!-- FIXED: Pure Font Awesome Icon Replacement -->
+						<i class="fa-solid fa-user-gear"
+							style="color: var(--primary-teal); font-size: 1.4rem;"></i>
+						Personal Administrative Details
 					</h2>
 					<span
-						style="background-color: rgba(14, 165, 233, 0.1); color: var(--primary-teal); padding: 4px 12px; border-radius: 4px; font-size: 0.85rem; font-weight: 600;">
-						Role: Root Administrator </span>
+						style="background-color: rgba(14, 165, 233, 0.1); color: var(--primary-teal); padding: 4px 12px; border-radius: 4px; font-size: 0.85rem; font-weight: 600; display: inline-flex; align-items: center; gap: 6px;">
+						<i class="fa-solid fa-key" style="font-size: 0.8rem;"></i> Role:
+						Root Administrator
+					</span>
 				</div>
 
 				<!-- PROFILE DATA PANEL COVER BOX -->
@@ -904,76 +1093,99 @@ to {
 
 					<!-- Profile Highlight Banner -->
 					<div
-						style="background: linear-gradient(135deg, var(--bg-surface) 0%, rgba(14, 165, 233, 0.1) 100%); padding: 24px 30px; border-bottom: 1px solid var(--border-color); display: flex; align-items: center; gap: 16px;">
+						style="background: linear-gradient(135deg, var(--bg-surface) 0%, rgba(14, 165, 233, 0.08) 100%); padding: 28px 30px; border-bottom: 1px solid var(--border-color); display: flex; align-items: center; gap: 20px;">
 
 						<!-- DYNAMIC AVATAR BUBBLE EXTRACTION USING THYMELEAF -->
 						<div
-							style="width: 48px; height: 48px; background-color: var(--bg-main); border: 2px solid var(--primary-teal); border-radius: 50%; display: flex; align-items: center; justify-content: center; font-weight: bold; color: var(--primary-teal); font-size: 1.2rem; text-transform: uppercase;"
+							style="width: 56px; height: 56px; background-color: var(--bg-main); border: 2.5px solid var(--primary-teal); border-radius: 50%; display: flex; align-items: center; justify-content: center; font-weight: 800; color: var(--primary-teal); font-size: 1.4rem; text-transform: uppercase; box-shadow: 0 0 15px rgba(14, 165, 233, 0.15);"
 							th:text="${adminDetails.name != null and !#strings.isEmpty(adminDetails.name)} ? ${#strings.substring(adminDetails.name, 0, 1)} : 'D'">
 						</div>
 
 						<div>
 							<!-- Reads admin name from your backend model parameter map -->
 							<h3
-								style="font-size: 1.25rem; font-weight: 700; color: var(--text-white);"
-								th:text="${adminDetails.name != null ? adminDetails.name : 'System User'}"></h3>
+								style="font-size: 1.35rem; font-weight: 700; color: var(--text-white); letter-spacing: -0.01em;"
+								th:text="${adminDetails.name != null ? adminDetails.name : 'System User'}">System
+								User</h3>
 							<p
-								style="color: var(--text-muted); font-size: 0.85rem; margin-top: 2px;">HMS
-								Executive Center</p>
+								style="color: var(--text-muted); font-size: 0.85rem; margin-top: 4px; display: flex; align-items: center; gap: 6px;">
+								<i class="fa-solid fa-shield-halved"
+									style="color: var(--primary-teal);"></i> HMS Executive Center
+							</p>
 						</div>
 					</div>
 
 					<!-- Meta Properties Data Rows -->
 					<div
-						style="padding: 24px 30px; display: flex; flex-direction: column; gap: 14px;">
+						style="padding: 24px 30px; display: flex; flex-direction: column; gap: 16px;">
 
 						<!-- Field 1: Admin ID -->
 						<div
-							style="display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid rgba(255, 255, 255, 0.03); padding-bottom: 10px;">
-							<span style="color: var(--text-muted); font-size: 0.95rem;">Admin
-								ID</span> <strong
-								style="font-family: monospace; font-size: 1rem; color: var(--text-white);"
-								th:text="${adminDetails.adminId}"></strong>
+							style="display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid rgba(255, 255, 255, 0.04); padding-bottom: 12px;">
+							<span
+								style="color: var(--text-muted); font-size: 0.95rem; display: flex; align-items: center; gap: 8px;">
+								<i class="fa-solid fa-fingerprint"
+								style="width: 16px; color: var(--primary-teal);"></i> Admin ID
+							</span> <strong
+								style="font-family: monospace; font-size: 1.05rem; color: var(--text-white); background: rgba(255, 255, 255, 0.03); padding: 2px 8px; border-radius: 4px; border: 1px solid rgba(255, 255, 255, 0.05);"
+								th:text="${adminDetails.adminId}">ADM-XXXX</strong>
 						</div>
 
 						<!-- Field 2: Gender -->
 						<div
-							style="display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid rgba(255, 255, 255, 0.03); padding-bottom: 10px;">
-							<span style="color: var(--text-muted); font-size: 0.95rem;">Gender</span>
-							<strong style="color: var(--text-white);"
-								th:text="${adminDetails.gender}"></strong>
+							style="display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid rgba(255, 255, 255, 0.04); padding-bottom: 12px;">
+							<span
+								style="color: var(--text-muted); font-size: 0.95rem; display: flex; align-items: center; gap: 8px;">
+								<i class="fa-solid fa-venus-mars"
+								style="width: 16px; color: var(--primary-teal);"></i> Gender
+							</span> <strong style="color: var(--text-white);"
+								th:text="${adminDetails.gender}">Gender Status</strong>
 						</div>
 
 						<!-- Field 3: Date of Birth -->
 						<div
-							style="display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid rgba(255, 255, 255, 0.03); padding-bottom: 10px;">
-							<span style="color: var(--text-muted); font-size: 0.95rem;">Date
-								of Birth</span> <strong style="color: var(--text-white);"
-								th:text="${adminDetails.dateOfBirth}"></strong>
+							style="display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid rgba(255, 255, 255, 0.04); padding-bottom: 12px;">
+							<span
+								style="color: var(--text-muted); font-size: 0.95rem; display: flex; align-items: center; gap: 8px;">
+								<i class="fa-solid fa-cake-candles"
+								style="width: 16px; color: var(--primary-teal);"></i> Date of
+								Birth
+							</span> <strong style="color: var(--text-white);"
+								th:text="${adminDetails.dateOfBirth}">YYYY-MM-DD</strong>
 						</div>
 
 						<!-- Field 4: Mobile No -->
 						<div
-							style="display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid rgba(255, 255, 255, 0.03); padding-bottom: 10px;">
-							<span style="color: var(--text-muted); font-size: 0.95rem;">Mobile
-								No</span> <strong style="color: var(--primary-teal);"
-								th:text="${adminDetails.contactNumber}"></strong>
+							style="display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid rgba(255, 255, 255, 0.04); padding-bottom: 12px;">
+							<span
+								style="color: var(--text-muted); font-size: 0.95rem; display: flex; align-items: center; gap: 8px;">
+								<i class="fa-solid fa-mobile-screen-button"
+								style="width: 16px; color: var(--primary-teal);"></i> Mobile
+								Number
+							</span> <strong style="color: var(--primary-teal); font-weight: 700;"
+								th:text=" '+91 ' +${adminDetails.contactNumber}">+91
+								00000 00000</strong>
 						</div>
 
 						<!-- Field 5: Permanent Address -->
 						<div
-							style="display: flex; flex-direction: column; gap: 6px; padding-top: 4px;">
-							<span style="color: var(--text-muted); font-size: 0.95rem;">Address</span>
+							style="display: flex; flex-direction: column; gap: 8px; padding-top: 4px;">
 							<span
-								style="color: var(--text-white); font-size: 0.9rem; background-color: rgba(15, 23, 42, 0.5); padding: 12px; border-radius: 6px; border: 1px solid var(--border-color); line-height: 1.5; margin-top: 2px;"
-								th:text="${adminDetails.address}"> </span>
+								style="color: var(--text-muted); font-size: 0.95rem; display: flex; align-items: center; gap: 8px;">
+								<i class="fa-solid fa-location-dot"
+								style="width: 16px; color: var(--primary-teal);"></i> Permanent
+								Address
+							</span> <span
+								style="color: var(--text-white); font-size: 0.9rem; background-color: rgba(15, 23, 42, 0.5); padding: 12px 16px; border-radius: 8px; border: 1px solid var(--border-color); line-height: 1.5; border-left: 3px solid var(--primary-teal);"
+								th:text="${adminDetails.address}">No permanent address
+								record detected inside your active database entity
+								configuration.</span>
 						</div>
 
 					</div>
 
 				</div>
 			</div>
-
 
 		</main>
 	</div>
@@ -993,6 +1205,88 @@ to {
             event.currentTarget.classList.add('active');
             document.getElementById(targetPanelId).classPack = document.getElementById(targetPanelId).classList.add('active-panel');
         }
+        
+        //
+ function handleRejection(event, id) {
+    // 1. Stop the immediate native form submission
+    event.preventDefault(); 
+    
+    // 2. Open the prompt popup box asking for input
+    var reason = prompt("Please enter the reason for rejecting this patient registration:");
+    
+    // 3. Handle cancel action or blank strings gracefully
+    if (reason === null) {
+        return false; // User clicked Cancel, do nothing
+    }
+    
+    if (reason.trim() === "") {
+        alert("A reason is required to reject the registration.");
+        return false; // User left it empty, block submission
+    }
+    
+    // 4. Get the active form element safely
+    var formElement = event.currentTarget; 
+    
+    // 5. FIX: Check if an input field named "rejectionReason" already exists inside THIS form
+    var existingInput = formElement.querySelector('input[name="rejectionReason"]');
+    
+    if (existingInput) {
+        // If it exists, just update its value instead of adding a new one
+        existingInput.value = reason;
+    } else {
+        // If it doesn't exist, create it programmatically
+        var hiddenInput = document.createElement("input");
+        hiddenInput.type = "hidden";
+        hiddenInput.name = "rejectionReason"; 
+        hiddenInput.value = reason;
+        formElement.appendChild(hiddenInput);
+    }
+    
+    // 6. Remove the onsubmit attribute block and fire the POST request safely
+    formElement.removeAttribute("onsubmit");
+    formElement.submit();
+}
+        
+        //function handler for appointment reject reason
+        function handleAppointmentCancellation(event) {
+    // 1. Pause native form submit execution sequence
+    event.preventDefault();
+    
+    // 2. Capture target form element context safely
+    var formElement = event.currentTarget;
+    
+    // 3. Open prompt popup dialog frame tracking entry values
+    var reason = prompt("Please provide a reason for cancelling this appointment request:");
+    
+    // 4. Handle cancel actions or clean escape routes gracefully
+    if (reason === null) {
+        return false; // Closes popup silently, does nothing
+    }
+    
+    if (reason.trim() === "") {
+        alert("An assignment cancellation reason is mandatory.");
+        return false; // Blocks transaction pipeline execution
+    }
+    
+    // 5. Look for or programmatically generate the hidden form variable value anchor
+    var hiddenInput = formElement.querySelector('input[name="cancellationReason"]');
+    if (!hiddenInput) {
+        hiddenInput = document.createElement("input");
+        hiddenInput.type = "hidden";
+        hiddenInput.name = "cancellationReason"; // Maps straight to backend parameter variable tags
+        formElement.appendChild(hiddenInput);
+    }
+    
+    // 6. Assign reason text content values directly to form parameters
+    hiddenInput.value = reason.trim();
+    
+    // 7. Strip interceptor locks completely off the element context to avoid infinite looping
+    formElement.removeAttribute("onsubmit");
+    formElement.submit();
+}
+
+
+
     </script>
 
 </body>

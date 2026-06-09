@@ -4,7 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Prescription History Summary - HMS</title>
-<!-- FontAwesome for executive portal icons -->
+    <!-- Branded Dashboard Icon Library -->
 <link rel="stylesheet"
 	href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.7.2/css/all.min.css">
     <style>
@@ -227,7 +227,7 @@
             <a th:href="@{/}" class="logo"> <i class="fa-solid fa-heart-pulse"></i>
 			Hospital <span>Management System</span>
 		</a>
-            <a th:href="@{/patient/dashboard}" class="btn-nav-back">
+            <a th:href="@{/doctor/dashboard}" class="btn-nav-back">
                 <i class="fa-solid fa-arrow-left"></i>  Back to Dashboard
             </a>
         </div>
@@ -239,7 +239,7 @@
             
             <div class="view-header">
                 <h2><i class="fa-solid fa-file-invoice"></i> Medical Prescription Details</h2>
-                <p>Official outpatient treatment sheet records issued by the attending medical specialist</p>
+                <p>Official patient treatment sheet records </p>
             </div>
 
             <div class="view-body">
@@ -248,8 +248,8 @@
                 <div class="meta-section-title">Consultation Information</div>
                 <div class="meta-data-box">
                     <div>
-                        <span class="meta-label">Attending Doctor</span>
-                        <span class="meta-value" th:text="${prescription.doctor != null ? prescription.doctor.name : 'Unknown Specialist'}">Dr. Raj Sharma</span>
+                        <span class="meta-label">Attending Patient</span>
+                        <span class="meta-value" th:text="${prescription.patient != null ? prescription.patient.name : 'Unknown Specialist'}">Dr. Raj Sharma</span>
                     </div>
                     <div>
                         <span class="meta-label">Consultation Date</span>

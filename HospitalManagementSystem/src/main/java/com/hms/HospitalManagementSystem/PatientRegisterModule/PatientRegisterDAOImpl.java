@@ -122,11 +122,12 @@ public class PatientRegisterDAOImpl implements PatientRegisterDAO {
 	
 	 @Override
 	 @Transactional
-	    public void rejectRegistration(Integer registerId) {
+	    public void rejectRegistration(Integer registerId, String reason) {
 	        PatientRegisterModel regData = patientRegisterRepository.findById(registerId)
 	                .orElseThrow(() -> new IllegalArgumentException("Registration record not found: " + registerId));
 
 	        regData.setRegistrationStatus(PatientRegisterModel.RegistrationStatus.REJECTED);
+	        regData.setReason(reason);
 	        patientRegisterRepository.save(regData);
 	    }
 }

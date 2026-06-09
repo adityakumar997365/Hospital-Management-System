@@ -4,8 +4,9 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Hospital Management System</title>
-<!-- FontAwesome for professional medical icons -->
-<link rel="stylesheet" href="cloudflare.com">
+<!-- FontAwesome for professional medical status icons -->
+<link rel="stylesheet"
+	href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.7.2/css/all.min.css">
 
 <style>
 /* CLINICAL COLOR PALETTE */
@@ -270,32 +271,14 @@ body {
 
 			<!-- Benefit Item 1 -->
 			<div class="info-card">
-				<!-- SYSTEM HISTORY CLOCK CARD ICON - PURE CSS REPLACEMENT -->
+				<!-- SYSTEM HISTORY CLOCK CARD ICON - FONT AWESOME REPLACEMENT -->
 				<div class="card-icon"
-					style="width: 48px; height: 48px; display: flex; align-items: center; justify-content: center; position: relative;">
-
-					<!-- Outer History Clock Ring Bounding Box -->
-					<div
-						style="position: relative; width: 20px; height: 20px; border: 2px solid var(--primary-teal); border-radius: 50%; display: flex; align-items: center; justify-content: center; background-color: transparent;">
-
-						<!-- Center Dial Dot -->
-						<span
-							style="width: 2px; height: 2px; background-color: var(--primary-teal); border-radius: 50%;"></span>
-
-						<!-- Hour Hand (Pointing Up/Left) -->
-						<span
-							style="position: absolute; bottom: 8px; left: 8px; width: 4px; height: 2px; background-color: var(--primary-teal); transform: rotate(-30deg); transform-origin: right center; border-radius: 0.5px;"></span>
-
-						<!-- Minute Hand (Pointing Up) -->
-						<span
-							style="position: absolute; bottom: 8px; width: 2px; height: 5px; background-color: var(--primary-teal); border-radius: 0.5px;"></span>
-
-						<!-- Historical Counter-Clockwise Rotation Indicator Arrow Tip -->
-						<span
-							style="position: absolute; top: -2px; left: 6px; width: 0; height: 0; border-top: 3px solid transparent; border-bottom: 3px solid transparent; border-right: 4px solid var(--primary-teal); transform: rotate(-15deg);"></span>
-
-					</div>
+					style="width: 48px; height: 48px; display: flex; align-items: center; justify-content: center;">
+					<!-- Font Awesome History Icon with matching primary-teal color -->
+					<i class="fa-solid fa-history"
+						style="font-size: 1.5rem; color: var(--primary-teal);"></i>
 				</div>
+
 
 				<div class="card-body">
 					<h3>Live Patient Waitlist</h3>
@@ -307,38 +290,14 @@ body {
 
 			<!-- Benefit Item 2 -->
 			<div class="info-card">
-				<!-- SYSTEM MEDICAL FILE CARD ICON - PURE CSS REPLACEMENT -->
+				<!-- SYSTEM MEDICAL FILE CARD ICON - FONT AWESOME REPLACEMENT -->
 				<div class="card-icon"
-					style="width: 48px; height: 48px; display: flex; align-items: center; justify-content: center; position: relative;">
-
-					<!-- Document Page Outline -->
-					<div
-						style="position: relative; width: 18px; height: 22px; border: 2px solid var(--primary-teal); border-radius: 3px; background-color: transparent; display: flex; flex-direction: column; padding: 3px; gap: 2px; justify-content: flex-end;">
-
-						<!-- Folded Page Corner Effect (Top Right) -->
-						<span
-							style="position: absolute; top: -2px; right: -2px; width: 5px; height: 5px; background-color: var(--bg-surface); border-bottom: 2px solid var(--primary-teal); border-left: 2px solid var(--primary-teal); border-bottom-left-radius: 2px;"></span>
-
-						<!-- Document Text Line Placeholder 1 -->
-						<span
-							style="width: 100%; height: 1.5px; background-color: rgba(14, 165, 233, 0.4); border-radius: 0.5px;"></span>
-						<!-- Document Text Line Placeholder 2 -->
-						<span
-							style="width: 75%; height: 1.5px; background-color: rgba(14, 165, 233, 0.4); border-radius: 0.5px;"></span>
-
-						<!-- Floating Medical Cross Badge Overlay -->
-						<div
-							style="position: absolute; top: 2px; left: 2px; width: 8px; height: 8px; display: flex; align-items: center; justify-content: center;">
-							<!-- Horizontal Cross Bar -->
-							<span
-								style="position: absolute; width: 8px; height: 2px; background-color: var(--primary-teal); border-radius: 0.5px;"></span>
-							<!-- Vertical Cross Bar -->
-							<span
-								style="position: absolute; width: 2px; height: 8px; background-color: var(--primary-teal); border-radius: 0.5px;"></span>
-						</div>
-
-					</div>
+					style="width: 48px; height: 48px; display: flex; align-items: center; justify-content: center;">
+					<!-- Font Awesome Medical File Icon with matching primary-teal color -->
+					<i class="fa-solid fa-file-medical"
+						style="font-size: 1.5rem; color: var(--primary-teal);"></i>
 				</div>
+
 
 				<div class="card-body">
 					<h3>All-in-One Patient Records</h3>
@@ -350,32 +309,12 @@ body {
 
 			<!-- Benefit Item 3 (System Growth Track Card) -->
 			<div class="info-card growth-card">
-				<!-- SYSTEM METRIC CARD ICON VIEW - PURE CSS REPLACEMENT -->
+				<!-- SYSTEM METRIC CARD ICON VIEW - FONT AWESOME REPLACEMENT -->
 				<div class="card-icon"
-					style="width: 48px; height: 48px; display: flex; align-items: center; justify-content: center; position: relative;">
-
-					<!-- Geometric Data Chart Graph Shape Engine -->
-					<div
-						style="position: relative; width: 22px; height: 18px; display: flex; align-items: flex-end; gap: 3px; border-bottom: 2px solid var(--primary-teal); border-left: 2px solid var(--primary-teal); padding-left: 1px; padding-bottom: 1px;">
-
-						<!-- Graph Column 1 -->
-						<span
-							style="width: 3px; height: 5px; background-color: rgba(14, 165, 233, 0.4); border-radius: 0.5px;"></span>
-						<!-- Graph Column 2 -->
-						<span
-							style="width: 3px; height: 10px; background-color: rgba(14, 165, 233, 0.6); border-radius: 0.5px;"></span>
-						<!-- Graph Column 3 -->
-						<span
-							style="width: 3px; height: 14px; background-color: var(--primary-teal); border-radius: 0.5px;"></span>
-
-						<!-- Ascending Vector Trend Arrow Overlay -->
-						<span
-							style="position: absolute; left: 2px; bottom: 3px; width: 16px; height: 2px; background-color: var(--primary-teal); transform: rotate(-38deg); transform-origin: left bottom; border-radius: 1px;">
-							<!-- Tiny Arrow Tip Cap Element --> <span
-							style="position: absolute; right: 0; top: -2px; width: 4px; height: 4px; border-top: 1.5px solid var(--primary-teal); border-right: 1.5px solid var(--primary-teal); transform: rotate(45deg);"></span>
-						</span>
-
-					</div>
+					style="width: 48px; height: 48px; display: flex; align-items: center; justify-content: center;">
+					<!-- Font Awesome Line Chart Icon with matching primary-teal color -->
+					<i class="fa-solid fa-chart-line"
+						style="font-size: 1.5rem; color: var(--primary-teal);"></i>
 				</div>
 
 				<div class="card-body">
