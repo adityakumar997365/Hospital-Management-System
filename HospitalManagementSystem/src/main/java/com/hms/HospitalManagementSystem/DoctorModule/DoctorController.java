@@ -11,6 +11,7 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.ResponseBody;
 
 import com.hms.HospitalManagementSystem.AppointmentSchedulingModule.AppointmentModel;
 import com.hms.HospitalManagementSystem.AppointmentSchedulingModule.AppointmentServices;
@@ -50,9 +51,13 @@ public class DoctorController {
 		model.addAttribute("appointmentsList", appointmentList);
 
 		// for Doctor Prescription History
-		List<PrescriptionModel> pateintPrescribeList = prescriptionServices.getPrescriptionOfDoctor(doctor.getDoctorId());
+		List<PrescriptionModel> patientPrescribeList = prescriptionServices.getPrescriptionOfDoctor(doctor.getDoctorId());
 
-		model.addAttribute("pateintPrescribeList", pateintPrescribeList);
+		if (patientPrescribeList != null) {
+			patientPrescribeList.sort((p1, p2) -> p2.getCreatedDate().compareTo(p1.getCreatedDate()));
+		}
+		
+		model.addAttribute("pateintPrescribeList", patientPrescribeList);
 
 		return "/doctor/dashboard";
 
@@ -86,6 +91,10 @@ public class DoctorController {
 	    	
 	    	prescription.setAppointment(appointment);
 	    	
+	    	// If it's a family member appointment, link them to the prescription.
+	    	// If it's for the primary patient, it cleanly passes down 'null'.
+	    	prescription.setFamilyMember(appointment.getFamilyMember());
+	    	
 	    	prescription.setCreatedDate(LocalDate.now());
 	    	
 	        
@@ -109,5 +118,12 @@ public class DoctorController {
 		    // Renders the dedicated, read-only dashboard summary layout template file
 		    return "/doctor/prescriptionView"; 
 		}
+	    
+	    @GetMapping("/check-phone")
+	    @ResponseBody
+	    public boolean checkDoctorPhoneExists(@RequestParam("phone") String phone) {
+	        // Queries the doctor table instead of the patient table
+	        return doctorservices.existsByContactNumber(phone);
+	    }
 
 }

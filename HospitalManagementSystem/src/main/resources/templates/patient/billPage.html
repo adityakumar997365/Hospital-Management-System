@@ -248,27 +248,63 @@ input[type="date"]::-webkit-calendar-picker-indicator:hover {
 
         <div class="invoice-body">
             
-            <!-- THE MAIN FORM: Opened early to encapsulate the new inputs seamlessly -->
-            <form id="appointmentBillingForm" th:action="@{/patient/book-appointment/process-payment}" method="POST" onsubmit="interceptPaymentWorkflow(event)">
-                
-                <!-- Hidden Primary Key Payloads -->
-                <input type="hidden" name="doctorId" th:value="${doctor.doctorId}">
-                <input type="hidden" name="patientId" th:value="${patient != null ? patient.patientId : ''}">
-                <input type="hidden" id="selectedPaymentStatus" name="paymentStatus" value="UNPAID">
-                <input type="hidden" name="amount" th:value="${grandTotal}">
+            <!-- THE MAIN FORM -->
+<form id="appointmentBillingForm" th:action="@{/patient/book-appointment/process-payment}" method="POST" onsubmit="interceptPaymentWorkflow(event)">
+    
+    <!-- Hidden Primary Key Payloads -->
+    <input type="hidden" name="doctorId" th:value="${doctor.doctorId}">
+    <input type="hidden" id="selectedPaymentStatus" name="paymentStatus" value="UNPAID">
+    <input type="hidden" name="amount" th:value="${grandTotal}">
 
-                <!-- Section Block A: Patient File Metadata -->
-                <div class="meta-section-title">Patient Information</div>
-                <div class="data-group-box">
-                    <div class="data-row">
-                        <span class="data-label">Patient Name</span>
-                        <span class="data-value" th:text="${patient != null ? patient.name : 'Unregistered Patient'}">Aditya Kumar</span>
-                    </div>
-                    <div class="data-row">
-                        <span class="data-label">Contact Number</span>
-                        <span class="data-value" style="font-family: monospace;" th:text="${patient != null ? patient.contactNumber : 'N/A'}">9876543210</span>
-                    </div>
-                </div>
+    <!-- UPDATED: Dynamic Appointment Target Payloads -->
+    <!-- This starts with the primary patient's ID but will change dynamically if a family member is picked -->
+    <input type="hidden" id="targetPatientId" name="patientId" th:value="${patient != null ? patient.patientId : ''}">
+    <!-- Optional parameter to pass down family context to your payment controller if needed -->
+    <input type="hidden" id="targetFamilyMemberId" name="familyMemberId" value="">
+
+    <!-- Section Block A: Patient File Metadata (UPDATED WITH DROPDOWN SELECTOR) -->
+    <div class="meta-section-title">Patient Information</div>
+    <div class="data-group-box" style="display: flex; flex-direction: column; gap: 14px;">
+        
+        <!-- Selection Dropdown for Appointment target -->
+        <div style="display: flex; flex-direction: column; gap: 6px;">
+            <label for="appointmentTargetSelector" style="font-size: 0.82rem; color: var(--text-muted); font-weight: 600;">Who is this appointment for? *</label>
+            <select id="appointmentTargetSelector" onchange="handlePatientSelectionChange()" required
+                    style="background-color: #0b0f19; color: var(--text-white); border: 1px solid var(--border-color); border-radius: 6px; padding: 10px; font-size: 0.88rem; outline: none; width: 100%; cursor: pointer;">
+                
+                <!-- Option A: Primary User Account Holder -->
+                <option th:if="${patient != null}" 
+                        th:value="'PRIMARY_' + ${patient.patientId}"
+                        th:data-name="${patient.name}"
+                        th:data-contact="${patient.contactNumber}"
+                        selected>
+                    [[${patient.name}]] (Myself)
+                </option>
+                
+                <!-- Option B: Dynamic iteration loop over added family members -->
+                <option th:each="member : ${familyMembersList}" 
+                        th:value="'FAMILY_' + ${member.memberId}"
+                        th:data-name="${member.name}"
+                        th:data-contact="${member.contact}">
+                    [[${member.name}]] ([[${member.relationship}]])
+                </option>
+            </select>
+        </div>
+
+        <!-- Rendered Display Context Fields (These adjust dynamically via JavaScript below) -->
+        <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 16px; border-top: 1px solid var(--border-color); padding-top: 12px;">
+            <div style="display: flex; flex-direction: column; gap: 2px;">
+                <span style="font-size: 0.8rem; color: var(--text-muted);">Patient Name</span>
+                <span id="displayPatientName" style="color: var(--text-white); font-weight: 600;" th:text="${patient != null ? patient.name : 'Unregistered Patient'}">Aditya Kumar</span>
+            </div>
+            <div style="display: flex; flex-direction: column; gap: 2px;">
+                <span style="font-size: 0.8rem; color: var(--text-muted);">Contact Number</span>
+                <span id="displayPatientContact" style="color: var(--text-white); font-family: monospace; font-weight: 600;" th:text="${patient != null ? patient.contactNumber : 'N/A'}">9876543210</span>
+            </div>
+        </div>
+    </div>
+
+    <!-- ... The rest of your existing Section Block B, B2, C fields stay exactly the same ... -->
 
                 <!-- Section Block B: Designated Medical Practitioner Metadata -->
                 <div class="meta-section-title">Assigned Medical Specialist</div>
@@ -423,6 +459,37 @@ function executePaymentSubmission(statusChoice) {
     // Execute raw form submit operation directly down path to your Controller endpoints
     document.getElementById('appointmentBillingForm').submit();
 }
+
+function handlePatientSelectionChange() {
+    // 1. Locate the dropdown select element wrapper and active index
+    var selector = document.getElementById("appointmentTargetSelector");
+    var selectedOption = selector.options[selector.selectedIndex];
+    
+    // 2. Extract embedded structural parameters from data attributes
+    var targetName = selectedOption.getAttribute("data-name");
+    var targetContact = selectedOption.getAttribute("data-contact");
+    var valueToken = selectedOption.value; // Format structure: 'PRIMARY_ID' or 'FAMILY_ID'
+    
+    // 3. Deconstruct values to split classification tokens
+    var splitTokens = valueToken.split("_");
+    var classification = splitTokens[0]; // PRIMARY or FAMILY
+    var targetId = splitTokens[1];       // Actual database Primary Key
+    
+    // 4. Update hidden input values to modify form payload variables
+    if (classification === "PRIMARY") {
+        document.getElementById("targetPatientId").value = targetId;
+        document.getElementById("targetFamilyMemberId").value = ""; // Empty string for primary account
+    } else {
+        // If a family member is picked, pass their specific record reference ID downward
+        document.getElementById("targetFamilyMemberId").value = targetId;
+        // Keep targetPatientId populated based on your preferred backend configuration mapping
+    }
+    
+    // 5. Instantly change user-visible text on checkout board template
+    document.getElementById("displayPatientName").textContent = targetName;
+    document.getElementById("displayPatientContact").textContent = targetContact;
+}
+
 </script>
 
 

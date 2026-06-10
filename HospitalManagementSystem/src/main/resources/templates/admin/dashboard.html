@@ -474,124 +474,159 @@ to {
 						Pending Actions </span>
 				</div>
 
-				<!-- RESPONSIVE TABLE WRAP CONTAINER -->
-				<div
-					style="width: 100%; overflow-x: auto; background-color: rgba(15, 23, 42, 0.3); border-radius: 8px; border: 1px solid var(--border-color);">
-					<table
-						style="width: 100%; border-collapse: collapse; text-align: left; font-size: 0.9rem;">
+		<!-- RESPONSIVE TABLE WRAP CONTAINER -->
+<div style="width: 100%; overflow-x: auto; background-color: rgba(15, 23, 42, 0.3); border-radius: 8px; border: 1px solid var(--border-color);">
+	<table style="width: 100%; border-collapse: collapse; text-align: left; font-size: 0.9rem;">
 
-						<!-- TABLE HEADERS -->
-						<thead>
-							<tr
-								style="background-color: rgba(255, 255, 255, 0.02); border-bottom: 1px solid var(--border-color); color: var(--text-white); font-weight: 700;">
-								<th style="padding: 16px 20px;">Patient Name</th>
-								<th style="padding: 16px 20px;">Doctor Name</th>
-								<th style="padding: 16px 20px;">Date & Time Slot</th>
-								<th style="padding: 16px 20px;">Payment Status</th>
-								<th style="padding: 16px 20px; text-align: center;">Actions</th>
-							</tr>
-						</thead>
+		<!-- TABLE HEADERS -->
+		<thead>
+			<tr style="background-color: rgba(255, 255, 255, 0.02); border-bottom: 1px solid var(--border-color); color: var(--text-white); font-weight: 700;">
+				<th style="padding: 16px 20px;">Patient Details</th>
+				<th style="padding: 16px 20px;">Doctor Name</th>
+				<th style="padding: 16px 20px;">Date & Time Slot</th>
+				<th style="padding: 16px 20px;">Payment Status</th>
+				<th style="padding: 16px 20px; text-align: center;">Actions</th>
+			</tr>
+		</thead>
 
-						<!-- TABLE BODY DATA ROWS -->
-						<tbody>
-							<tr th:each="appointment : ${appointmentsList}"
-								style="border-bottom: 1px solid var(--border-color); color: var(--text-muted); transition: background 0.2s;"
-								onmouseover="this.style.backgroundColor='rgba(255,255,255,0.01)'"
-								onmouseout="this.style.backgroundColor='transparent'">
+		<!-- TABLE BODY DATA ROWS -->
+		<tbody>
+			<tr th:each="appointment : ${appointmentsList}"
+				style="border-bottom: 1px solid var(--border-color); color: var(--text-muted); transition: background 0.2s;"
+				onmouseover="this.style.backgroundColor='rgba(255,255,255,0.01)'"
+				onmouseout="this.style.backgroundColor='transparent'">
 
-								<!-- 1. Patient Name with User Profile Icon -->
-								<td
-									style="padding: 14px 20px; font-weight: 600; color: var(--text-white);">
-									<div style="display: flex; align-items: center; gap: 8px;">
-										<i class="fa-solid fa-user"
-											style="color: var(--primary-teal); font-size: 0.85rem; width: 14px;"></i>
-										<span th:text="${appointment.patient.name}">Aditya
-											Kumar</span>
-									</div>
-								</td>
+				
+				<td style="padding: 14px 20px; color: var(--text-white);">
+					<div style="display: flex; flex-direction: column; gap: 4px;">
+						
+						<!-- Patient Name Name Display Line -->
+						<div style="display: flex; align-items: center; gap: 8px; font-weight: 600;">
+							<i class="fa-solid fa-user" style="color: var(--primary-teal); font-size: 0.85rem; width: 14px;"></i>
+							
+							<!-- CASE A: Booked for a Family Member Dependent -->
+							<span th:if="${appointment.familyMember != null}">
+								[[${appointment.familyMember.name}]]<br>
+								<span style="color: var(--accent-amber, #f59e0b); font-size: 0.8rem; font-weight: 500;">([[${appointment.familyMember.relationship}]] of [[${appointment.patient.name}]])</span>
+							</span>
+							
+							<!-- CASE B: Booked for the Primary Patient Account Holder -->
+							<span th:unless="${appointment.familyMember != null}" th:text="${appointment.patient.name}">
+								Aditya Kumar
+							</span>
+						</div>
 
-								<!-- 2. Doctor Name with Doctor Badge Icon -->
-								<td style="padding: 14px 20px; color: var(--text-white);">
-									<div style="display: flex; align-items: center; gap: 8px;">
-										<i class="fa-solid fa-user-doctor"
-											style="color: var(--primary-teal); font-size: 0.85rem; width: 14px;"></i>
-										<span th:text="${appointment.doctor.name}">Dr. Ramesh
-											Kumar</span>
-									</div>
-								</td>
+						<!-- Dynamic Subtext Metadata Row: Gender & Age -->
+						<div style="display: flex; align-items: center; gap: 12px; font-size: 0.8rem; color: var(--text-muted); padding-left: 22px;">
+							
+							<!-- Gender Segment Tracking -->
+							<span>
+								<i class="fa-solid fa-venus-mars" style="font-size: 0.75rem; margin-right: 3px;"></i>
+								<span th:text="${appointment.familyMember != null ? appointment.familyMember.gender : appointment.patient.gender}">Male</span>
+							</span>
 
-								<!-- 3. CONSOLIDATED: Date & Time Slot Column with Sub-Block Meta Icons -->
-								<td style="padding: 14px 20px;">
-									<div style="display: flex; flex-direction: column; gap: 2px;">
-										<span style="color: var(--text-white); font-weight: 500;">
-											<i class="fa-solid fa-calendar-day"
-											style="font-size: 0.8rem; margin-right: 4px; color: var(--text-muted);"></i>
-											<span th:text="${appointment.appointmentDate}">14-May-2026</span>
-										</span> <span style="font-size: 0.8rem; color: var(--text-muted);">
-											<i class="fa-solid fa-clock"
-											style="font-size: 0.75rem; margin-right: 4px;"></i> <span
-											th:text="${appointment.timeSlot}">10:00 AM - 11:00 AM</span>
-										</span>
-									</div>
-								</td>
+							<!-- Chronological Age Computation Line from DOB -->
+							<span>
+								<i class="fa-solid fa-cake-candles" style="font-size: 0.75rem; margin-right: 3px;"></i>
+								<span th:with="dob=${appointment.familyMember != null ? appointment.familyMember.dob : appointment.patient.dateOfBirth}"
+								      th:text="${dob != null ? T(java.time.Period).between(dob, T(java.time.LocalDate).now()).getYears() + ' Yrs' : 'N/A'}">24 Yrs</span>
+							</span>
 
-								<!-- 4. Payment Status with Enum Evaluation (PAID / UNPAID) -->
-								<td style="padding: 14px 20px; vertical-align: middle;">
-									<!-- CASE A: ENUM IS PAID --> <span
-									th:if="${appointment.Bill != null && appointment.Bill.paymentStatus != null && appointment.Bill.paymentStatus.name() == 'PAID'}"
-									style="background-color: rgba(16, 185, 129, 0.1); color: #10b981; border: 1px solid rgba(16, 185, 129, 0.2); padding: 4px 10px; border-radius: 6px; font-size: 0.8rem; font-weight: 700; display: inline-flex; align-items: center; gap: 6px;">
-										<i class="fa-solid fa-file-circle-check"
-										style="font-size: 0.75rem;"></i> Paid
-								</span> <!-- CASE B: ENUM IS UNPAID (Or Bill/Status record fallback instances) -->
-									<span
-									th:if="${appointment.Bill == null || appointment.Bill.paymentStatus == null || appointment.Bill.paymentStatus.name() == 'UNPAID'}"
-									style="background-color: rgba(245, 158, 11, 0.1); color: var(--accent-amber, #f59e0b); border: 1px solid rgba(245, 158, 11, 0.2); padding: 4px 10px; border-radius: 6px; font-size: 0.8rem; font-weight: 700; display: inline-flex; align-items: center; gap: 6px;">
-										<i class="fa-solid fa-circle-dollar-to-slot"
-										style="font-size: 0.75rem;"></i> Unpaid
-								</span>
+						</div>
+					</div>
+				</td>
 
-								</td>
+				<!-- 2. Doctor Name with Doctor Badge Icon -->
+				<td style="padding: 14px 20px; color: var(--text-white); vertical-align: middle;">
+					<div style="display: flex; align-items: center; gap: 8px;">
+						<i class="fa-solid fa-user-doctor" style="color: var(--primary-teal); font-size: 0.85rem; width: 14px;"></i>
+						<span th:text="${appointment.doctor.name}">Dr. Ramesh Kumar</span>
+					</div>
+				</td>
 
-								<!-- 5. ACTION INTERACTION BUTTONS -->
-								<td
-									style="padding: 14px 20px; text-align: center; vertical-align: middle;">
-									<div style="display: flex; gap: 8px; justify-content: center;">
+				<!-- 3. Date & Time Slot Column with Sub-Block Meta Icons -->
+				<td style="padding: 14px 20px; vertical-align: middle;">
+					<div style="display: flex; flex-direction: column; gap: 2px;">
+						<span style="color: var(--text-white); font-weight: 500;">
+							<i class="fa-solid fa-calendar-day" style="font-size: 0.8rem; margin-right: 4px; color: var(--text-muted);"></i>
+							<span th:text="${appointment.appointmentDate}">14-May-2026</span>
+						</span> 
+						<span style="font-size: 0.8rem; color: var(--text-muted);">
+							<i class="fa-solid fa-clock" style="font-size: 0.75rem; margin-right: 4px;"></i> 
+							<span th:text="${appointment.timeSlot}">10:00 AM - 11:00 AM</span>
+						</span>
+					</div>
+				</td>
 
-										<!-- CONFIRM APPOINTMENT FORM -->
-										<form
-											th:action="@{/admin/appointments/confirm/{id}(id=${appointment.appointmentId})}"
-											method="post" style="margin: 0;">
-											<button type="submit" title="Confirm Appointment"
-												style="background-color: rgba(16, 185, 129, 0.1); color: #10b981; border: 1px solid rgba(16, 185, 129, 0.2); width: 36px; height: 32px; border-radius: 6px; cursor: pointer; display: flex; align-items: center; justify-content: center; transition: 0.2s;"
-												onmouseover="this.style.backgroundColor='#10b981'; this.style.color='#0f172a';"
-												onmouseout="this.style.backgroundColor='rgba(16, 185, 129, 0.1)'; this.style.color='#10b981';">
-												<i class="fa-solid fa-check" style="font-size: 0.95rem;"></i>
-											</button>
-										</form>
+				<!-- 4. Payment Status with Enum Evaluation (PAID / UNPAID) -->
+				<td style="padding: 14px 20px; vertical-align: middle;">
+					<!-- CASE A: ENUM IS PAID --> 
+					<span th:if="${appointment.Bill != null && appointment.Bill.paymentStatus != null && appointment.Bill.paymentStatus.name() == 'PAID'}"
+						style="background-color: rgba(16, 185, 129, 0.1); color: #10b981; border: 1px solid rgba(16, 185, 129, 0.2); padding: 4px 10px; border-radius: 6px; font-size: 0.8rem; font-weight: 700; display: inline-flex; align-items: center; gap: 6px;">
+						<i class="fa-solid fa-file-circle-check" style="font-size: 0.75rem;"></i> Paid
+					</span> 
+					
+					<!-- CASE B: ENUM IS UNPAID -->
+					<span th:if="${appointment.Bill == null || appointment.Bill.paymentStatus == null || appointment.Bill.paymentStatus.name() == 'UNPAID'}"
+						style="background-color: rgba(245, 158, 11, 0.1); color: var(--accent-amber, #f59e0b); border: 1px solid rgba(245, 158, 11, 0.2); padding: 4px 10px; border-radius: 6px; font-size: 0.8rem; font-weight: 700; display: inline-flex; align-items: center; gap: 6px;">
+						<i class="fa-solid fa-circle-dollar-to-slot" style="font-size: 0.75rem;"></i> Unpaid
+					</span>
+				</td>
 
-										<!-- CANCEL/DENY APPOINTMENT FORM (WITH INTERCEPTOR FUNCTIONAL LOCK) -->
-										<form
-											th:action="@{/admin/appointments/cancel/{id}(id=${appointment.appointmentId})}"
-											method="post" style="margin: 0;"
-											th:onsubmit="return handleAppointmentCancellation(event)">
-											<button type="submit" title="Deny Request"
-												style="background-color: rgba(239, 68, 68, 0.1); color: #ef4444; border: 1px solid rgba(239, 68, 68, 0.2); width: 36px; height: 32px; border-radius: 6px; cursor: pointer; display: flex; align-items: center; justify-content: center; transition: 0.2s;"
-												onmouseover="this.style.backgroundColor='#ef4444'; this.style.color='#ffffff';"
-												onmouseout="this.style.backgroundColor='rgba(239, 68, 68, 0.1)'; this.style.color='#ef4444';">
-												<i class="fa-solid fa-xmark" style="font-size: 0.95rem;"></i>
-											</button>
-										</form>
+				<!-- 5. ACTION INTERACTION BUTTONS -->
+				<td style="padding: 14px 20px; text-align: center; vertical-align: middle;">
+					<div style="display: flex; gap: 8px; justify-content: center;">
 
-									</div>
-								</td>
+						<!-- CONFIRM APPOINTMENT FORM -->
+						<form th:action="@{/admin/appointments/confirm/{id}(id=${appointment.appointmentId})}" method="post" style="margin: 0;">
+							<button type="submit" title="Confirm Appointment"
+								style="background-color: rgba(16, 185, 129, 0.1); color: #10b981; border: 1px solid rgba(16, 185, 129, 0.2); width: 36px; height: 32px; border-radius: 6px; cursor: pointer; display: flex; align-items: center; justify-content: center; transition: 0.2s;"
+								onmouseover="this.style.backgroundColor='#10b981'; this.style.color='#0f172a';"
+								onmouseout="this.style.backgroundColor='rgba(16, 185, 129, 0.1)'; this.style.color='#10b981';">
+								<i class="fa-solid fa-check" style="font-size: 0.95rem;"></i>
+							</button>
+						</form>
 
+						<!-- CANCEL/DENY APPOINTMENT FORM -->
+						<form th:action="@{/admin/appointments/cancel/{id}(id=${appointment.appointmentId})}" method="post" style="margin: 0;"
+						      th:onsubmit="handleAppointmentCancellation(event, this)">
+							<button type="submit" title="Deny Request"
+								style="background-color: rgba(239, 68, 68, 0.1); color: #ef4444; border: 1px solid rgba(239, 68, 68, 0.2); width: 36px; height: 32px; border-radius: 6px; cursor: pointer; display: flex; align-items: center; justify-content: center; transition: 0.2s;"
+								onmouseover="this.style.backgroundColor='#ef4444'; this.style.color='#ffffff';"
+								onmouseout="this.style.backgroundColor='rgba(239, 68, 68, 0.1)'; this.style.color='#ef4444';">
+								<i class="fa-solid fa-xmark" style="font-size: 0.95rem;"></i>
+							</button>
+						</form>
+						
+					</div>
+				</td>
 
-							</tr>
-						</tbody>
+			</tr>
+		</tbody>
+	</table>
+</div>
 
-					</table>
-				</div>
 			</div>
+
+<!-- CENTERED HTML CANCELLATION MODAL -->
+<div id="cancelReasonModal" style="display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0, 0, 0, 0.4); z-index: 9999; backdrop-filter: blur(2px); align-items: center; justify-content: center;">
+    <div style="background: #ffffff; padding: 24px; border-radius: 12px; width: 100%; max-width: 400px; box-shadow: 0 10px 25px rgba(0,0,0,0.15); font-family: sans-serif;">
+        <h3 style="margin-top: 0; color: #1e293b; font-size: 1.2rem; font-weight: 600; margin-bottom: 8px;">Cancel Appointment</h3>
+        <p style="color: #64748b; font-size: 0.9rem; margin-bottom: 16px;">Please provide a reason for cancelling this appointment request:</p>
+        
+        <!-- Textarea input field inside modal -->
+        <textarea id="modalReasonInput" rows="3" style="width: 100%; box-sizing: border-box; padding: 10px; border: 1px solid #cbd5e1; border-radius: 6px; resize: none; font-size: 0.95rem; margin-bottom: 16px; outline: none; transition: 0.2s;" onfocus="this.style.borderColor='#ef4444'"></textarea>
+        
+        <!-- Error tracking alert placeholder -->
+        <div id="modalErrorMessage" style="display: none; color: #ef4444; font-size: 0.85rem; margin-bottom: 12px; font-weight: 500;"></div>
+
+        <!-- Action Button Row -->
+        <div style="display: flex; justify-content: flex-end; gap: 10px;">
+            <button type="button" onclick="closeCancelModal()" style="padding: 8px 16px; border: 1px solid #cbd5e1; background: #ffffff; color: #64748b; border-radius: 6px; cursor: pointer; font-weight: 500; font-size: 0.9rem;">Close</button>
+            <button type="button" onclick="submitCancelModalForm()" style="padding: 8px 16px; border: none; background: #ef4444; color: #ffffff; border-radius: 6px; cursor: pointer; font-weight: 500; font-size: 0.9rem;">Submit Reason</button>
+        </div>
+    </div>
+</div>
 
 
 			<!-- Tab View 2: Patient Registration Access Requests Table View -->
@@ -672,24 +707,24 @@ to {
 										</form>
 
 										<!-- REJECT FORM -->
-										<form id="rejectForm_[[${request.patientRegisterId}]]"
-											th:action="@{/admin/patient-registration/reject/{id}(id=${request.patientRegisterId})}"
-											method="post" style="margin: 0;"
-											th:onsubmit="return handleRejection(event, [[${request.patientRegisterId}]])">
+<form id="rejectForm_[[${request.patientRegisterId}]]"
+	th:action="@{/admin/patient-registration/reject/{id}(id=${request.patientRegisterId})}"
+	method="post" style="margin: 0;"
+	th:onsubmit="handleRejection(event, this)"> <!-- Changed second parameter to 'this' -->
 
-											<!-- Hidden input that will hold the reason filled by JavaScript -->
-											<input type="hidden" name="rejectionReason"
-												id="reason_[[${request.patientRegisterId}]]" />
+	<!-- Hidden input that will hold the reason filled by JavaScript -->
+	<input type="hidden" name="rejectionReason" id="reason_[[${request.patientRegisterId}]]" />
 
-											<button type="submit" title="Deny Request"
-												style="background-color: rgba(239, 68, 68, 0.1); color: #ef4444; border: 1px solid rgba(239, 68, 68, 0.2); width: 36px; height: 32px; border-radius: 6px; cursor: pointer; display: flex; align-items: center; justify-content: center; transition: 0.2s;"
-												onmouseover="this.style.backgroundColor='#ef4444'; this.style.color='#ffffff';"
-												onmouseout="this.style.backgroundColor='rgba(239, 68, 68, 0.1)'; this.style.color='#ef4444';">
+	<button type="submit" title="Deny Request"
+		style="background-color: rgba(239, 68, 68, 0.1); color: #ef4444; border: 1px solid rgba(239, 68, 68, 0.2); width: 36px; height: 32px; border-radius: 6px; cursor: pointer; display: flex; align-items: center; justify-content: center; transition: 0.2s;"
+		onmouseover="this.style.backgroundColor='#ef4444'; this.style.color='#ffffff';"
+		onmouseout="this.style.backgroundColor='rgba(239, 68, 68, 0.1)'; this.style.color='#ef4444';">
 
-												<!-- Font Awesome Xmark icon -->
-												<i class="fa-solid fa-xmark" style="font-size: 1rem;"></i>
-											</button>
-										</form>
+		<!-- Font Awesome Xmark icon -->
+		<i class="fa-solid fa-xmark" style="font-size: 1rem;"></i>
+	</button>
+</form>
+
 
 
 									</div>
@@ -700,6 +735,27 @@ to {
 					</table>
 				</div>
 			</div>
+			
+<!-- CENTERED HTML REGISTRATION REJECTION MODAL -->
+<div id="rejectReasonModal" style="display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0, 0, 0, 0.4); z-index: 9999; backdrop-filter: blur(2px); align-items: center; justify-content: center;">
+    <div style="background: #ffffff; padding: 24px; border-radius: 12px; width: 100%; max-width: 400px; box-shadow: 0 10px 25px rgba(0,0,0,0.15); font-family: sans-serif;">
+        <h3 style="margin-top: 0; color: #1e293b; font-size: 1.2rem; font-weight: 600; margin-bottom: 8px;">Reject Patient Registration</h3>
+        <p style="color: #64748b; font-size: 0.9rem; margin-bottom: 16px;">Please enter the reason for rejecting this patient registration:</p>
+        
+        <!-- Textarea input field inside modal -->
+        <textarea id="modalRejectReasonInput" rows="3" style="width: 100%; box-sizing: border-box; padding: 10px; border: 1px solid #cbd5e1; border-radius: 6px; resize: none; font-size: 0.95rem; margin-bottom: 16px; outline: none; transition: 0.2s;" onfocus="this.style.borderColor='#ef4444'"></textarea>
+        
+        <!-- Error tracking alert placeholder -->
+        <div id="modalRejectErrorMessage" style="display: none; color: #ef4444; font-size: 0.85rem; margin-bottom: 12px; font-weight: 500;"></div>
+
+        <!-- Action Button Row -->
+        <div style="display: flex; justify-content: flex-end; gap: 10px;">
+            <button type="button" onclick="closeRejectModal()" style="padding: 8px 16px; border: 1px solid #cbd5e1; background: #ffffff; color: #64748b; border-radius: 6px; cursor: pointer; font-weight: 500; font-size: 0.9rem;">Close</button>
+            <button type="button" onclick="submitRejectModalForm()" style="padding: 8px 16px; border: none; background: #ef4444; color: #ffffff; border-radius: 6px; cursor: pointer; font-weight: 500; font-size: 0.9rem;">Submit Reason</button>
+        </div>
+    </div>
+</div>
+
 
 
 			<!-- Tab View 3: Doctor Directory Box Grid View -->
@@ -892,18 +948,6 @@ to {
 									Sector 4</span>
 							</div>
 
-							<!-- MEDICAL HISTORY HIGHLIGHT FIELD (Isolated inside stylized warning banner) -->
-							<!-- <div
-								style="background-color: rgba(245, 158, 11, 0.05); border: 1px dashed rgba(245, 158, 11, 0.2); border-radius: 6px; padding: 12px; margin-top: 4px;">
-								<p
-									style="font-size: 0.75rem; font-weight: 700; text-transform: uppercase; letter-spacing: 0.05em; color: var(--accent-amber); margin-bottom: 4px;">
-									<i class="fa-solid fa-file-medical"></i> Medical History Log
-								</p>
-								<p
-									style="color: var(--text-white); font-size: 0.82rem; line-height: 1.4;"
-									th:text="${countRecord != null} ? ${countRecord +'Records '}: 'NA'"></p>
-
-							</div> -->
 						</div>
 
 						<!-- Card Actions Row Layer -->
@@ -919,27 +963,6 @@ to {
 									<i class="fa-solid fa-folder-open"></i> Open Medical Records
 								</button>
 							</a>
-
-							<!-- ARCHIVE RECORD BUTTON WITH PURE CSS BOX GRAPHIC DESIGN -->
-							<!-- <button title="Delete Record"
-								style="background-color: rgba(239, 68, 68, 0.1); border: 1px solid rgba(239, 68, 68, 0.15); width: 36px; height: 32px; border-radius: 6px; cursor: pointer; display: flex; align-items: center; justify-content: center; transition: 0.2s;"
-								onmouseover="this.style.backgroundColor='var(--accent-red)'; this.querySelector('.css-box-top').style.backgroundColor='#ffffff'; this.querySelector('.css-box-bottom').style.borderColor='#ffffff';"
-								onmouseout="this.style.backgroundColor='rgba(239, 68, 68, 0.1)'; this.querySelector('.css-box-top').style.backgroundColor='var(--accent-red)'; this.querySelector('.css-box-bottom').style.borderColor='var(--accent-red)';">
-
-								Pure CSS Geometric Archive Container Construct
-								<div
-									style="position: relative; width: 16px; height: 14px; display: flex; flex-direction: column; align-items: center; gap: 2px;">
-									Box Top Lid Element
-									<span class="css-box-top"
-										style="width: 16px; height: 3px; background-color: var(--accent-red); border-radius: 1px; transition: 0.2s;"></span>
-									Box Lower Body Element
-									<span class="css-box-bottom"
-										style="width: 12px; height: 8px; border: 2.5px solid var(--accent-red); border-top: none; border-bottom-left-radius: 2px; border-bottom-right-radius: 2px; transition: 0.2s; position: relative;">
-										Inner Box Handle Slot Overlay <span
-										style="position: absolute; top: 1px; left: 3px; width: 6px; height: 1.5px; background-color: rgba(255, 255, 255, 0.2); border-radius: 0.5px;"></span>
-									</span>
-								</div>
-							</button> -->
 						</div>
 
 					</div>
@@ -1006,21 +1029,30 @@ to {
 					</div>
 
 					<!-- 3. CONTACT NUMBER FIELD -->
-					<div style="display: flex; flex-direction: column; gap: 8px;">
-						<label
-							style="font-size: 0.8rem; font-weight: 700; text-transform: uppercase; letter-spacing: 0.05em; color: var(--text-muted);">Contact
-							Number</label>
-						<div
-							style="position: relative; display: flex; align-items: center;">
-							<i class="fa-solid fa-phone"
-								style="position: absolute; left: 14px; color: var(--text-muted); font-size: 1rem;"></i>
-							<input type="tel" name="contactNumber" maxlength="15" required
-								style="width: 100%; padding: 14px 14px 14px 42px; background-color: rgba(15, 23, 42, 0.6); border: 1px solid var(--border-color); border-radius: 8px; color: var(--text-white); font-size: 0.95rem; outline: none; transition: var(--transition);"
-								onfocus="this.style.borderColor='var(--primary-teal)'"
-								onblur="this.style.borderColor='var(--border-color)'"
-								placeholder="E.g., +91 94412 34567">
-						</div>
-					</div>
+<div style="display: flex; flex-direction: column; gap: 8px;">
+    <label style="font-size: 0.8rem; font-weight: 700; text-transform: uppercase; letter-spacing: 0.05em; color: var(--text-muted);">
+        Contact Number
+    </label>
+    <div style="position: relative; display: flex; align-items: center;">
+        <i class="fa-solid fa-phone" style="position: absolute; left: 14px; color: var(--text-muted); font-size: 1rem;"></i>
+        
+        <!-- ADDED id="contactNumber" and pattern for strict 10-digit number entry -->
+        <input type="tel" 
+               id="contactNumber" 
+               name="contactNumber" 
+               maxlength="10" 
+               minlength="10" 
+               pattern="[0-9]{10}" 
+               required
+               style="width: 100%; padding: 14px 14px 14px 42px; background-color: rgba(15, 23, 42, 0.6); border: 1px solid var(--border-color); border-radius: 8px; color: var(--text-white); font-size: 0.95rem; outline: none; transition: var(--transition);"
+               onfocus="this.style.borderColor='var(--primary-teal)'"
+               onblur="this.style.borderColor='var(--border-color)'"
+               placeholder="E.g., 9445551234">
+    </div>
+    
+    <!-- ADDED: Error container for your jQuery AJAX script to target -->
+    <small id="phoneError" style="color: #ef4444; display: none; font-size: 0.8rem; margin-top: 4px; font-weight: 500;"></small>
+</div>
 
 					<!-- 4. AVAILABILITY SCHEDULE TEXT AREA FIELD -->
 					<div style="display: flex; flex-direction: column; gap: 8px;">
@@ -1057,12 +1089,10 @@ to {
 					</div>
 
 					<!-- FORM SUBMIT EXECUTOR -->
-					<button type="submit"
-						style="width: 100%; max-width: 250px; background-color: var(--primary-teal); color: var(--bg-main); border: none; padding: 14px; border-radius: 8px; font-size: 1rem; font-weight: 600; cursor: pointer; box-shadow: 0 4px 14px rgba(14, 165, 233, 0.3); transition: var(--transition); display: flex; align-items: center; justify-content: center; gap: 8px; margin-top: 10px;"
-						onmouseover="this.style.backgroundColor='var(--primary-hover)'; this.style.transform='translateY(-1px)';"
-						onmouseout="this.style.backgroundColor='var(--primary-teal)'; this.style.transform='translateY(0)';">
-						Onboard Doctor <i class="fa-solid fa-user-plus"></i>
-					</button>
+					<button type="submit" class="btn-submit" 
+        style="padding: 14px; background-color: var(--primary-teal); color: white; border: none; border-radius: 8px; font-size: 1rem; font-weight: 600; cursor: pointer; margin-top: 10px;">
+    Onboard Specialist
+</button>
 
 				</form>
 
@@ -1191,103 +1221,197 @@ to {
 	</div>
 
 	<!-- TAB SWITCH ENGINE MECHANICAL LOGIC -->
-	<script>
-        function switchTab(event, targetPanelId) {
-            // 1. Remove active state styling from all sidebar button items
-            const sidebarButtons = document.querySelectorAll('.sidebar-btn');
-            sidebarButtons.forEach(btn => btn.classList.remove('active'));
+<script>
+function switchTab(event, targetPanelId) {
+    // 1. Remove active state styling from all sidebar button items
+    const sidebarButtons = document.querySelectorAll('.sidebar-btn');
+    sidebarButtons.forEach(btn => btn.classList.remove('active'));
 
-            // 2. Hide all central content viewport panels
-            const contentPanels = document.querySelectorAll('.tab-panel');
-            contentPanels.forEach(panel => panel.classList.remove('active-panel'));
+    // 2. Hide all central content viewport panels
+    const contentPanels = document.querySelectorAll('.tab-panel');
+    contentPanels.forEach(panel => panel.classList.remove('active-panel'));
 
-            // 3. Mount active flags onto targeted triggers and related panels
-            event.currentTarget.classList.add('active');
-            document.getElementById(targetPanelId).classPack = document.getElementById(targetPanelId).classList.add('active-panel');
-        }
-        
-        //
- function handleRejection(event, id) {
+    // 3. Mount active flags onto targeted triggers and related panels
+    event.currentTarget.classList.add('active');
+    const targetPanel = document.getElementById(targetPanelId);
+    if (targetPanel) {
+        targetPanel.classList.add('active-panel');
+    }
+}
+
+// Global scope anchor tracking active registration form context to registration reject and reason
+var activeRejectionForm = null;
+
+function handleRejection(event, formElement) {
     // 1. Stop the immediate native form submission
     event.preventDefault(); 
     
-    // 2. Open the prompt popup box asking for input
-    var reason = prompt("Please enter the reason for rejecting this patient registration:");
+    // 2. Lock targeted HTML form context framework reference
+    activeRejectionForm = formElement;
     
-    // 3. Handle cancel action or blank strings gracefully
-    if (reason === null) {
-        return false; // User clicked Cancel, do nothing
-    }
+    // 3. Reset previous modal input values and validation errors
+    document.getElementById("modalRejectReasonInput").value = "";
+    document.getElementById("modalRejectErrorMessage").style.display = "none";
     
-    if (reason.trim() === "") {
-        alert("A reason is required to reject the registration.");
-        return false; // User left it empty, block submission
-    }
-    
-    // 4. Get the active form element safely
-    var formElement = event.currentTarget; 
-    
-    // 5. FIX: Check if an input field named "rejectionReason" already exists inside THIS form
-    var existingInput = formElement.querySelector('input[name="rejectionReason"]');
-    
-    if (existingInput) {
-        // If it exists, just update its value instead of adding a new one
-        existingInput.value = reason;
-    } else {
-        // If it doesn't exist, create it programmatically
-        var hiddenInput = document.createElement("input");
-        hiddenInput.type = "hidden";
-        hiddenInput.name = "rejectionReason"; 
-        hiddenInput.value = reason;
-        formElement.appendChild(hiddenInput);
-    }
-    
-    // 6. Remove the onsubmit attribute block and fire the POST request safely
-    formElement.removeAttribute("onsubmit");
-    formElement.submit();
+    // 4. Reveal custom centered HTML modal
+    var modal = document.getElementById("rejectReasonModal");
+    modal.style.display = "flex";
 }
+
+function closeRejectModal() {
+    // Hide the modal overlay
+    document.getElementById("rejectReasonModal").style.display = "none";
+    activeRejectionForm = null;
+}
+
+function submitRejectModalForm() {
+    var reasonInput = document.getElementById("modalRejectReasonInput").value.trim();
+    var errorDiv = document.getElementById("modalRejectErrorMessage");
+    
+    // Validate that the input is not empty
+    if (reasonInput === "") {
+        errorDiv.textContent = "A reason is required to reject the registration.";
+        errorDiv.style.display = "block";
+        return;
+    }
+    
+    if (activeRejectionForm) {
+        // Find the hidden input that already exists in your form
+        var targetHiddenInput = activeRejectionForm.querySelector('input[name="rejectionReason"]');
         
-        //function handler for appointment reject reason
-        function handleAppointmentCancellation(event) {
-    // 1. Pause native form submit execution sequence
+        if (targetHiddenInput) {
+            targetHiddenInput.value = reasonInput;
+        }
+        
+        // Hide modal and trigger actual form execution
+        document.getElementById("rejectReasonModal").style.display = "none";
+        activeRejectionForm.submit();
+    }
+}
+
+//Global scope anchor tracking active submission context for the appointment cancel and reason
+var activeCancellationForm = null;
+
+function handleAppointmentCancellation(event, formElement) {
+    // 1. Pause native form submit action
     event.preventDefault();
     
-    // 2. Capture target form element context safely
-    var formElement = event.currentTarget;
+    // 2. Lock targeted HTML form context framework reference
+    activeCancellationForm = formElement;
     
-    // 3. Open prompt popup dialog frame tracking entry values
-    var reason = prompt("Please provide a reason for cancelling this appointment request:");
+    // 3. Reset previous modal input values and validation errors 
+    document.getElementById("modalReasonInput").value = "";
+    document.getElementById("modalErrorMessage").style.display = "none";
     
-    // 4. Handle cancel actions or clean escape routes gracefully
-    if (reason === null) {
-        return false; // Closes popup silently, does nothing
-    }
-    
-    if (reason.trim() === "") {
-        alert("An assignment cancellation reason is mandatory.");
-        return false; // Blocks transaction pipeline execution
-    }
-    
-    // 5. Look for or programmatically generate the hidden form variable value anchor
-    var hiddenInput = formElement.querySelector('input[name="cancellationReason"]');
-    if (!hiddenInput) {
-        hiddenInput = document.createElement("input");
-        hiddenInput.type = "hidden";
-        hiddenInput.name = "cancellationReason"; // Maps straight to backend parameter variable tags
-        formElement.appendChild(hiddenInput);
-    }
-    
-    // 6. Assign reason text content values directly to form parameters
-    hiddenInput.value = reason.trim();
-    
-    // 7. Strip interceptor locks completely off the element context to avoid infinite looping
-    formElement.removeAttribute("onsubmit");
-    formElement.submit();
+    // 4. Reveal custom centered HTML modal 
+    var modal = document.getElementById("cancelReasonModal");
+    modal.style.display = "flex";
 }
 
+function closeCancelModal() {
+    // Hide the centered HTML modal frame
+    document.getElementById("cancelReasonModal").style.display = "none";
+    activeCancellationForm = null;
+}
 
+function submitCancelModalForm() {
+    var reasonInput = document.getElementById("modalReasonInput").value.trim();
+    var errorDiv = document.getElementById("modalErrorMessage");
+    
+    // Validate that the input is not empty
+    if (reasonInput === "") {
+        errorDiv.textContent = "An assignment cancellation reason is mandatory.";
+        errorDiv.style.display = "block";
+        return;
+    }
+    
+    if (activeCancellationForm) {
+        // Find or create hidden field mapping context
+        var hiddenInput = activeCancellationForm.querySelector('input[name="cancellationReason"]');
+        if (!hiddenInput) {
+            hiddenInput = document.createElement("input");
+            hiddenInput.type = "hidden";
+            hiddenInput.name = "cancellationReason";
+            activeCancellationForm.appendChild(hiddenInput);
+        }
+        
+        // Pass value and execute backend transaction pipeline
+        hiddenInput.value = reasonInput;
+        
+        // Hide modal and trigger actual form execution
+        document.getElementById("cancelReasonModal").style.display = "none";
+        activeCancellationForm.submit();
+    }
+}
 
-    </script>
+// Pure JavaScript Native AJAX for the add new doctor contact number
+document.addEventListener("DOMContentLoaded", function() {
+    const phoneInput = document.getElementById('contactNumber');
+    
+    // Prevent code execution errors if this element doesn't exist on the current page
+    if (!phoneInput) return;
+
+    phoneInput.addEventListener('blur', function() {
+        const phoneNumber = phoneInput.value.trim();
+        const errorElement = document.getElementById('phoneError');
+        const submitBtn = document.querySelector('.btn-submit');
+
+        // 1. Clear error states if the input field is empty
+        if (phoneNumber === "") {
+            if (errorElement) errorElement.style.display = 'none';
+            phoneInput.style.borderColor = 'var(--border-color)';
+            phoneInput.setCustomValidity("");
+            if (submitBtn) submitBtn.disabled = false;
+            return;        
+        }
+
+        // 2. Local Format Validation
+        if (phoneNumber.length !== 10 || !/^\d+$/.test(phoneNumber)) {
+            if (errorElement) {
+                errorElement.textContent = "Please enter a valid 10-digit phone number.";
+                errorElement.style.display = 'block';
+            }
+            phoneInput.style.borderColor = '#ef4444'; // Soft Red
+            phoneInput.setCustomValidity("Invalid phone number length");
+            if (submitBtn) submitBtn.disabled = true;
+            return;
+        }
+
+        // 3. Send Native Fetch GET request to Doctor backend API
+        fetch(`/hms/doctor/check-phone?phone=${encodeURIComponent(phoneNumber)}`, {
+            method: 'GET',
+            headers: { 'Accept': 'application/json' }
+        })
+        .then(response => {
+            if (!response.ok) throw new Error('Network response failure');
+            return response.json();
+        })
+        .then(exists => {
+            if (exists) {
+                if (errorElement) {
+                    errorElement.textContent = "This contact number is already registered to a doctor.";
+                    errorElement.style.display = 'block';
+                }
+                phoneInput.style.borderColor = '#ef4444'; // Soft Red
+                phoneInput.setCustomValidity("Duplicate doctor phone number");
+                if (submitBtn) submitBtn.disabled = true;
+            } else {
+                if (errorElement) errorElement.style.display = 'none';
+                phoneInput.style.borderColor = '#10b981'; // Emerald Green
+                phoneInput.setCustomValidity("");
+                if (submitBtn) submitBtn.disabled = false;
+            }
+        })
+        .catch(error => {
+            console.error("AJAX Fetch Error Status:", error);
+            // Fail-safe protection fallback
+            phoneInput.style.borderColor = 'var(--border-color)';
+            if (submitBtn) submitBtn.disabled = false;
+        });
+    });
+});
+</script>
+
 
 </body>
 </html>

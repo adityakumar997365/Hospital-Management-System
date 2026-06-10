@@ -36,4 +36,10 @@ public class DoctorServicesImpl implements DoctorServices {
 		return doctorDao.getUserByContact(usernameMob);
 	}
 
+
+	@Override
+	public boolean existsByContactNumber(String contactNumber) {
+		return doctorDao.existsByContactNumber(contactNumber);
+	}
+
 }

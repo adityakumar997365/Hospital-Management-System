@@ -329,76 +329,105 @@ to {
 				</header>
 			</div>
 
-			<!-- Tab View 1: Doctor Table View -->
+		<!-- Tab View 1: Doctor Table View -->
+<div id="patientAppointmentListTab" class="tab-panel">
+	<div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px; border-bottom: 1px solid var(--border-color); padding-bottom: 12px;">
+		<h2>
+			<i class="fa-solid fa-calendar-check"></i> Patient Appointments
+		</h2>
+		<span style="background-color: rgba(14, 165, 233, 0.1); color: var(--primary-teal); padding: 4px 12px; border-radius: 4px; font-size: 0.85rem; font-weight: 600;">
+			Pending Actions </span>
+	</div>
 
-			<div id="patientAppointmentListTab" class="tab-panel">
-				<div
-					style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px; border-bottom: 1px solid var(--border-color); padding-bottom: 12px;">
-					<h2>
-						<i class="fa-solid fa-calendar-check"></i> Patient Appointments
-					</h2>
-					<span
-						style="background-color: rgba(14, 165, 233, 0.1); color: var(--primary-teal); padding: 4px 12px; border-radius: 4px; font-size: 0.85rem; font-weight: 600;">
-						Pending Actions </span>
-				</div>
+	<!-- RESPONSIVE TABLE WRAP CONTAINER -->
+	<div style="width: 100%; overflow-x: auto; background-color: rgba(15, 23, 42, 0.3); border-radius: 8px; border: 1px solid var(--border-color);">
+		<table style="width: 100%; border-collapse: collapse; text-align: left; font-size: 0.9rem;">
 
-				<!-- RESPONSIVE TABLE WRAP CONTAINER -->
-				<div
-					style="width: 100%; overflow-x: auto; background-color: rgba(15, 23, 42, 0.3); border-radius: 8px; border: 1px solid var(--border-color);">
-					<table
-						style="width: 100%; border-collapse: collapse; text-align: left; font-size: 0.9rem;">
+			<!-- TABLE HEADERS -->
+			<thead>
+				<tr style="background-color: rgba(255, 255, 255, 0.02); border-bottom: 1px solid var(--border-color); color: var(--text-white); font-weight: 700;">
+					<th style="padding: 16px 20px;">Patient Details</th>
+					<th style="padding: 16px 20px;">Appointment Date</th>
+					<th style="padding: 16px 20px;">Time Slot</th>
+					<th style="padding: 16px 20px; text-align: center;">Actions</th>
+				</tr>
+			</thead>
 
-						<!-- TABLE HEADERS -->
-						<thead>
-							<tr
-								style="background-color: rgba(255, 255, 255, 0.02); border-bottom: 1px solid var(--border-color); color: var(--text-white); font-weight: 700;">
-								<th style="padding: 16px 20px;">Patient Name</th>
-								<th style="padding: 16px 20px;">Appointment Date</th>
-								<th style="padding: 16px 20px;">Time Slot</th>
-								<th style="padding: 16px 20px; text-align: center;">Actions</th>
-							</tr>
-						</thead>
+			<!-- TABLE BODY DATA ROWS -->
+			<tbody>
+				<tr th:each="appointment : ${appointmentsList}"
+					style="border-bottom: 1px solid var(--border-color); color: var(--text-muted); transition: background 0.2s;"
+					onmouseover="this.style.backgroundColor='rgba(255,255,255,0.01)'"
+					onmouseout="this.style.backgroundColor='transparent'">
 
-						<!-- TABLE BODY DATA ROWS (Loops through the model array using Thymeleaf th:each) -->
-						<tbody>
-							<!-- Placeholder row for design testing; Spring Boot loops over these automatically -->
-							<tr th:each="appointment : ${appointmentsList}"
-								style="border-bottom: 1px solid var(--border-color); color: var(--text-muted); transition: background 0.2s;"
-								onmouseover="this.style.backgroundColor='rgba(255,255,255,0.01)'"
-								onmouseout="this.style.backgroundColor='transparent'">
+					
+					<td style="padding: 14px 20px; color: var(--text-white);">
+						<div style="display: flex; flex-direction: column; gap: 4px;">
+							
+							<!-- Patient Name Display Line -->
+							<div style="display: flex; align-items: center; gap: 8px; font-weight: 600;">
+								<i class="fa-solid fa-user" style="color: var(--primary-teal); font-size: 0.85rem; width: 14px;"></i>
+								
+								<!-- CASE A: Booked for a Family Member Dependent -->
+								<span th:if="${appointment.familyMember != null}">
+								[[${appointment.familyMember.name}]]<br>
+								<span style="color: var(--accent-amber, #f59e0b); font-size: 0.8rem; font-weight: 500;">([[${appointment.familyMember.relationship}]] of [[${appointment.patient.name}]])</span>
+								</span>
+								
+								<!-- CASE B: Booked for the Primary Patient Account Holder -->
+								<span th:unless="${appointment.familyMember != null}" th:text="${appointment.patient.name}">
+									Aditya Kumar
+								</span>
+							</div>
 
-								<td style="padding: 14px 20px;"
-									th:text="${appointment.patient.name}"></td>
+							<!-- Dynamic Subtext Metadata Row: Gender & Age -->
+							<div style="display: flex; align-items: center; gap: 12px; font-size: 0.8rem; color: var(--text-muted); padding-left: 22px;">
+								
+								<!-- Gender Segment Tracking -->
+								<span>
+									<i class="fa-solid fa-venus-mars" style="font-size: 0.75rem; margin-right: 3px;"></i>
+									<span th:text="${appointment.familyMember != null ? appointment.familyMember.gender : appointment.patient.gender}">Male</span>
+								</span>
 
-								<td style="padding: 14px 20px; color: var(--text-white);"
-									th:text="${appointment.appointmentDate}">14-May-2026</td>
+								<!-- Chronological Age Computation Line from DOB -->
+								<span>
+									<i class="fa-solid fa-cake-candles" style="font-size: 0.75rem; margin-right: 3px;"></i>
+									<span th:with="dob=${appointment.familyMember != null ? appointment.familyMember.dob : appointment.patient.dateOfBirth}"
+									      th:text="${dob != null ? T(java.time.Period).between(dob, T(java.time.LocalDate).now()).getYears() + ' Yrs' : 'N/A'}">24 Yrs</span>
+								</span>
 
-								<td style="padding: 14px 20px; color: var(--text-white);"
-									th:text="${appointment.timeSlot}">10:00 AM - 11:00 AM</td>
+							</div>
+						</div>
+					</td>
 
-								<!-- DOCTOR ACTION WORKFLOW CELL -->
-								<td style="padding: 14px 20px; text-align: center;">
-									<div style="display: flex; gap: 8px; justify-content: center;">
+					<td style="padding: 14px 20px; color: var(--text-white); vertical-align: middle;"
+						th:text="${appointment.appointmentDate}">14-May-2026</td>
 
-										<!-- PRESCRIPTION ENTRANCE DIALOG TRIGGER LINK -->
-										<a
-											th:href="@{/doctor/appointment/{id}/prescribe(id=${appointment.appointmentId})}"
-											title="Issue Medical Prescription"
-											style="background-color: rgba(14, 165, 233, 0.1); color: var(--primary-teal); border: 1px solid rgba(14, 165, 233, 0.2); padding: 0 14px; height: 32px; border-radius: 6px; cursor: pointer; display: flex; align-items: center; justify-content: center; font-size: 0.85rem; font-weight: 700; text-decoration: none; transition: 0.2s;"
-											onmouseover="this.style.backgroundColor='var(--primary-teal)'; this.style.color='#0f172a'"
-											onmouseout="this.style.backgroundColor='rgba(14, 165, 233, 0.1)'; this.style.color='var(--primary-teal)'">
-											Prescribe </a>
+					<td style="padding: 14px 20px; color: var(--text-white); vertical-align: middle;"
+						th:text="${appointment.timeSlot}">10:00 AM - 11:00 AM</td>
 
-									</div>
-								</td>
+					<!-- DOCTOR ACTION WORKFLOW CELL -->
+					<td style="padding: 14px 20px; text-align: center; vertical-align: middle;">
+						<div style="display: flex; gap: 8px; justify-content: center;">
 
+							<!-- PRESCRIPTION ENTRANCE DIALOG TRIGGER LINK -->
+							<a th:href="@{/doctor/appointment/{id}/prescribe(id=${appointment.appointmentId})}"
+								title="Issue Medical Prescription"
+								style="background-color: rgba(14, 165, 233, 0.1); color: var(--primary-teal); border: 1px solid rgba(14, 165, 233, 0.2); padding: 0 14px; height: 32px; border-radius: 6px; cursor: pointer; display: flex; align-items: center; justify-content: center; font-size: 0.85rem; font-weight: 700; text-decoration: none; transition: 0.2s;"
+								onmouseover="this.style.backgroundColor='var(--primary-teal)'; this.style.color='#0f172a'"
+								onmouseout="this.style.backgroundColor='rgba(14, 165, 233, 0.1)'; this.style.color='var(--primary-teal)'">
+								Prescribe 
+							</a>
 
-							</tr>
-						</tbody>
+						</div>
+					</td>
 
-					</table>
-				</div>
-			</div>
+				</tr>
+			</tbody>
+
+		</table>
+	</div>
+</div>
 
 			<!-- Tab View 2: Doctor Prescribe History Table View -->
 			<div id="prescribeHistoryTab" class="tab-panel">
@@ -413,58 +442,92 @@ to {
 				</div>
 
 				<!-- RESPONSIVE TABLE CONTAINER -->
-				<div
-					style="width: 100%; overflow-x: auto; background-color: rgba(15, 23, 42, 0.3); border-radius: 8px; border: 1px solid var(--border-color);">
-					<table
-						style="width: 100%; border-collapse: collapse; text-align: left; font-size: 0.9rem;">
+				<div style="width: 100%; overflow-x: auto; background-color: rgba(15, 23, 42, 0.3); border-radius: 8px; border: 1px solid var(--border-color);">
+	<table style="width: 100%; border-collapse: collapse; text-align: left; font-size: 0.9rem;">
 
-						<!-- TABLE HEADERS -->
-						<thead>
-							<tr
-								style="background-color: rgba(255, 255, 255, 0.02); border-bottom: 1px solid var(--border-color); color: var(--text-white); font-weight: 700;">
-								<th style="padding: 16px 20px;">Patient Name</th>
-								<th style="padding: 16px 20px;">Date of Appointment</th>
-								<th style="padding: 16px 20px;">Diagnose</th>
-								<th style="padding: 16px 20px; text-align: center;">View
-									Prescribe</th>
-							</tr>
-						</thead>
+		<!-- TABLE HEADERS -->
+		<thead>
+			<tr style="background-color: rgba(255, 255, 255, 0.02); border-bottom: 1px solid var(--border-color); color: var(--text-white); font-weight: 700;">
+				<th style="padding: 16px 20px;">Patient Details</th>
+				<th style="padding: 16px 20px;">Date of Appointment</th>
+				<th style="padding: 16px 20px;">Diagnose</th>
+				<th style="padding: 16px 20px; text-align: center;">View Prescribe</th>
+			</tr>
+		</thead>
 
-						<!-- TABLE BODY DATA ROWS (Loops using Thymeleaf th:each) -->
-						<tbody>
-							<!-- Placeholder row for design preview; replaced dynamically by Spring Book backend -->
-							<tr th:each="history : ${pateintPrescribeList}"
-								style="border-bottom: 1px solid var(--border-color); color: var(--text-muted); transition: background 0.2s;"
-								onmouseover="this.style.backgroundColor='rgba(255,255,255,0.01)'"
-								onmouseout="this.style.backgroundColor='transparent'">
+		<!-- TABLE BODY DATA ROWS (Loops using Thymeleaf th:each) -->
+		<tbody>
+			<tr th:each="history : ${pateintPrescribeList}"
+				style="border-bottom: 1px solid var(--border-color); color: var(--text-muted); transition: background 0.2s;"
+				onmouseover="this.style.backgroundColor='rgba(255,255,255,0.01)'"
+				onmouseout="this.style.backgroundColor='transparent'">
 
-								<td
-									style="padding: 14px 20px; font-weight: 600; color: var(--text-white);"
-									th:text="${history.patient.name}"></td>
-								<td style="padding: 14px 20px;"
-									th:text="${history.appointment.appointmentDate}"></td>
-								<td style="padding: 14px 20px;" th:text="${history.diagnose}"></td>
+				
+				<td style="padding: 14px 20px; color: var(--text-white);">
+					<div style="display: flex; flex-direction: column; gap: 4px;">
+						
+						<!-- Patient Name Display Line -->
+						<div style="display: flex; align-items: center; gap: 8px; font-weight: 600;">
+							<i class="fa-solid fa-user" style="color: var(--primary-teal); font-size: 0.85rem; width: 14px;"></i>
+							
+							<!-- CASE A: Prescription was written for a Family Member Dependent -->
+							<span th:if="${history.familyMember != null}">
+								[[${history.familyMember.name}]] <br>
+								<span style="color: var(--accent-amber, #f59e0b); font-size: 0.8rem; font-weight: 500;">([[${history.familyMember.relationship}]] of [[${history.patient.name}]])</span>
+							</span>
+							
+							<!-- CASE B: Prescription was written for the Primary Patient Account Holder -->
+							<span th:unless="${history.familyMember != null}" th:text="${history.patient.name}">
+								Aditya Kumar
+							</span>
+						</div>
 
-								<!-- View ACTION BUTTON -->
-								<td style="padding: 14px 20px; text-align: center;">
-									<div style="display: flex; gap: 8px; justify-content: center;">
+						<!-- Dynamic Subtext Metadata Row: Gender & Age -->
+						<div style="display: flex; align-items: center; gap: 12px; font-size: 0.8rem; color: var(--text-muted); padding-left: 22px;">
+							
+							<!-- Gender Segment Tracking -->
+							<span>
+								<i class="fa-solid fa-venus-mars" style="font-size: 0.75rem; margin-right: 3px;"></i>
+								<span th:text="${history.familyMember != null ? history.familyMember.gender : history.patient.gender}">Male</span>
+							</span>
 
-										<!-- VIEW MEDICINE HISTORY ANCHOR LINK ROUTER (UPDATED) -->
-										<a
-											th:href="@{/doctor/prescription/view(appointmentId=${history.appointment.appointmentId})}"
-											title="View Medicine History"
-											style="background-color: rgba(16, 185, 129, 0.1); color: #10b981; border: 1px solid rgba(16, 185, 129, 0.2); padding: 0 14px; height: 32px; border-radius: 6px; cursor: pointer; display: inline-flex; align-items: center; justify-content: center; font-size: 0.85rem; font-weight: 700; text-decoration: none; transition: 0.2s;"
-											onmouseover="this.style.backgroundColor='#10b981'; this.style.color='#0f172a'"
-											onmouseout="this.style.backgroundColor='rgba(16, 185, 129, 0.1)'; this.style.color='#10b981'">
-											View </a>
+							<!-- Chronological Age Computation Line from DOB -->
+							<span>
+								<i class="fa-solid fa-cake-candles" style="font-size: 0.75rem; margin-right: 3px;"></i>
+								<span th:with="dob=${history.familyMember != null ? history.familyMember.dob : history.patient.dateOfBirth}"
+								      th:text="${dob != null ? T(java.time.Period).between(dob, T(java.time.LocalDate).now()).getYears() + ' Yrs' : 'N/A'}">24 Yrs</span>
+							</span>
 
-									</div>
-								</td>
-							</tr>
-						</tbody>
+						</div>
+					</div>
+				</td>
 
-					</table>
-				</div>
+				<td style="padding: 14px 20px; color: var(--text-white); vertical-align: middle;"
+					th:text="${history.appointment.appointmentDate}"></td>
+				
+				<td style="padding: 14px 20px; vertical-align: middle;" th:text="${history.diagnose}"></td>
+
+				<!-- View ACTION BUTTON -->
+				<td style="padding: 14px 20px; text-align: center; vertical-align: middle;">
+					<div style="display: flex; gap: 8px; justify-content: center;">
+
+						<!-- VIEW MEDICINE HISTORY ANCHOR LINK ROUTER (UPDATED) -->
+						<a th:href="@{/doctor/prescription/view(appointmentId=${history.appointment.appointmentId})}"
+							title="View Medicine History"
+							style="background-color: rgba(16, 185, 129, 0.1); color: #10b981; border: 1px solid rgba(16, 185, 129, 0.2); padding: 0 14px; height: 32px; border-radius: 6px; cursor: pointer; display: inline-flex; align-items: center; justify-content: center; font-size: 0.85rem; font-weight: 700; text-decoration: none; transition: 0.2s;"
+							onmouseover="this.style.backgroundColor='#10b981'; this.style.color='#0f172a'"
+							onmouseout="this.style.backgroundColor='rgba(16, 185, 129, 0.1)'; this.style.color='#10b981'">
+							View 
+						</a>
+
+					</div>
+				</td>
+			</tr>
+		</tbody>
+
+	</table>
+</div>
+
 			</div>
 
 

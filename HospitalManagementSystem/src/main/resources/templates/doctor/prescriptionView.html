@@ -243,51 +243,87 @@
             </div>
 
             <div class="view-body">
+    
+    <!-- Section Block A: Consultation Core Metadata -->
+    <div class="meta-section-title">Consultation Information</div>
+    <div class="meta-data-box" style="display: grid; grid-template-columns: 1fr 1fr; gap: 16px; margin-bottom: 20px;">
+        
+        
+        <div>
+            <span class="meta-label">Attending Patient</span>
+            <span class="meta-value" style="font-weight: 600; display: block; margin-bottom: 4px;">
+                <!-- CASE A: Prescription belongs to a Family Member Dependent -->
+                <span th:if="${prescription.familyMember != null}">
+								[[${prescription.familyMember.name}]]<br>
+								<span style="color: var(--accent-amber, #f59e0b); font-size: 0.8rem; font-weight: 500;">([[${prescription.familyMember.relationship}]] of [[${prescription.patient.name}]])</span>
+							</span>
                 
-                <!-- Section Block A: Consultation Core Metadata -->
-                <div class="meta-section-title">Consultation Information</div>
-                <div class="meta-data-box">
-                    <div>
-                        <span class="meta-label">Attending Patient</span>
-                        <span class="meta-value" th:text="${prescription.patient != null ? prescription.patient.name : 'Unknown Specialist'}">Dr. Raj Sharma</span>
-                    </div>
-                    <div>
-                        <span class="meta-label">Consultation Date</span>
-                        <span class="meta-value" style="color: var(--accent-amber);" th:text="${prescription.createdDate}">2026-05-18</span>
-                    </div>
-                </div>
-
-                <!-- Section Block B: Detailed Prescription Form Box Records -->
-                <div class="meta-section-title">Prescription Log Summary</div>
-                <div class="read-only-stack">
-                    
-                    <!-- 1. Clinical Diagnosis Assessment Box Line -->
-                    <div class="box-field-wrapper">
-                        <label><i class="fa-solid fa-stethoscope"></i> Diagnosis / Medical Assessment</label>
-                        <div class="static-text-box" th:text="${prescription.diagnose}">
-                            Acute Viral Nasopharyngitis with cough symptoms
-                        </div>
-                    </div>
-
-                    <!-- 2. Pharmacy Medicine Formulation Line Box Container -->
-                    <div class="box-field-wrapper">
-                        <label><i class="fa-solid fa-pills"></i> Prescribed Medication</label>
-                        <div class="static-text-box" style="font-weight: 600; color: var(--primary-teal);" th:text="${prescription.medicine}">
-                            Amoxicillin 500mg (Oral Capsules)
-                        </div>
-                    </div>
-
-                    <!-- 3. Safe Intake Dosage Frequency Box Instruction Sheet -->
-                    <div class="box-field-wrapper">
-                        <label><i class="fa-solid fa-clock-rotate-left"></i> Dosage Instructions</label>
-                        <div class="static-text-box" style="color: #e2e8f0;" th:text="${prescription.dosage}">
-                            Take 1 tablet every 8 hours after meals for 7 consecutive days.
-                        </div>
-                    </div>
-
-                </div>
-
+                <!-- CASE B: Prescription belongs to the Primary Patient Account Holder -->
+                <span th:unless="${prescription.familyMember != null}" th:text="${prescription.patient.name}">
+                    Aditya Kumar
+                </span>
+            </span>
+            
+            <!-- Dynamic Subtext Metadata Row: Gender & Age metrics -->
+            <div style="display: flex; gap: 12px; font-size: 0.8rem; color: var(--text-muted);">
+                <span>
+                    <i class="fa-solid fa-venus-mars" style="font-size: 0.75rem; margin-right: 3px;"></i>
+                    <span th:text="${prescription.familyMember != null ? prescription.familyMember.gender : prescription.patient.gender}">Male</span>
+                </span>
+                <span>
+                    <i class="fa-solid fa-cake-candles" style="font-size: 0.75rem; margin-right: 3px;"></i>
+                    <span th:with="dob=${prescription.familyMember != null ? prescription.familyMember.dob : prescription.patient.dateOfBirth}"
+                          th:text="${dob != null ? T(java.time.Period).between(dob, T(java.time.LocalDate).now()).getYears() + ' Yrs' : 'N/A'}">24 Yrs</span>
+                </span>
             </div>
+        </div>
+
+        <div>
+            <span class="meta-label">Consultation Date</span>
+            <span class="meta-value" style="color: var(--accent-amber);" th:text="${prescription.createdDate}">2026-05-18</span>
+        </div>
+    </div>
+
+    <!-- Section Block B: Detailed Prescription Form Box Records -->
+    <div class="meta-section-title">Prescription Log Summary</div>
+    <div class="read-only-stack">
+        
+        <!-- 1. Clinical Diagnosis Assessment Box Line -->
+        <div class="box-field-wrapper">
+            <label><i class="fa-solid fa-stethoscope"></i> Diagnosis / Medical Assessment</label>
+            <div class="static-text-box" th:text="${prescription.diagnose}">
+                Acute Viral Nasopharyngitis with cough symptoms
+            </div>
+        </div>
+<!-- UPDATED: Dynamic Multi-Row Prescription Log View -->
+<div class="box-field-wrapper">
+    <label><i class="fa-solid fa-pills"></i> Prescribed Medications & Dosage Intake Plan</label>
+    <div style="display: flex; flex-direction: column; gap: 8px; margin-top: 6px;">
+        
+        <!-- Iterate safely by splitting the string straight inside Thymeleaf using SpEL expression tokens -->
+        <div th:each="med, iterStat : ${#strings.arraySplit(prescription.medicine, '\|\|\|')}" 
+             style="background: #0f172a; border: 1px solid var(--border-color); border-radius: 8px; padding: 12px 16px; display: flex; justify-content: space-between; align-items: center;">
+            
+            <div>
+                <i class="fa-solid fa-capsules" style="color: var(--primary-teal); margin-right: 6px; font-size: 0.85rem;"></i>
+                <span style="font-weight: 600; color: var(--text-white);" th:text="${med}">Amoxicillin 500mg</span>
+            </div>
+            
+            <div style="font-size: 0.88rem; color: #cbd5e1; background: rgba(255,255,255,0.02); padding: 4px 10px; border-radius: 4px; border: 1px solid var(--border-color);">
+                <i class="fa-solid fa-clock-rotate-left" style="font-size: 0.75rem; margin-right: 4px; color: var(--accent-amber);"></i>
+                <!-- Grabs the matching index position from your dosage array string to link them up correctly -->
+                <span th:text="${#strings.arraySplit(prescription.dosage, '\|\|\|')[iterStat.index]}">Take 1 every 8 hours</span>
+            </div>
+            
+        </div>
+    </div>
+</div>
+
+
+    </div>
+
+</div>
+
 
         </div>
     </main>

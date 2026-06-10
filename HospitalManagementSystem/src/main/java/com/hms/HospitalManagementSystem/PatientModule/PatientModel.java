@@ -3,6 +3,8 @@ package com.hms.HospitalManagementSystem.PatientModule;
 import jakarta.persistence.*;
 import java.time.LocalDate;
 
+import com.hms.HospitalManagementSystem.FamilyMemberModule.FamilyMemberModel;
+
 @Entity
 @Table(name = "Patient")
 public class PatientModel {
@@ -30,6 +32,13 @@ public class PatientModel {
     @Lob
     @Column(name = "medicalHistory", columnDefinition = "TEXT")
     private String medicalHistory;
+    
+    // Add this inside PatientModel class for easy data retrieval
+    @OneToMany(mappedBy = "patient", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
+    private java.util.List<FamilyMemberModel> familyMembers;
+
+    
+
 
     public PatientModel() {}
 
@@ -87,5 +96,14 @@ public class PatientModel {
 
     public void setMedicalHistory(String medicalHistory ) {
         this.medicalHistory = medicalHistory;
+    }
+    
+ // Getter and Setter for familyMembers
+    public java.util.List<FamilyMemberModel> getFamilyMembers() {
+        return familyMembers;
+    }
+
+    public void setFamilyMembers(java.util.List<FamilyMemberModel> familyMembers) {
+        this.familyMembers = familyMembers;
     }
 }

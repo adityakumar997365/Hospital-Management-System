@@ -57,6 +57,11 @@ public class DoctorDAOImpl implements DoctorDAO {
 		
 		return user;
 	}
+
+	@Override
+	public boolean existsByContactNumber(String contactNumber) {
+		return doctorRepository.existsByContactNumber(contactNumber);
+	}
 	
 	
 

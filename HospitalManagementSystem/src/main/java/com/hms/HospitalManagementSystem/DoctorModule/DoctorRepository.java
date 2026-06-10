@@ -10,4 +10,6 @@ public interface DoctorRepository extends JpaRepository<DoctorModel, Integer> {
 	
 	Optional<DoctorModel> findByDoctorId(Integer doctorId);
 
+	 boolean existsByContactNumber(String contactNumber);
+	
 }

@@ -7,14 +7,19 @@ import java.util.Optional;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.ModelAttribute;
+import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 import com.hms.HospitalManagementSystem.AppointmentSchedulingModule.AppointmentModel;
 import com.hms.HospitalManagementSystem.AppointmentSchedulingModule.AppointmentServices;
 import com.hms.HospitalManagementSystem.DoctorModule.DoctorModel;
 import com.hms.HospitalManagementSystem.DoctorModule.DoctorRepository;
 import com.hms.HospitalManagementSystem.DoctorModule.DoctorServices;
+import com.hms.HospitalManagementSystem.FamilyMemberModule.FamilyMemberModel;
+import com.hms.HospitalManagementSystem.FamilyMemberModule.FamilyMemberRepository;
 import com.hms.HospitalManagementSystem.PrescriptionModule.PrescriptionModel;
 import com.hms.HospitalManagementSystem.PrescriptionModule.PrescriptionServices;
 
@@ -28,18 +33,19 @@ public class PatientController {
 	private final DoctorRepository doctorRepository;
 	private final PrescriptionServices prescriptionServices;
 	private final AppointmentServices appointmentServices;
-
+	private final FamilyMemberRepository familyMemberRepository;
 	
 
 	public PatientController(PatientServices patientServices, DoctorServices doctorservices,
 			DoctorRepository doctorRepository, PrescriptionServices prescriptionServices,
-			AppointmentServices appointmentServices) {
+			AppointmentServices appointmentServices, FamilyMemberRepository familyMemberRepository) {
 
 		this.patientServices = patientServices;
 		this.doctorservices = doctorservices;
 		this.doctorRepository = doctorRepository;
 		this.prescriptionServices = prescriptionServices;
 		this.appointmentServices = appointmentServices;
+		this.familyMemberRepository = familyMemberRepository;
 	}
 
 	@GetMapping("/dashboard")
@@ -83,6 +89,13 @@ public class PatientController {
 		
 		model.addAttribute("patientAppointmentHistoryList", patientAppointmentHistoryList);
 		
+		//for family member
+		if (patient != null && patient.getFamilyMembers() != null) {
+			model.addAttribute("familyMembersList", patient.getFamilyMembers());
+		} else {
+			model.addAttribute("familyMembersList", new java.util.ArrayList<FamilyMemberModel>());
+		}
+		
 		return "/patient/dashboard";
 
 	}
@@ -90,32 +103,38 @@ public class PatientController {
 	@GetMapping("/book-appointment")
 	public String checkoutAppointmentBill(@RequestParam(name = "doctorId") Integer doctorId, Model model, Principal principal) {
 	  
-		// 1. for patient
-				String usernameMob = principal.getName();
-
-				PatientModel patient = patientServices.getUserByContact(usernameMob);
-
-				model.addAttribute("patient", patient);
+	    // 1. Fetch patient
+	    String usernameMob = principal.getName();
+	    PatientModel patient = patientServices.getUserByContact(usernameMob);
+	    model.addAttribute("patient", patient);
 				
-	    // 2. Query the specialist details out of your DAO layer
-	    // Note: Ensure your DAO has a lookup method by primary key ID matching this call
+	    // =======================================================
+	    // ADDED: Fetch and bind family members for booking choice
+	    // =======================================================
+	    if (patient != null && patient.getFamilyMembers() != null) {
+	        model.addAttribute("familyMembersList", patient.getFamilyMembers());
+	    } else {
+	        model.addAttribute("familyMembersList", new java.util.ArrayList<>());
+	    }
+
+	    // 2. Query doctor details
 	    Optional<DoctorModel> option = doctorRepository.findByDoctorId(doctorId);
-	    
 	    DoctorModel doctor = option.get();
 
 	    // 3. Calculate financial checkout parameters
-	    double consultationFee = 500.00; // Hardcoded default clinic service charge
-	    double taxAmount = consultationFee * 0.18; // 18% standard healthcare service cess
+	    double consultationFee = 500.00;
+	    double taxAmount = consultationFee * 0.18;
 	    double grandTotalAmount = consultationFee + taxAmount;
 
-	    // 4. Bind parameters directly into Thymeleaf model variables
+	    // 4. Bind parameters
 	    model.addAttribute("doctor", doctor);
 	    model.addAttribute("consultationFee", String.format("%.2f", consultationFee));
 	    model.addAttribute("taxAmount", String.format("%.2f", taxAmount));
 	    model.addAttribute("grandTotal", String.format("%.2f", grandTotalAmount));
 
-	    return "/patient/billPage"; // Renders the brand new central checkout bill template view page
+	    return "/patient/billPage"; 
 	}
+
 	
 	@GetMapping("/prescription/view")
 	public String viewPrescriptionDetailsDataSummary(@RequestParam(name = "appointmentId") Integer appointmentId, 
@@ -130,6 +149,35 @@ public class PatientController {
 	    return "/patient/prescriptionView"; 
 	}
 
+	@PostMapping("/family/add")
+	public String addFamilyMember(
+	        @ModelAttribute FamilyMemberModel familyMember,
+	        @RequestParam("primaryPatientId") Integer primaryPatientId, // Captures ID from the hidden frontend field
+	        RedirectAttributes redirectAttributes) {
+		
+		 try {
+		        // 1. Fetch the primary patient entity context directly using your PatientRepository
+		        PatientModel primaryPatient = patientServices.getPatientById(primaryPatientId);
+
+		        // 2. Apply your Fallback Rule: If contact input is empty, copy the primary patient's number
+		        if (familyMember.getContact() == null || familyMember.getContact().trim().isEmpty()) {
+		            familyMember.setContact(primaryPatient.getContactNumber());
+		        }
+
+		        // 3. Link the family member profile to the primary patient profile object
+		        familyMember.setPatient(primaryPatient);
+
+		        // 4. Save directly to the database using the JpaRepository method
+		        familyMemberRepository.save(familyMember);
+		        
+		        redirectAttributes.addFlashAttribute("successMessage", "Family member added successfully!");
+		        
+		    } catch (Exception e) {
+		        redirectAttributes.addFlashAttribute("errorMessage", "Failed to add family member: " + e.getMessage());
+		    }
+		
+		return "redirect:/patient/dashboard";
+	}
 
 
 }

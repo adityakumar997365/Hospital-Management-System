@@ -4,6 +4,7 @@ import java.math.BigDecimal;
 import java.time.LocalDate;
 
 import com.hms.HospitalManagementSystem.DoctorModule.DoctorModel;
+import com.hms.HospitalManagementSystem.FamilyMemberModule.FamilyMemberModel;
 import com.hms.HospitalManagementSystem.PatientModule.PatientModel;
 
 import jakarta.persistence.Column;
@@ -35,6 +36,10 @@ public class BillModel {
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "doctorId")
     private DoctorModel doctor;
+    
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "familyMemberId", nullable = true) // Nullable because it is null if the primary patient books for themselves
+    private FamilyMemberModel familyMember;
 
     @Column(name = "totalAmount", precision = 10, scale = 2)
     private BigDecimal totalAmount;
@@ -74,7 +79,15 @@ public class BillModel {
         this.patient = patient;
     }
     
-    public DoctorModel getDoctor() {
+    public FamilyMemberModel getFamilyMember() {
+		return familyMember;
+	}
+
+	public void setFamilyMember(FamilyMemberModel familyMember) {
+		this.familyMember = familyMember;
+	}
+
+	public DoctorModel getDoctor() {
         return doctor;
     }
 

@@ -20,12 +20,6 @@ public class AppointmentController {
         appointmentServices.updateStatus(id, AppointmentModel.Status.CONFIRMED, null);
         return "redirect:/admin/dashboard"; // Change this path to match your dashboard page endpoint
     }
-
-//    @PostMapping("/cancel/{id}")
-//    public String cancelAppointment(@PathVariable("id") Integer id) {
-//        appointmentServices.updateStatus(id, AppointmentModel.Status.CANCELLED);
-//        return "redirect:/admin/dashboard"; // Change this path to match your dashboard page endpoint
-//    }
     
     @PostMapping("/cancel/{id}")
     public String cancelAppointment(

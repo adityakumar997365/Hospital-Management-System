@@ -4,6 +4,7 @@ import java.time.LocalDate;
 
 import com.hms.HospitalManagementSystem.BillingAndPaymentsModule.BillModel;
 import com.hms.HospitalManagementSystem.DoctorModule.DoctorModel;
+import com.hms.HospitalManagementSystem.FamilyMemberModule.FamilyMemberModel;
 import com.hms.HospitalManagementSystem.PatientModule.PatientModel;
 
 import jakarta.persistence.Column;
@@ -30,6 +31,10 @@ public class AppointmentModel {
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "patientId")
     private PatientModel patient;
+    
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "family_member_id", nullable = true) // Nullable because it can be null if booking for self
+    private FamilyMemberModel familyMember;
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "doctorId")
@@ -75,7 +80,15 @@ public class AppointmentModel {
         this.patient = patient;
     }
 
-    public DoctorModel getDoctor() {
+    public FamilyMemberModel getFamilyMember() {
+		return familyMember;
+	}
+
+	public void setFamilyMember(FamilyMemberModel familyMember) {
+		this.familyMember = familyMember;
+	}
+
+	public DoctorModel getDoctor() {
         return doctor;
     }
 

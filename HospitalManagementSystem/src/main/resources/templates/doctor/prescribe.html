@@ -291,72 +291,176 @@
         </div>
     </nav>
 
-    <!-- 2. CENTRALIZED BILL CARD PANEL FRAME CONTAINER -->
-    <main class="content-viewport-wrapper">
-        <div class="prescription-card">
-            
-            <div class="prescription-header">
-                <h2><i class="fa-solid fa-file-medical"></i> Issue Medical Prescription</h2>
-                <p>Record clinical diagnoses, prescription line entries, and matching treatment regimens</p>
-            </div>
+<!-- 2. CENTRALIZED BILL CARD PANEL FRAME CONTAINER -->
+<main class="content-viewport-wrapper">
+    <div class="prescription-card">
+        
+        <div class="prescription-header">
+            <h2><i class="fa-solid fa-file-medical"></i> Issue Medical Prescription</h2>
+            <p>Record clinical diagnoses, prescription line entries, and matching treatment regimens</p>
+        </div>
 
-            <div class="prescription-body">
+        <div class="prescription-body">
+            
+            <!-- Read-Only Consultation Context Fields Block -->
+            <div class="meta-section-title">Consultation Context</div>
+            <div class="patient-meta-box" style="display: grid; grid-template-columns: 1fr 1fr; gap: 16px; margin-bottom: 20px;">
                 
-                <!-- Read-Only Consultation Context Fields Block -->
-                <div class="meta-section-title">Consultation Context</div>
-                <div class="patient-meta-box">
-                    <div>
-                        <span class="meta-item-label">Target Patient Name</span>
-                        <span class="meta-item-value" th:text="${appointment.patient.name}">John Doe</span>
-                    </div>
-                    <div>
-                        <span class="meta-item-label">Appointment Calendar Date</span>
-                        <span class="meta-item-value" style="color: var(--accent-amber);" th:text="${appointment.appointmentDate}">2026-05-18</span>
+                
+                <div>
+                    <span class="meta-item-label">Target Patient Name</span>
+                    <span class="meta-item-value" style="font-weight: 600; display: block; margin-bottom: 4px;">
+                        <!-- CASE A: Treated Person is a Family Member -->
+                       <span th:if="${appointment.familyMember != null}">
+								[[${appointment.familyMember.name}]]<br>
+								<span style="color: var(--accent-amber, #f59e0b); font-size: 0.8rem; font-weight: 500;">([[${appointment.familyMember.relationship}]] of [[${appointment.patient.name}]])</span>
+						</span>
+                        
+                        <!-- CASE B: Treated Person is the Primary Patient Profile -->
+                        <span th:unless="${appointment.familyMember != null}" th:text="${appointment.patient.name}">
+                            John Doe
+                        </span>
+                    </span>
+                    
+                    <!-- Dynamic Subtext Badges row: Gender & Age metrics -->
+                    <div style="display: flex; gap: 12px; font-size: 0.8rem; color: var(--text-muted);">
+                        <span>
+                            <i class="fa-solid fa-venus-mars" style="font-size: 0.75rem; margin-right: 3px;"></i>
+                            <span th:text="${appointment.familyMember != null ? appointment.familyMember.gender : appointment.patient.gender}">Male</span>
+                        </span>
+                        <span>
+                            <i class="fa-solid fa-cake-candles" style="font-size: 0.75rem; margin-right: 3px;"></i>
+                            <span th:with="dob=${appointment.familyMember != null ? appointment.familyMember.dob : appointment.patient.dateOfBirth}"
+                                  th:text="${dob != null ? T(java.time.Period).between(dob, T(java.time.LocalDate).now()).getYears() + ' Yrs' : 'N/A'}">24 Yrs</span>
+                        </span>
                     </div>
                 </div>
 
-                <!-- Core Patient Treatment Intake Form Block -->
-                <div class="meta-section-title">Clinical Entry Ledger</div>
-                
-                <form th:action="@{/doctor/appointment/{id}/prescribe(id=${appointment.appointmentId})}" method="post">
-                    
-                    <div class="form-group-stack">
-                        <!-- A. Diagnosis Assessment Field Selector Container -->
-                        <div class="form-control-layout">
-                            <label for="diagnosisField"><i class="fa-solid fa-stethoscope"></i> Diagnosis </label>
-                            <input type="text" id="diagnosisField" name="diagnosis" required 
-                                   placeholder="e.g. Acute Viral Nasopharyngitis" class="input-field-style">
-                        </div>
-
-                        <!-- B. Prescribed Pharmacy Formulation Selector Container -->
-                        <div class="form-control-layout">
-                            <label for="medicineField"><i class="fa-solid fa-capsules"></i> Prescribed Medicine</label>
-                            <input type="text" id="medicineField" name="medicine" required 
-                                   placeholder="e.g. Amoxicillin 500mg" class="input-field-style">
-                        </div>
-
-                        <!-- C. Dosage Instructions Text Parameter Field Container -->
-                        <div class="form-control-layout">
-                            <label for="dosageField"><i class="fa-solid fa-clock-rotate-left"></i> Dosage Instructions</label>
-                            <input type="text" id="dosageField" name="dosage" required 
-                                   placeholder="e.g. 1 tablet every 8 hours for 7 days" class="input-field-style">
-                        </div>
-                    </div>
-
-                    <!-- Layout Submissions & Action Form Router Row -->
-                    <div class="form-action-row">
-                        <a th:href="@{/doctor/dashboard}" class="btn-cancel">Cancel Entry</a>
-                        <button type="submit" class="btn-submit-prescription">
-                            <i class="fa-solid fa-file-signature"></i> Submit Prescription
-                        </button>
-                    </div>
-
-                </form>
-
+                <div>
+                    <span class="meta-item-label">Appointment Calendar Date</span>
+                    <span class="meta-item-value" style="color: var(--accent-amber);" th:text="${appointment.appointmentDate}">2026-05-18</span>
+                </div>
             </div>
 
-        </div>
-    </main>
+           <!-- Core Patient Treatment Intake Form Block (UPDATED FOR MULTIPLE MEDICINES) -->
+<div class="meta-section-title">Clinical Entry Ledger</div>
 
+<form th:action="@{/doctor/appointment/{id}/prescribe(id=${appointment.appointmentId})}" method="post" id="prescriptionForm" onsubmit="packageMedicinesBeforeSubmit(event)">
+    
+    <!-- Diagnosis Field Remains Singular -->
+    <div class="form-control-layout" style="margin-bottom: 20px;">
+        <label for="diagnosisField"><i class="fa-solid fa-stethoscope"></i> Diagnosis Assessment *</label>
+        <input type="text" id="diagnosisField" name="diagnosis" required 
+               placeholder="e.g. Acute Viral Nasopharyngitis" class="input-field-style" style="width: 100%; box-sizing: border-box; padding: 10px; background: #0f172a; border: 1px solid var(--border-color); border-radius: 6px; color: var(--text-white);">
+    </div>
+
+    <!-- Hidden Inputs that will carry the bundled packaged values to your Java controller -->
+    <input type="hidden" id="finalMedicinePayload" name="medicine">
+    <input type="hidden" id="finalDosagePayload" name="dosage">
+
+    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px;">
+        <label style="font-size: 0.9rem; color: var(--text-white); font-weight: 600;"><i class="fa-solid fa-pills"></i> Medications & Dosages *</label>
+        <!-- ADD BUTTON TO INJECT NEW ROWS -->
+        <button type="button" onclick="addNewMedicineRow()" style="background-color: var(--primary-teal, #14b8a6); color: #0f172a; border: none; padding: 6px 12px; border-radius: 4px; cursor: pointer; font-size: 0.85rem; font-weight: 700; display: inline-flex; align-items: center; gap: 4px;">
+            <i class="fa-solid fa-plus"></i> Add Medicine
+        </button>
+    </div>
+
+    <!-- CONTAINER WHERE ROWS WILL BE DYNAMICALLY INJECTED -->
+    <div id="medicineRowsContainer">
+        
+        <!-- Default Initial Row Item Pair (Row #1) -->
+        <div class="medicine-entry-row" style="display: flex; gap: 12px; margin-bottom: 12px; align-items: flex-end;">
+            <div style="flex: 1;">
+                <span style="font-size: 0.75rem; color: var(--text-muted); display: block; margin-bottom: 4px;">Medicine Name</span>
+                <input type="text" class="med-name-input" required placeholder="e.g. Paracetamol 650mg" style="width: 100%; box-sizing: border-box; padding: 10px; background: #0f172a; border: 1px solid var(--border-color); border-radius: 6px; color: var(--text-white); outline: none;">
+            </div>
+            <div style="flex: 1;">
+                <span style="font-size: 0.75rem; color: var(--text-muted); display: block; margin-bottom: 4px;">Dosage Instructions</span>
+                <input type="text" class="med-dosage-input" required placeholder="e.g. 1-0-1 (After Food, 5 Days)" style="width: 100%; box-sizing: border-box; padding: 10px; background: #0f172a; border: 1px solid var(--border-color); border-radius: 6px; color: var(--text-white); outline: none;">
+            </div>
+            <!-- Delete action is disabled on row 1 since at least 1 medication is mandatory -->
+            <button type="button" disabled style="background: transparent; border: 1px solid rgba(255,255,255,0.05); color: rgba(255,255,255,0.2); width: 38px; height: 38px; border-radius: 6px; cursor: not-allowed; display: flex; align-items: center; justify-content: center;">
+                <i class="fa-solid fa-trash"></i>
+            </button>
+        </div>
+
+    </div>
+
+    <!-- Layout Submissions & Action Form Router Row -->
+    <div class="form-action-row" style="display: flex; justify-content: flex-end; gap: 12px; margin-top: 24px; border-top: 1px solid var(--border-color); padding-top: 16px;">
+        <a th:href="@{/doctor/dashboard}" class="btn-cancel" style="padding: 10px 20px; color: var(--text-muted); text-decoration: none; border: 1px solid var(--border-color); border-radius: 6px; font-weight: 600; font-size: 0.9rem;">Cancel</a>
+        <button type="submit" class="btn-submit-prescription" style="padding: 10px 24px; background: var(--primary-teal, #14b8a6); color: #0f172a; border: none; border-radius: 6px; font-weight: 700; font-size: 0.9rem; cursor: pointer; display: inline-flex; align-items: center; gap: 6px;">
+            <i class="fa-solid fa-file-signature"></i> Submit Prescription
+        </button>
+    </div>
+
+</form>
+
+
+        </div>
+
+    </div>
+</main>
+<script>
+// Function to dynamically insert a new row pair into the form container
+function addNewMedicineRow() {
+    var container = document.getElementById("medicineRowsContainer");
+    
+    // Create new div container for the row item
+    var newRow = document.createElement("div");
+    newRow.className = "medicine-entry-row";
+    newRow.style = "display: flex; gap: 12px; margin-bottom: 12px; align-items: flex-end;";
+    
+    // Inject the raw HTML form markup with an active operational trash delete button
+    newRow.innerHTML = `
+        <div style="flex: 1;">
+            <input type="text" class="med-name-input" required placeholder="e.g. Cetirizine 10mg" style="width: 100%; box-sizing: border-box; padding: 10px; background: #0f172a; border: 1px solid var(--border-color); border-radius: 6px; color: var(--text-white); outline: none;">
+        </div>
+        <div style="flex: 1;">
+            <input type="text" class="med-dosage-input" required placeholder="e.g. 0-0-1 (At Bedtime, 3 Days)" style="width: 100%; box-sizing: border-box; padding: 10px; background: #0f172a; border: 1px solid var(--border-color); border-radius: 6px; color: var(--text-white); outline: none;">
+        </div>
+        <button type="button" onclick="removeMedicineRow(this)" style="background-color: rgba(239, 68, 68, 0.1); color: #ef4444; border: 1px solid rgba(239, 68, 68, 0.2); width: 38px; height: 38px; border-radius: 6px; cursor: pointer; display: flex; align-items: center; justify-content: center; transition: 0.2s;" onmouseover="this.style.backgroundColor='#ef4444'; this.style.color='#ffffff';" onmouseout="this.style.backgroundColor='rgba(239, 68, 68, 0.1)'; this.style.color='#ef4444';">
+            <i class="fa-solid fa-trash"></i>
+        </button>
+    `;
+    
+    container.appendChild(newRow);
+}
+
+// Function to safely delete a row item
+function removeMedicineRow(buttonElement) {
+    var row = buttonElement.parentElement;
+    row.remove();
+}
+
+// Intercepts submit, reads all open rows, and compiles them into a clean string split pattern
+function packageMedicinesBeforeSubmit(event) {
+    var nameInputs = document.querySelectorAll(".med-name-input");
+    var dosageInputs = document.querySelectorAll(".med-dosage-input");
+    
+    var compiledMedicines = [];
+    var compiledDosages = [];
+    
+    for (var i = 0; i < nameInputs.length; i++) {
+        var nameVal = nameInputs[i].value.trim();
+        var dosageVal = dosageInputs[i].value.trim();
+        
+        if (nameVal !== "" && dosageVal !== "") {
+            // Replace any accidental user entry patterns with simple hyphens to preserve string integrity
+            compiledMedicines.push(nameVal.replace(/\|/g, "-"));
+            compiledDosages.push(dosageVal.replace(/\|/g, "-"));
+        }
+    }
+    
+    // Join arrays together using three bars '|||' as a unique separator token
+    document.getElementById("finalMedicinePayload").value = compiledMedicines.join("|||");
+    document.getElementById("finalDosagePayload").value = compiledDosages.join("|||");
+    
+    return true;
+}
+
+
+</script>
 </body>
 </html>

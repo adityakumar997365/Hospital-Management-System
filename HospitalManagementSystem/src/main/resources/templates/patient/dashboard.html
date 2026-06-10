@@ -278,32 +278,39 @@ to {
 	<div class="dashboard-container">
 
 		<!-- 2. SIDEBAR NAVIGATION CONTROLS -->
-		<aside class="sidebar">
+<aside class="sidebar">
 
-			<button class="sidebar-btn active"
-				onclick="switchTab(event, 'patientDashboardTab')">
-				<i class="fa-solid fa-chart-pie"></i> Dashboard
-			</button>
-			<button class="sidebar-btn"
-				onclick="switchTab(event, 'doctorsListTab')">
-				<i class="fa-solid fa-user-doctor"></i> Doctor Directory
-			</button>
-			<button class="sidebar-btn"
-				onclick="switchTab(event, 'patientHistoryTab')">
-				<i class="fa-solid fa-hospital-user"></i> Prescription History
-			</button>
+	<button class="sidebar-btn active"
+		onclick="switchTab(event, 'patientDashboardTab')">
+		<i class="fa-solid fa-chart-pie"></i> Dashboard
+	</button>
+	<button class="sidebar-btn"
+		onclick="switchTab(event, 'doctorsListTab')">
+		<i class="fa-solid fa-user-doctor"></i> Doctor Directory
+	</button>
+	<button class="sidebar-btn"
+		onclick="switchTab(event, 'patientHistoryTab')">
+		<i class="fa-solid fa-hospital-user"></i> Prescription History
+	</button>
 
-			<!-- ADDED: Appointment History Tab -->
-			<button class="sidebar-btn"
-				onclick="switchTab(event, 'appointmentHistoryTab')">
-				<i class="fa-solid fa-calendar-days"></i> Appointment History
-			</button>
+	<!-- ADDED: Appointment History Tab -->
+	<button class="sidebar-btn"
+		onclick="switchTab(event, 'appointmentHistoryTab')">
+		<i class="fa-solid fa-calendar-days"></i> Appointment History
+	</button>
 
-			<button class="sidebar-btn"
-				onclick="switchTab(event, 'patientProfileTab')">
-				<i class="fa-solid fa-sliders"></i> My Profile
-			</button>
-		</aside>
+	<!-- ADDED: Family Members Tab (Placed before Profile) -->
+	<button class="sidebar-btn"
+		onclick="switchTab(event, 'familyMembersTab')">
+		<i class="fa-solid fa-users"></i> Family Members
+	</button>
+
+	<button class="sidebar-btn"
+		onclick="switchTab(event, 'patientProfileTab')">
+		<i class="fa-solid fa-sliders"></i> My Profile
+	</button>
+</aside>
+
 
 
 		<!-- CENTRAL INTERACTIVE MAIN DESKTOP -->
@@ -329,6 +336,42 @@ to {
 				</header>
 			</div>
 
+		
+			<!-- SYSTEM NOTIFICATION FLASH ALERTS CONTAINER -->
+<div style="width: 100%; margin-bottom: 20px;">
+	
+	<!-- 1. SUCCESS FLASH MESSAGE BANNER -->
+	<div th:if="${successMessage}" 
+		style="background-color: rgba(16, 185, 129, 0.1); border: 1px solid rgba(16, 185, 129, 0.3); color: #10b981; padding: 14px 20px; border-radius: 8px; font-size: 0.9rem; font-weight: 500; display: flex; align-items: center; gap: 10px; font-family: sans-serif; box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.2);">
+		<i class="fa-solid fa-circle-check" style="font-size: 1.1rem;"></i>
+		<div style="flex-grow: 1;">
+			<span th:text="${successMessage}">Family member added successfully!</span>
+		</div>
+		<button type="button" onclick="this.parentElement.style.display='none'" style="background: transparent; border: none; color: #10b981; cursor: pointer; font-size: 1rem; opacity: 0.7;" onmouseover="this.style.opacity='1'" onmouseout="this.style.opacity='0.7'">
+			<i class="fa-solid fa-xmark"></i>
+		</button>
+	</div>
+
+</div>
+
+<!-- FLASH MESSAGE VIEW CONTAINER -->
+<div style="width: 100%; margin-bottom: 20px;">
+	
+	<!-- RENDERS DYNAMICALLY WHEN REDIRECT FLASH ATTRIBUTE IS SUPPLIED -->
+	<div th:if="${billSuccessMessage}" 
+		style="background-color: rgba(16, 185, 129, 0.1); border: 1px solid rgba(16, 185, 129, 0.3); color: #10b981; padding: 14px 20px; border-radius: 8px; font-size: 0.9rem; font-weight: 500; display: flex; align-items: center; gap: 10px; font-family: sans-serif; box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.2);">
+		<i class="fa-solid fa-circle-check" style="font-size: 1.1rem;"></i>
+		<div style="flex-grow: 1;">
+			<span th:text="${billSuccessMessage}">Dynamic execution feedback message placeholder</span>
+		</div>
+		<button type="button" onclick="this.parentElement.style.display='none'" style="background: transparent; border: none; color: #10b981; cursor: pointer; font-size: 1rem; opacity: 0.7;" onmouseover="this.style.opacity='1'" onmouseout="this.style.opacity='0.7'">
+			<i class="fa-solid fa-xmark"></i>
+		</button>
+	</div>
+
+</div>
+
+			
 			<!-- Tab View 1: Doctor Table View -->
 
 			<div id="doctorsListTab" class="tab-panel">
@@ -419,212 +462,445 @@ to {
 			</div>
 
 			<!-- Tab View 2: Patient History Table View -->
-			<div id="patientHistoryTab" class="tab-panel">
-				<div
-					style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px; border-bottom: 1px solid var(--border-color); padding-bottom: 12px;">
-					<h2>
-						<i class="fa-solid fa-user-shield"></i> Patient Medical History
-					</h2>
-					<span
-						style="background-color: rgba(245, 158, 11, 0.1); color: var(--accent-amber); padding: 4px 12px; border-radius: 4px; font-size: 0.85rem; font-weight: 600;">
-						All Prescriptions</span>
-				</div>
+<div id="patientHistoryTab" class="tab-panel">
+	<div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px; border-bottom: 1px solid var(--border-color); padding-bottom: 12px;">
+		<h2>
+			<i class="fa-solid fa-user-shield"></i> Patient Medical History
+		</h2>
+		<span style="background-color: rgba(245, 158, 11, 0.1); color: var(--accent-amber); padding: 4px 12px; border-radius: 4px; font-size: 0.85rem; font-weight: 600;">
+			All Prescriptions</span>
+	</div>
 
-				<!-- RESPONSIVE TABLE CONTAINER -->
-				<div
-					style="width: 100%; overflow-x: auto; background-color: rgba(15, 23, 42, 0.3); border-radius: 8px; border: 1px solid var(--border-color);">
-					<table
-						style="width: 100%; border-collapse: collapse; text-align: left; font-size: 0.9rem;">
+	<!-- RESPONSIVE TABLE CONTAINER -->
+	<div style="width: 100%; overflow-x: auto; background-color: rgba(15, 23, 42, 0.3); border-radius: 8px; border: 1px solid var(--border-color);">
+		<table style="width: 100%; border-collapse: collapse; text-align: left; font-size: 0.9rem;">
 
-						<!-- TABLE HEADERS -->
-						<thead>
-							<tr
-								style="background-color: rgba(255, 255, 255, 0.02); border-bottom: 1px solid var(--border-color); color: var(--text-white); font-weight: 700;">
-								<th style="padding: 16px 20px;">Doctor Name</th>
-								<th style="padding: 16px 20px;">Specialization</th>
-								<th style="padding: 16px 20px;">Appointment Date & Time Slot</th>
-								<th style="padding: 16px 20px;">Diagnose</th>
-								<th style="padding: 16px 20px; text-align: center;">View
-									Prescription</th>
-							</tr>
-						</thead>
+			<!-- TABLE HEADERS -->
+			<thead>
+				<tr style="background-color: rgba(255, 255, 255, 0.02); border-bottom: 1px solid var(--border-color); color: var(--text-white); font-weight: 700;">
+					<!-- ADDED: Patient profile info header column -->
+					<th style="padding: 16px 20px;">Patient Details</th>
+					<th style="padding: 16px 20px;">Doctor Name</th>
+					<th style="padding: 16px 20px;">Specialization</th>
+					<th style="padding: 16px 20px;">Appointment Date & Time Slot</th>
+					<th style="padding: 16px 20px;">Diagnose</th>
+					<th style="padding: 16px 20px; text-align: center;">View Prescription</th>
+				</tr>
+			</thead>
 
-						<!-- TABLE BODY DATA ROWS (Loops using Thymeleaf th:each) -->
-						<tbody>
-							<!-- Placeholder row for design preview; replaced dynamically by Spring Boot backend -->
-							<tr th:each="history : ${pateintprescriptionList}"
-								style="border-bottom: 1px solid var(--border-color); color: var(--text-muted); transition: background 0.2s;"
-								onmouseover="this.style.backgroundColor='rgba(255,255,255,0.01)'"
-								onmouseout="this.style.backgroundColor='transparent'">
+			<!-- TABLE BODY DATA ROWS (Loops using Thymeleaf th:each) -->
+			<tbody>
+				<tr th:each="history : ${pateintprescriptionList}"
+					style="border-bottom: 1px solid var(--border-color); color: var(--text-muted); transition: background 0.2s;"
+					onmouseover="this.style.backgroundColor='rgba(255,255,255,0.01)'"
+					onmouseout="this.style.backgroundColor='transparent'">
 
-
-								<td
-									style="padding: 14px 20px; font-weight: 600; color: var(--text-white);">
-									<div style="display: flex; align-items: center; gap: 8px;">
-										<i class="fa-solid fa-user-doctor"
-											style="color: var(--primary-teal); font-size: 0.85rem;"></i>
-										<span th:text="${history.doctor.name}">Dr. Ramesh Kumar</span>
-									</div>
-								</td>
+					
+					<td style="padding: 14px 20px; color: var(--text-white);">
+						<div style="display: flex; flex-direction: column; gap: 4px;">
+							
+							<!-- Recipient Name Block -->
+							<div style="display: flex; align-items: center; gap: 6px; font-weight: 600;">
+								<i class="fa-solid fa-hospital-user" style="color: var(--primary-teal); font-size: 0.85rem; width: 14px;"></i>
 								
-								<td style="padding: 14px 20px;"><span
-									style="background-color: rgba(255, 255, 255, 0.05); padding: 4px 8px; border-radius: 4px; font-size: 0.8rem; color: var(--text-white);"
-									th:text="${history.doctor.specialization}">Cardiologist</span></td>
+								<!-- CASE A: Prescription linked to a Family Dependent -->
+								<span th:if="${history.familyMember != null}">
+									[[${history.familyMember.name}]]
+									<span style="color: var(--accent-amber, #f59e0b); font-size: 0.8rem; font-weight: 500;">([[${history.familyMember.relationship}]])</span>
+								</span>
 								
+								<!-- CASE B: Prescription linked to the Main Account Holder -->
+								<span th:unless="${history.familyMember != null}" th:text="${history.patient.name}">
+									Aditya Kumar
+								</span>
+							</div>
+
+							<!-- Recipient Subtext Details Row: Gender and Calculated Age -->
+							<div style="display: flex; align-items: center; gap: 12px; font-size: 0.8rem; color: var(--text-muted); padding-left: 20px;">
+								<span>
+									<i class="fa-solid fa-venus-mars" style="font-size: 0.75rem; margin-right: 3px;"></i>
+									<span th:text="${history.familyMember != null ? history.familyMember.gender : history.patient.gender}">Male</span>
+								</span>
+								<span>
+									<i class="fa-solid fa-cake-candles" style="font-size: 0.75rem; margin-right: 3px;"></i>
+									<span th:with="dob=${history.familyMember != null ? history.familyMember.dob : history.patient.dateOfBirth}"
+									      th:text="${dob != null ? T(java.time.Period).between(dob, T(java.time.LocalDate).now()).getYears() + ' Yrs' : 'N/A'}">24 Yrs</span>
+								</span>
+							</div>
+
+						</div>
+					</td>
+
+					<!-- 2. Doctor Name Cell -->
+					<td style="padding: 14px 20px; font-weight: 600; color: var(--text-white); vertical-align: middle;">
+						<div style="display: flex; align-items: center; gap: 8px;">
+							<i class="fa-solid fa-user-doctor" style="color: var(--primary-teal); font-size: 0.85rem;"></i>
+							<span th:text="${history.doctor.name}">Dr. Ramesh Kumar</span>
+						</div>
+					</td>
+					
+					<!-- 3. Specialization Badge Cell -->
+					<td style="padding: 14px 20px; vertical-align: middle;">
+						<span style="background-color: rgba(255, 255, 255, 0.05); padding: 4px 8px; border-radius: 4px; font-size: 0.8rem; color: var(--text-white);"
+							th:text="${history.doctor.specialization}">Cardiologist</span>
+					</td>
+					
+					<!-- 4. Schedule Meta Block Cell -->
+					<td style="padding: 14px 20px; vertical-align: middle;">
+						<div style="display: flex; flex-direction: column; gap: 2px;">
+							<span style="color: var(--text-white); font-weight: 500;">
+								<i class="fa-solid fa-calendar-day" style="font-size: 0.8rem; margin-right: 4px; color: var(--text-muted);"></i>
+								<span th:text="${history.appointment.appointmentDate}">2026-06-15</span>
+							</span> 
+							<span style="font-size: 0.8rem; color: var(--text-muted);">
+								<i class="fa-solid fa-clock" style="font-size: 0.75rem; margin-right: 4px;"></i> 
+								<span th:text="${history.appointment.timeSlot}">10:30 AM - 11:00 AM</span>
+							</span>
+						</div>
+					</td>
+
+					<!-- 5. Diagnosis Text Cell -->
+					<td style="padding: 14px 20px; vertical-align: middle;" th:text="${history.diagnose}">Malaria Detection</td>
+
+					<!-- 6. View ACTION BUTTON -->
+					<td style="padding: 14px 20px; text-align: center; vertical-align: middle;">
+						<div style="display: flex; gap: 8px; justify-content: center;">
+							<a th:href="@{/patient/prescription/view(appointmentId=${history.appointment.appointmentId})}"
+								title="View Medicine History"
+								style="background-color: rgba(16, 185, 129, 0.1); color: #10b981; border: 1px solid rgba(16, 185, 129, 0.2); padding: 0 14px; height: 32px; border-radius: 6px; cursor: pointer; display: inline-flex; align-items: center; justify-content: center; gap: 6px; font-size: 0.85rem; font-weight: 700; text-decoration: none; transition: 0.2s;"
+								onmouseover="this.style.backgroundColor='#10b981'; this.style.color='#0f172a'"
+								onmouseout="this.style.backgroundColor='rgba(16, 185, 129, 0.1)'; this.style.color='#10b981'">
+								<i class="fa-solid fa-eye" style="font-size: 0.8rem;"></i>
+								View
+							</a>
+						</div>
+					</td>
+
+				</tr>
+			</tbody>
+		</table>
+	</div>
+</div>
+
+			<!-- Tab View 3: Appointment History Tab Panel -->
+<div id="appointmentHistoryTab" class="tab-panel">
+	<div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px; border-bottom: 1px solid var(--border-color); padding-bottom: 12px;">
+		<h2>
+			<i class="fa-solid fa-calendar-check"></i> My Appointment Log
+		</h2>
+		<span style="background-color: rgba(14, 165, 233, 0.1); color: var(--primary-teal); padding: 4px 12px; border-radius: 4px; font-size: 0.85rem; font-weight: 600;">
+			Real-time Tracker </span>
+	</div>
+
+	<!-- RESPONSIVE TABLE CONTAINER -->
+	<div style="width: 100%; overflow-x: auto; background-color: rgba(15, 23, 42, 0.3); border-radius: 8px; border: 1px solid var(--border-color);">
+		<table style="width: 100%; border-collapse: collapse; text-align: left; font-size: 0.9rem;">
+			<thead>
+				<tr style="background-color: rgba(255, 255, 255, 0.02); border-bottom: 1px solid var(--border-color); color: var(--text-white); font-weight: 700;">
+					<!-- ADDED: Patient Details header token -->
+					<th style="padding: 16px 20px;">Patient Details</th>
+					<th style="padding: 16px 20px;">Doctor Name</th>
+					<th style="padding: 16px 20px;">Specialization</th>
+					<th style="padding: 16px 20px;">Appointment Date & Time Slot</th>
+					<th style="padding: 16px 20px; text-align: center;">Status</th>
+				</tr>
+			</thead>
+			<tbody>
+				<!-- Thymeleaf iterator processing backend list attributes safely -->
+				<tr th:each="appt : ${patientAppointmentHistoryList}"
+					style="border-bottom: 1px solid var(--border-color); color: var(--text-muted); transition: var(--transition);"
+					onmouseover="this.style.backgroundColor='rgba(255,255,255,0.01)'"
+					onmouseout="this.style.backgroundColor='transparent'">
+
+					
+					<td style="padding: 14px 20px; color: var(--text-white);">
+						<div style="display: flex; flex-direction: column; gap: 4px;">
+							
+							<!-- Row 1: Name & Bracketed Relationship Label -->
+							<div style="display: flex; align-items: center; gap: 6px; font-weight: 600;">
+								<i class="fa-solid fa-hospital-user" style="color: var(--primary-teal); font-size: 0.85rem; width: 14px;"></i>
 								
-								<!-- 2. Appointment Scheduled Booking Meta Block Cell with Icons -->
-								<td style="padding: 14px 20px;">
-									<div style="display: flex; flex-direction: column; gap: 2px;">
-										<span style="color: var(--text-white); font-weight: 500;">
-											<i class="fa-solid fa-calendar-day"
-											style="font-size: 0.8rem; margin-right: 4px; color: var(--text-muted);"></i>
-											<span th:text="${history.appointment.appointmentDate}">2026-06-15</span>
-										</span> <span style="font-size: 0.8rem; color: var(--text-muted);">
-											<i class="fa-solid fa-clock"
-											style="font-size: 0.75rem; margin-right: 4px;"></i> <span
-											th:text="${history.appointment.timeSlot}">10:30 AM -
-												11:00 AM</span>
-										</span>
-									</div>
-								</td>
+								<!-- CASE A: Visit belongs to an added Family Member -->
+								<span th:if="${appt.familyMember != null}">
+									[[${appt.familyMember.name}]] 
+									<span style="color: var(--accent-amber, #f59e0b); font-size: 0.8rem; font-weight: 500;">([[${appt.familyMember.relationship}]])</span>
+								</span>
+								
+								<!-- CASE B: Visit belongs directly to the Primary User Account Holder -->
+								<span th:unless="${appt.familyMember != null}" th:text="${appt.patient.name}">
+									Aditya Kumar
+								</span>
+							</div>
 
-								<!-- 3. Diagnosis Text Cell -->
-								<td style="padding: 14px 20px;" th:text="${history.diagnose}">Malaria
-									Detection</td>
+							<!-- Row 2: Subtext line rendering Gender and Calculated Age variables -->
+							<div style="display: flex; align-items: center; gap: 12px; font-size: 0.8rem; color: var(--text-muted); padding-left: 20px;">
+								<span>
+									<i class="fa-solid fa-venus-mars" style="font-size: 0.75rem; margin-right: 3px;"></i>
+									<span th:text="${appt.familyMember != null ? appt.familyMember.gender : appt.patient.gender}">Male</span>
+								</span>
+								<span>
+									<i class="fa-solid fa-cake-candles" style="font-size: 0.75rem; margin-right: 3px;"></i>
+									<span th:with="dob=${appt.familyMember != null ? appt.familyMember.dob : appt.patient.dateOfBirth}"
+									      th:text="${dob != null ? T(java.time.Period).between(dob, T(java.time.LocalDate).now()).getYears() + ' Yrs' : 'N/A'}">24 Yrs</span>
+								</span>
+							</div>
 
-								<!-- 4. View ACTION BUTTON -->
-								<td style="padding: 14px 20px; text-align: center;">
-									<div style="display: flex; gap: 8px; justify-content: center;">
+						</div>
+					</td>
 
-										<!-- VIEW MEDICINE HISTORY ANCHOR LINK ROUTER (UPDATED WITH ICON) -->
-										<a
-											th:href="@{/patient/prescription/view(appointmentId=${history.appointment.appointmentId})}"
-											title="View Medicine History"
-											style="background-color: rgba(16, 185, 129, 0.1); color: #10b981; border: 1px solid rgba(16, 185, 129, 0.2); padding: 0 14px; height: 32px; border-radius: 6px; cursor: pointer; display: inline-flex; align-items: center; justify-content: center; gap: 6px; font-size: 0.85rem; font-weight: 700; text-decoration: none; transition: 0.2s;"
-											onmouseover="this.style.backgroundColor='#10b981'; this.style.color='#0f172a'"
-											onmouseout="this.style.backgroundColor='rgba(16, 185, 129, 0.1)'; this.style.color='#10b981'">
-											<i class="fa-solid fa-eye" style="font-size: 0.8rem;"></i>
-											View
-										</a>
+					<!-- 2. Doctor Name Column -->
+					<td style="padding: 14px 20px; font-weight: 600; color: var(--text-white); vertical-align: middle;">
+						<div style="display: flex; align-items: center; gap: 8px;">
+							<i class="fa-solid fa-user-doctor" style="color: var(--primary-teal); font-size: 0.85rem;"></i>
+							<span th:text="${appt.doctor.name}">Dr. Ramesh Kumar</span>
+						</div>
+					</td>
 
-									</div>
-								</td>
+					<!-- 3. Medical Field Specialisation Area Column -->
+					<td style="padding: 14px 20px; vertical-align: middle;"><span
+						style="background-color: rgba(255, 255, 255, 0.05); padding: 4px 8px; border-radius: 4px; font-size: 0.8rem; color: var(--text-white);"
+						th:text="${appt.doctor.specialization}">Cardiologist</span></td>
 
-							</tr>
-						</tbody>
+					<!-- 4. Target Date and Booking Window Time Frame Parameters Column -->
+					<td style="padding: 14px 20px; vertical-align: middle;">
+						<div style="display: flex; flex-direction: column; gap: 2px;">
+							<span style="color: var(--text-white); font-weight: 500;">
+								<i class="fa-solid fa-calendar-day" style="font-size: 0.8rem; margin-right: 4px; color: var(--text-muted);"></i>
+								<span th:text="${appt.appointmentDate}">2026-06-15</span>
+							</span> 
+							<span style="font-size: 0.8rem; color: var(--text-muted);">
+								<i class="fa-solid fa-clock" style="font-size: 0.75rem; margin-right: 4px;"></i> 
+								<span th:text="${appt.timeSlot}">10:30 AM - 11:00 AM</span>
+							</span>
+						</div>
+					</td>
 
-					</table>
-				</div>
-			</div>
+					<!-- 5. Dynamic Process Lifecycle Workflow Conditional Badges Column -->
+					<td style="padding: 14px 20px; text-align: center; vertical-align: middle;">
+						<div style="display: flex; flex-direction: column; align-items: center; gap: 6px; width: 100%;">
 
-			<!-- Tab View 4: Appointment History Tab Panel -->
-			<div id="appointmentHistoryTab" class="tab-panel">
-				<div
-					style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px; border-bottom: 1px solid var(--border-color); padding-bottom: 12px;">
-					<h2>
-						<i class="fa-solid fa-calendar-check"></i> My Appointment Log
-					</h2>
-					<span
-						style="background-color: rgba(14, 165, 233, 0.1); color: var(--primary-teal); padding: 4px 12px; border-radius: 4px; font-size: 0.85rem; font-weight: 600;">
-						Real-time Tracker </span>
-				</div>
+							<!-- STATE 1: REVIEWING BADGE --> 
+							<span th:if="${appt.status.name() == 'REVIEWING'}"
+								style="background-color: rgba(245, 158, 11, 0.1); color: var(--accent-amber); border: 1px solid rgba(245, 158, 11, 0.2); padding: 4px 10px; border-radius: 6px; font-size: 0.8rem; font-weight: 700; display: inline-flex; align-items: center; gap: 6px;">
+								<i class="fa-solid fa-spinner fa-spin" style="font-size: 0.75rem;"></i> Reviewing
+							</span> 
 
-				<!-- RESPONSIVE TABLE CONTAINER -->
-				<div
-					style="width: 100%; overflow-x: auto; background-color: rgba(15, 23, 42, 0.3); border-radius: 8px; border: 1px solid var(--border-color);">
-					<table
-						style="width: 100%; border-collapse: collapse; text-align: left; font-size: 0.9rem;">
-						<thead>
-							<tr
-								style="background-color: rgba(255, 255, 255, 0.02); border-bottom: 1px solid var(--border-color); color: var(--text-white); font-weight: 700;">
-								<th style="padding: 16px 20px;">Doctor Name</th>
-								<th style="padding: 16px 20px;">Specialization</th>
-								<th style="padding: 16px 20px;">Appointment Date & Time Slot</th>
-								<th style="padding: 16px 20px; text-align: center;">Status</th>
-							</tr>
-						</thead>
-						<tbody>
-							<!-- Thymeleaf iterator processing backend list attributes safely -->
-							<tr th:each="appt : ${patientAppointmentHistoryList}"
-								style="border-bottom: 1px solid var(--border-color); color: var(--text-muted); transition: var(--transition);"
-								onmouseover="this.style.backgroundColor='rgba(255,255,255,0.01)'"
-								onmouseout="this.style.backgroundColor='transparent'">
+							<!-- STATE 2: CONFIRMED BADGE -->
+							<span th:if="${appt.status.name() == 'CONFIRMED'}"
+								style="background-color: rgba(16, 185, 129, 0.1); color: var(--accent-green); border: 1px solid rgba(16, 185, 129, 0.2); padding: 4px 10px; border-radius: 6px; font-size: 0.8rem; font-weight: 700; display: inline-flex; align-items: center; gap: 6px;">
+								<i class="fa-solid fa-circle-check" style="font-size: 0.75rem;"></i> Confirmed
+							</span> 
 
+							<!-- STATE 3: COMPLETED BADGE -->
+							<span th:if="${appt.status.name() == 'COMPLETED'}"
+								style="background-color: rgba(14, 165, 233, 0.1); color: var(--primary-teal); border: 1px solid rgba(14, 165, 233, 0.2); padding: 4px 10px; border-radius: 6px; font-size: 0.8rem; font-weight: 700; display: inline-flex; align-items: center; gap: 6px;">
+								<i class="fa-solid fa-circle-user" style="font-size: 0.75rem;"></i> Completed
+							</span> 
 
-								<td
-									style="padding: 14px 20px; font-weight: 600; color: var(--text-white);">
-									<div style="display: flex; align-items: center; gap: 8px;">
-										<i class="fa-solid fa-user-doctor"
-											style="color: var(--primary-teal); font-size: 0.85rem;"></i>
-										<span th:text="${appt.doctor.name}">Dr. Ramesh Kumar</span>
-									</div>
-								</td>
+							<!-- STATE 4: CANCELLED BADGE --> 
+							<span th:if="${appt.status.name() == 'CANCELLED'}"
+								style="background-color: rgba(239, 68, 68, 0.1); color: var(--accent-red); border: 1px solid rgba(239, 68, 68, 0.2); padding: 4px 10px; border-radius: 6px; font-size: 0.8rem; font-weight: 700; display: inline-flex; align-items: center; gap: 6px;">
+								<i class="fa-solid fa-circle-xmark" style="font-size: 0.75rem;"></i> Cancelled
+							</span>
 
-								<!-- 2. Medical Field Specialisation Area Column -->
-								<td style="padding: 14px 20px;"><span
-									style="background-color: rgba(255, 255, 255, 0.05); padding: 4px 8px; border-radius: 4px; font-size: 0.8rem; color: var(--text-white);"
-									th:text="${appt.doctor.specialization}">Cardiologist</span></td>
+							<!-- TARGETED BLOCK: Displays Reason Only For Cancelled Rows -->
+							<div th:if="${appt.status.name() == 'CANCELLED'}" 
+								 style="font-size: 0.75rem; color: rgba(239, 68, 68, 0.9); background-color: rgba(239, 68, 68, 0.05); padding: 4px 8px; border-radius: 4px; border: 1px solid rgba(239, 68, 68, 0.15); max-width: 180px; word-break: break-word; line-height: 1.3; text-align: center; font-weight: 500;">
+								<i class="fa-solid fa-comment-dots" style="font-size: 0.7 rot; margin-right: 2px;"></i>
+								<span th:text="${appt.reason != null ? appt.reason : 'No reason provided'}">Reason text placeholder</span>
+							</div>
 
-								<!-- 3. Target Date and Booking Window Time Frame Parameters Column -->
-								<td style="padding: 14px 20px;">
-									<div style="display: flex; flex-direction: column; gap: 2px;">
-										<span style="color: var(--text-white); font-weight: 500;">
-											<i class="fa-solid fa-calendar-day"
-											style="font-size: 0.8rem; margin-right: 4px; color: var(--text-muted);"></i>
-											<span th:text="${appt.appointmentDate}">2026-06-15</span>
-										</span> <span style="font-size: 0.8rem; color: var(--text-muted);">
-											<i class="fa-solid fa-clock"
-											style="font-size: 0.75rem; margin-right: 4px;"></i> <span
-											th:text="${appt.timeSlot}">10:30 AM - 11:00 AM</span>
-										</span>
-									</div>
-								</td>
+						</div>
+					</td>
+				</tr>
+			</tbody>
+		</table>
+	</div>
+</div>
 
-								<!-- 4. Dynamic Process Lifecycle Workflow Conditional Badges Column -->
-<td style="padding: 14px 20px; text-align: center; vertical-align: middle;">
-	<!-- Flex Container: Stacks elements vertically and centers them -->
-	<div style="display: flex; flex-direction: column; align-items: center; gap: 6px; width: 100%;">
-
-		<!-- STATE 1: REVIEWING BADGE (Amber Alert Style) --> 
-		<span th:if="${appt.status.name() == 'REVIEWING'}"
-			style="background-color: rgba(245, 158, 11, 0.1); color: var(--accent-amber); border: 1px solid rgba(245, 158, 11, 0.2); padding: 4px 10px; border-radius: 6px; font-size: 0.8rem; font-weight: 700; display: inline-flex; align-items: center; gap: 6px;">
-			<i class="fa-solid fa-spinner fa-spin" style="font-size: 0.75rem;"></i> Reviewing
-		</span> 
-
-		<!-- STATE 2: CONFIRMED BADGE (Vibrant Emerald Success Style) -->
-		<span th:if="${appt.status.name() == 'CONFIRMED'}"
-			style="background-color: rgba(16, 185, 129, 0.1); color: var(--accent-green); border: 1px solid rgba(16, 185, 129, 0.2); padding: 4px 10px; border-radius: 6px; font-size: 0.8rem; font-weight: 700; display: inline-flex; align-items: center; gap: 6px;">
-			<i class="fa-solid fa-circle-check" style="font-size: 0.75rem;"></i> Confirmed
-		</span> 
-
-		<!-- STATE 3: COMPLETED BADGE (Solid Primary Teal Style) -->
-		<span th:if="${appt.status.name() == 'COMPLETED'}"
-			style="background-color: rgba(14, 165, 233, 0.1); color: var(--primary-teal); border: 1px solid rgba(14, 165, 233, 0.2); padding: 4px 10px; border-radius: 6px; font-size: 0.8rem; font-weight: 700; display: inline-flex; align-items: center; gap: 6px;">
-			<i class="fa-solid fa-circle-user" style="font-size: 0.75rem;"></i> Completed
-		</span> 
-
-		<!-- STATE 4: CANCELLED BADGE (Warning Red Style) --> 
-		<span th:if="${appt.status.name() == 'CANCELLED'}"
-			style="background-color: rgba(239, 68, 68, 0.1); color: var(--accent-red); border: 1px solid rgba(239, 68, 68, 0.2); padding: 4px 10px; border-radius: 6px; font-size: 0.8rem; font-weight: 700; display: inline-flex; align-items: center; gap: 6px;">
-			<i class="fa-solid fa-circle-xmark" style="font-size: 0.75rem;"></i> Cancelled
+<!-- Tab View: Family Members Management View -->
+<div id="familyMembersTab" class="tab-panel" >
+	<div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px; border-bottom: 1px solid var(--border-color); padding-bottom: 12px;">
+		<h2>
+			<i class="fa-solid fa-users"></i> Managed Family Members
+		</h2>
+		<span style="background-color: rgba(20, 184, 166, 0.1); color: var(--primary-teal); padding: 4px 12px; border-radius: 4px; font-size: 0.85rem; font-weight: 600;">
+			Dependents
 		</span>
+	</div>
 
-		<!-- TARGETED BLOCK: Displays Reason Only For Cancelled Rows -->
-		<div th:if="${appt.status.name() == 'CANCELLED'}" 
-			 style="font-size: 0.75rem; color: rgba(239, 68, 68, 0.9); background-color: rgba(239, 68, 68, 0.05); padding: 4px 8px; border-radius: 4px; border: 1px solid rgba(239, 68, 68, 0.15); max-width: 180px; word-break: break-word; line-height: 1.3; text-align: center; font-weight: 500;">
-			<i class="fa-solid fa-comment-dots" style="font-size: 0.7rem; margin-right: 2px;"></i>
-			<span th:text="${appt.reason != null ? appt.reason : 'No reason provided'}">Reason text placeholder</span>
+	<!-- TOP ACTION CONTAINER: ADD NEW MEMBER BUTTON -->
+	<div style="margin-bottom: 16px; display: flex; justify-content: flex-start;">
+		<button type="button" onclick="openAddFamilyModal()"
+			style="background-color: var(--primary-teal); color: #0f172a; border: none; padding: 0 16px; height: 38px; border-radius: 6px; cursor: pointer; display: inline-flex; align-items: center; justify-content: center; gap: 8px; font-size: 0.9rem; font-weight: 700; transition: 0.2s;"
+			onmouseover="this.style.opacity='0.9';"
+			onmouseout="this.style.opacity='1';">
+			<i class="fa-solid fa-user-plus"></i> Add New Member
+		</button>
+	</div>
+
+	<!-- RESPONSIVE TABLE CONTAINER -->
+	<div style="width: 100%; overflow-x: auto; background-color: rgba(15, 23, 42, 0.3); border-radius: 8px; border: 1px solid var(--border-color);">
+		<table style="width: 100%; border-collapse: collapse; text-align: left; font-size: 0.9rem;">
+
+			<!-- TABLE HEADERS -->
+			<thead>
+				<tr style="background-color: rgba(255, 255, 255, 0.02); border-bottom: 1px solid var(--border-color); color: var(--text-white); font-weight: 700;">
+					<th style="padding: 16px 20px; width: 80px;">ID</th>
+					<th style="padding: 16px 20px;">Full Name</th>
+					<th style="padding: 16px 20px;">Gender</th>
+					<th style="padding: 16px 20px;">Date of Birth</th>
+					<th style="padding: 16px 20px;">Relationship</th>
+					<th style="padding: 16px 20px;">Contact Number</th>
+				</tr>
+			</thead>
+
+			<!-- TABLE BODY DATA ROWS (Loops using Thymeleaf th:each) -->
+			<tbody>
+				<!-- Iterates over family members list provided by back-end context -->
+				<tr th:each="member : ${familyMembersList}"
+					style="border-bottom: 1px solid var(--border-color); color: var(--text-muted); transition: background 0.2s;"
+					onmouseover="this.style.backgroundColor='rgba(255,255,255,0.01)'"
+					onmouseout="this.style.backgroundColor='transparent'">
+
+					<!-- Member ID -->
+					<td style="padding: 14px 20px; font-weight: 600; color: var(--primary-teal);" th:text="${member.memberId}">#1</td>
+
+					<!-- Full Name -->
+					<td style="padding: 14px 20px; font-weight: 600; color: var(--text-white);">
+						<div style="display: flex; align-items: center; gap: 8px;">
+							<i class="fa-solid fa-user" style="color: var(--text-muted); font-size: 0.85rem;"></i>
+							<span th:text="${member.name}">Jane Doe</span>
+						</div>
+					</td>
+
+					<!-- Gender -->
+					<td style="padding: 14px 20px;">
+						<span style="background-color: rgba(255, 255, 255, 0.05); padding: 4px 8px; border-radius: 4px; font-size: 0.8rem; color: var(--text-white);" th:text="${member.gender}">Female</span>
+					</td>
+
+					<!-- Date of Birth -->
+					<td style="padding: 14px 20px;">
+						<i class="fa-solid fa-calendar-day" style="font-size: 0.8rem; margin-right: 4px; color: var(--text-muted);"></i>
+						<span th:text="${member.dob}">1995-08-20</span>
+					</td>
+
+					<!-- Relationship -->
+					<td style="padding: 14px 20px;">
+						<span style="color: var(--accent-amber); font-weight: 600;" th:text="${member.relationship}">Spouse</span>
+					</td>
+
+					<!-- Contact Number -->
+					<td style="padding: 14px 20px;" th:text="${member.contact}">9876543210</td>
+				</tr>
+				
+				<!-- Fallback empty data notice row -->
+				<tr th:if="${#lists.isEmpty(familyMembersList)}">
+					<td colspan="6" style="padding: 30px; text-align: center; color: var(--text-muted);">
+						<i class="fa-solid fa-folder-open" style="font-size: 1.5rem; display: block; margin-bottom: 8px; color: var(--border-color);"></i>
+						No family members added yet. Click 'Add New Member' to start.
+					</td>
+				</tr>
+			</tbody>
+		</table>
+	</div>
+</div>
+
+<!-- ========================================== -->
+<!-- CENTERED HTML ADD FAMILY MEMBER MODAL DIALOG -->
+<!-- ========================================== -->
+<div id="addFamilyMemberModal" style="display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(15, 23, 42, 0.6); z-index: 9999; backdrop-filter: blur(4px); align-items: center; justify-content: center;">
+	<div style="background: #1e293b; padding: 24px; border-radius: 12px; width: 100%; max-width: 450px; box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.5), 0 10px 10px -5px rgba(0, 0, 0, 0.5); border: 1px solid var(--border-color); font-family: sans-serif; color: var(--text-white);">
+		
+		<!-- Modal Header Title Row -->
+		<div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 16px; border-bottom: 1px solid var(--border-color); padding-bottom: 10px;">
+			<h3 style="margin: 0; color: var(--text-white); font-size: 1.2rem; font-weight: 600;">
+				<i class="fa-solid fa-user-plus" style="color: var(--primary-teal); margin-right: 6px;"></i> Add Family Member
+			</h3>
+			<button type="button" onclick="closeAddFamilyModal()" style="background: transparent; border: none; color: var(--text-muted); cursor: pointer; font-size: 1.2rem;">
+				<i class="fa-solid fa-xmark"></i>
+			</button>
 		</div>
 
-	</div>
-</td>
+		<!-- Registration Submission Form -->
+		<form th:action="@{/patient/family/add}" method="post" id="addFamilyForm" onsubmit="return validateFamilyForm(event)">
+			
+			<!--hidden field -->
+			<input type="hidden" name="primaryPatientId" th:value="${patientDetails.patientId}" />
+	
+			<!-- Input: Full Name -->
+			<div style="margin-bottom: 14px;">
+				<label style="display: block; font-size: 0.85rem; color: var(--text-muted); margin-bottom: 6px; font-weight: 500;">Full Name *</label>
+				<input type="text" name="name" id="famName" placeholder="Enter member's full name" required
+					style="width: 100%; box-sizing: border-box; padding: 10px; background: #0f172a; border: 1px solid var(--border-color); border-radius: 6px; color: var(--text-white); font-size: 0.9rem; outline: none; transition: 0.2s;" 
+					onfocus="this.style.borderColor='var(--primary-teal)'">
+			</div>
 
-
-							</tr>
-						</tbody>
-					</table>
+			<!-- Input Row: Gender & Date of Birth -->
+			<div style="display: flex; gap: 14px; margin-bottom: 14px;">
+				<div style="flex: 1;">
+					<label style="display: block; font-size: 0.85rem; color: var(--text-muted); margin-bottom: 6px; font-weight: 500;">Gender *</label>
+					<select name="gender" id="famGender" required
+						style="width: 100%; box-sizing: border-box; padding: 10px; background: #0f172a; border: 1px solid var(--border-color); border-radius: 6px; color: var(--text-white); font-size: 0.9rem; outline: none; transition: 0.2s;"
+						onfocus="this.style.borderColor='var(--primary-teal)'">
+						<option value="" disabled selected hidden>Select</option>
+						<option value="Male">Male</option>
+						<option value="Female">Female</option>
+						<option value="Other">Other</option>
+					</select>
+				</div>
+				<div style="flex: 1;">
+					<label style="display: block; font-size: 0.85rem; color: var(--text-muted); margin-bottom: 6px; font-weight: 500;">Date of Birth *</label>
+					<input type="date" name="dob" id="famDob" required
+						style="width: 100%; box-sizing: border-box; padding: 10px; background: #0f172a; border: 1px solid var(--border-color); border-radius: 6px; color: var(--text-white); font-size: 0.9rem; outline: none; transition: 0.2s;"
+						onfocus="this.style.borderColor='var(--primary-teal)'">
 				</div>
 			</div>
+
+			<!-- Input: Family Relationship Options Dropdown -->
+			<div style="margin-bottom: 14px;">
+				<label style="display: block; font-size: 0.85rem; color: var(--text-muted); margin-bottom: 6px; font-weight: 500;">Relationship *</label>
+				<select name="relationship" id="famRelationship" required
+					style="width: 100%; box-sizing: border-box; padding: 10px; background: #0f172a; border: 1px solid var(--border-color); border-radius: 6px; color: var(--text-white); font-size: 0.9rem; outline: none; transition: 0.2s;"
+					onfocus="this.style.borderColor='var(--primary-teal)'">
+					<option value="" disabled selected hidden>Choose relationship type</option>
+					<option value="Dad">Dad</option>
+					<option value="Mom">Mom</option>
+					<option value="GrandFather">GrandFather</option>
+					<option value="GrandMother">GrandMother</option>
+					<option value="Son">Son</option>
+					<option value="Daughter">Daughter</option>
+					<option value="Brother">Brother</option>
+					<option value="Sister">Sister</option>
+					<option value="Cousin">Cousin</option>
+				</select>
+			</div>
+
+			<!-- Input: Optional Contact Number -->
+			<div style="margin-bottom: 18px;">
+				<label style="display: block; font-size: 0.85rem; color: var(--text-muted); margin-bottom: 4px; font-weight: 500;">Contact Number <span style="font-size: 0.75rem; color: var(--text-muted); font-style: italic;">(Optional)</span></label>
+				<input type="text" name="contact" id="famContact" placeholder="Leave blank to use your number" maxlength="15"
+					style="width: 100%; box-sizing: border-box; padding: 10px; background: #0f172a; border: 1px solid var(--border-color); border-radius: 6px; color: var(--text-white); font-size: 0.9rem; outline: none; transition: 0.2s;"
+					onfocus="this.style.borderColor='var(--primary-teal)'">
+			</div>
+
+			<!-- Error Tracking Placeholder Box -->
+			<div id="familyFormErrorMessage" style="display: none; color: #ef4444; font-size: 0.85rem; margin-bottom: 14px; font-weight: 500;"></div>
+
+			<!-- Footer Action Buttons Row -->
+			<div style="display: flex; justify-content: flex-end; gap: 10px; border-top: 1px solid var(--border-color); padding-top: 14px;">
+				<button type="button" onclick="closeAddFamilyModal()" 
+					style="padding: 8px 16px; border: 1px solid var(--border-color); background: transparent; color: var(--text-muted); border-radius: 6px; cursor: pointer; font-weight: 600; font-size: 0.9rem;">
+					Cancel
+				</button>
+				<button type="submit" 
+					style="padding: 8px 20px; border: none; background: var(--primary-teal); color: #0f172a; border-radius: 6px; cursor: pointer; font-weight: 700; font-size: 0.9rem;">
+					Save Member
+				</button>
+			</div>
+		</form>
+	</div>
+</div>
 
 
 			<!-- Tab View 4: Patient Profile Box View -->
@@ -750,6 +1026,59 @@ to {
             event.currentTarget.classList.add('active');
             document.getElementById(targetPanelId).classPack = document.getElementById(targetPanelId).classList.add('active-panel');
         }
+        
+        //for add family member validation
+        // Function to open the modal and reset any previous data or error alerts
+function openAddFamilyModal() {
+    // Reset all form inputs to blank/default states
+    document.getElementById("addFamilyForm").reset();
+    
+    // Hide the error message block
+    document.getElementById("familyFormErrorMessage").style.display = "none";
+    
+    // Display the modal block centered on screen
+    document.getElementById("addFamilyMemberModal").style.display = "flex";
+}
+
+// Function to close the modal
+function closeAddFamilyModal() {
+    document.getElementById("addFamilyMemberModal").style.display = "none";
+}
+
+// Validation function that stops submission if required inputs are missing
+function validateFamilyForm(event) {
+    // Capture values and strip unnecessary outer spaces
+    var name = document.getElementById("famName").value.trim();
+    var gender = document.getElementById("famGender").value;
+    var dob = document.getElementById("famDob").value;
+    var relationship = document.getElementById("famRelationship").value;
+    var errorDiv = document.getElementById("familyFormErrorMessage");
+
+    // Check if any mandatory fields are missing
+    if (name === "" || gender === "" || dob === "" || relationship === "") {
+        errorDiv.textContent = "Please fill in all mandatory fields marked with an asterisk (*).";
+        errorDiv.style.display = "block";
+        
+        // Block the native browser execution pipeline
+        event.preventDefault();
+        return false;
+    }
+
+    // Optional Extra Check: Ensure date of birth is not a future date
+    var selectedDate = new Date(dob);
+    var today = new Date();
+    if (selectedDate > today) {
+        errorDiv.textContent = "Date of birth cannot be a future date.";
+        errorDiv.style.display = "block";
+        event.preventDefault();
+        return false;
+    }
+
+    // Clear alert and allow smooth dynamic submission
+    errorDiv.style.display = "none";
+    return true;
+}
+
     </script>
 
 </body>

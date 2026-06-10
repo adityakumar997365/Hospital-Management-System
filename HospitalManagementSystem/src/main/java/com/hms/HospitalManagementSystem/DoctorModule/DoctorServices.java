@@ -9,4 +9,6 @@ public interface DoctorServices {
 	DoctorModel addNewDoctor(DoctorDTO dto);
 
 	DoctorModel getUserByContact(String usernameMob);
+	
+	 boolean existsByContactNumber(String contactNumber);
 }
